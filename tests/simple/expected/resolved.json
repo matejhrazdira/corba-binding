@@ -1,0 +1,723 @@
+{
+  "fileName": "simple.idl",
+  "definitions": [
+    {
+      "name": "IncludedIdl",
+      "definitions": [
+        {
+          "name": "IncludedStruct",
+          "members": [
+            {
+              "declarator": {
+                "name": "someMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            }
+          ],
+          "CLASS": "StructType"
+        }
+      ],
+      "CLASS": "Module"
+    },
+    {
+      "name": "SimpleIdl",
+      "definitions": [
+        {
+          "name": "IDL_VERSION",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "1",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "COMPOSED_CONST",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "2",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "ADD",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "6",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "MULTIPLY",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "type": "OPENING_BRACKET",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "1",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "SUBTRACT",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "3",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "CLOSING_BRACKET",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "type": "MULTIPLY",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "type": "OPENING_BRACKET",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "type": "UNARY_MINUS",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "5",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "DIVIDE",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "2",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "CLOSING_BRACKET",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "type": "SUBTRACT",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "value": "5",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "ADD",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "name": [
+                  "SimpleIdl",
+                  "IDL_VERSION"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "STRING_CONSTANT",
+          "type": {
+            "CLASS": "StringType"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "\"This is some string!\"",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "type": {
+            "type": "SIGNED_LONG_LONG_INT"
+          },
+          "declarators": [
+            {
+              "name": "time",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
+          "type": {
+            "type": "SIGNED_LONG_LONG_INT"
+          },
+          "declarators": [
+            {
+              "name": "someReally",
+              "CLASS": "Declarator"
+            },
+            {
+              "name": "someReallyWeird",
+              "CLASS": "Declarator"
+            },
+            {
+              "name": "someReallyWeirdTypedef",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
+          "name": "SimpleStruct",
+          "members": [
+            {
+              "declarator": {
+                "name": "stringMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "intMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "type": "SIGNED_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "typedefedMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "SimpleIdl",
+                  "time"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "uintMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "type": "UNSIGNED_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "longMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "type": "SIGNED_LONG_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "ulongMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "type": "UNSIGNED_LONG_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "dimensions": [
+                  {
+                    "elements": [
+                      {
+                        "value": "5",
+                        "CLASS": "Literal"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  }
+                ],
+                "name": "longArr",
+                "CLASS": "ArrayDeclarator"
+              },
+              "type": {
+                "type": "SIGNED_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "includedMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "IncludedIdl",
+                  "IncludedStruct"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "fullyScopedIncludedMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "IncludedIdl",
+                  "IncludedStruct"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "duplicate1",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "duplicate2",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            }
+          ],
+          "CLASS": "StructType"
+        },
+        {
+          "type": {
+            "elementType": {
+              "name": [
+                "SimpleIdl",
+                "SimpleStruct"
+              ],
+              "fullyQualified": true,
+              "CLASS": "ScopedName"
+            }
+          },
+          "declarators": [
+            {
+              "name": "structs",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
+          "type": {
+            "name": [
+              "SimpleIdl",
+              "SimpleStruct"
+            ],
+            "fullyQualified": true,
+            "CLASS": "ScopedName"
+          },
+          "declarators": [
+            {
+              "name": "typedefedStruct",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
+          "name": "StructWithArrays",
+          "members": [
+            {
+              "declarator": {
+                "name": "typedefedArray",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "SimpleIdl",
+                  "structs"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "directArray",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "elementType": {
+                  "name": [
+                    "SimpleIdl",
+                    "SimpleStruct"
+                  ],
+                  "fullyQualified": true,
+                  "CLASS": "ScopedName"
+                }
+              },
+              "CLASS": "Member"
+            }
+          ],
+          "CLASS": "StructType"
+        },
+        {
+          "name": "SimpleEnum",
+          "values": [
+            {
+              "name": "EN_VAL_A",
+              "CLASS": "EnumValue"
+            },
+            {
+              "name": "EN_VAL_B",
+              "CLASS": "EnumValue"
+            },
+            {
+              "name": "EN_VAL_C",
+              "CLASS": "EnumValue"
+            }
+          ],
+          "CLASS": "EnumType"
+        },
+        {
+          "name": "SimpleUnion",
+          "type": {
+            "name": [
+              "SimpleIdl",
+              "SimpleEnum"
+            ],
+            "fullyQualified": true,
+            "CLASS": "ScopedName"
+          },
+          "fields": [
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "strInUnion",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "SimpleIdl",
+                          "SimpleEnum",
+                          "EN_VAL_A"
+                        ],
+                        "fullyQualified": true,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            },
+            {
+              "type": {
+                "type": "UNSIGNED_LONG_LONG_INT"
+              },
+              "declarator": {
+                "name": "ullInUnion",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "SimpleIdl",
+                          "SimpleEnum",
+                          "EN_VAL_B"
+                        ],
+                        "fullyQualified": true,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            },
+            {
+              "type": {
+                "name": [
+                  "SimpleIdl",
+                  "SimpleStruct"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "declarator": {
+                "name": "simpleStructInUnion",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "SimpleIdl",
+                          "SimpleEnum",
+                          "EN_VAL_C"
+                        ],
+                        "fullyQualified": true,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            }
+          ],
+          "CLASS": "UnionType"
+        },
+        {
+          "name": "WeirdUnion",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "fields": [
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "foo",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "value": "1",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "ADD",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "3",
+                        "CLASS": "Literal"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                },
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "value": "1",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "ADD",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "2",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "MULTIPLY",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "5",
+                        "CLASS": "Literal"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                },
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "value": "2",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "ADD",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "6",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "MULTIPLY",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "type": "OPENING_BRACKET",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "1",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "SUBTRACT",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "3",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "CLOSING_BRACKET",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "type": "MULTIPLY",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "type": "OPENING_BRACKET",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "type": "UNARY_MINUS",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "5",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "DIVIDE",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "2",
+                        "CLASS": "Literal"
+                      },
+                      {
+                        "type": "CLOSING_BRACKET",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "type": "SUBTRACT",
+                        "CLASS": "PrimitiveElement"
+                      },
+                      {
+                        "value": "5",
+                        "CLASS": "Literal"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            },
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "bar",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "CLASS": "DefaultLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            }
+          ],
+          "CLASS": "UnionType"
+        },
+        {
+          "name": "NoMemberException",
+          "members": [],
+          "CLASS": "ExceptDcl"
+        },
+        {
+          "name": "ExceptionWithMembers",
+          "members": [
+            {
+              "declarator": {
+                "name": "someStringMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            }
+          ],
+          "CLASS": "ExceptDcl"
+        },
+        {
+          "name": "SimpleIdlInterface",
+          "CLASS": "Interface"
+        }
+      ],
+      "CLASS": "Module"
+    }
+  ],
+  "CLASS": "Specification"
+}

@@ -1,0 +1,9 @@
+
+
+File header, should not be included
+
+    $$$ BGN $$$
+First line of output.
+        $$$EVENT$$$
+Something that should be $$$REPLACED$$$.
+And last line

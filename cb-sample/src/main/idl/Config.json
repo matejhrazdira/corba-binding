@@ -1,0 +1,9 @@
+{
+  "inputFiles": [
+    "idl/Simple.idl"
+  ],
+  "javaOutputDir": "java-cb",
+  "javaPackagePrefix": "com.matejhrazdira.cbsample.generated",
+  "cppCorbaOutputDir": "cpp-cb",
+  "cppCorbaTaoGeneratedPath": "../cpp-tao"
+}

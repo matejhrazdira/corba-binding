@@ -1,0 +1,11 @@
+.gradle
+.project
+.cproject
+build
+/.idea/workspace.xml
+/.idea/libraries
+CMakeFiles
+CMakeCache.txt
+Makefile
+cmake_*
+*.so

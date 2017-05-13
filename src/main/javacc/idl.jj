@@ -1,0 +1,1287 @@
+/* Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+options
+{
+  STATIC = false ;
+}
+PARSER_BEGIN(IdlParser)
+package com.matejhrazdira.corbabinding.gen;
+
+import java.util.*;
+
+import com.matejhrazdira.corbabinding.idl.*;
+import com.matejhrazdira.corbabinding.idl.definitions.*;
+import com.matejhrazdira.corbabinding.idl.definitions.members.*;
+import com.matejhrazdira.corbabinding.idl.definitions.unionmembers.*;
+import com.matejhrazdira.corbabinding.idl.expressions.*;
+import com.matejhrazdira.corbabinding.idl.interfaces.*;
+import com.matejhrazdira.corbabinding.idl.types.*;
+
+public class IdlParser {
+
+  public interface OutputListener {
+    void onInfo(String info);
+    void onWarning(String warning);
+    void onError(String error);
+  }
+
+  private static final OutputListener NO_OP_LISTENER = new OutputListener() {
+    @Override public void onInfo(final String info) {}
+    @Override public void onWarning(final String warning) {}
+    @Override public void onError(final String error) {}
+  };
+
+  private OutputListener mOutputListener = NO_OP_LISTENER;
+
+  public void setOutputListener(final OutputListener outputListener) {
+    if (outputListener == null) {
+      mOutputListener = NO_OP_LISTENER;
+    } else {
+      mOutputListener = outputListener;
+    }
+  }
+
+  private void logi(String message) {
+    mOutputListener.onInfo(message);
+  }
+
+  private void logw(String message) {
+    mOutputListener.onWarning(message);
+  }
+
+  private void loge(String message) {
+    mOutputListener.onError(message);
+  }
+}
+
+PARSER_END(IdlParser)
+
+
+/*
+ * Tokens to ignore in the BNF follow.
+ * + Added preprocessor stuff
+ */
+
+SKIP :
+{
+  < " " >
+| < "\t" >
+| < "\n" >
+| < "\r" >
+| < "//" (~["\n"])* "\n" >
+| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+| < "#" ("ifndef" | "ifdef" | "define") ([" ","\t"])* (~["\n"])* ([" ","\t"])* "\n" >
+| < "#endif" ([" ","\t"])* "\n" >
+| < "#include" ([" ","\t"])* "\"" (~["\n"])* "\"" ([" ","\t"])* "\n" >
+| < "#" ([" ","\t"])* (["0"-"9"])+
+    (([" ","\t"])* "\"" (~["\""])+ "\""
+           ([" ","\t"])* (["0"-"9"])* ([" ","\t"])* (["0"-"9"])*)? "\n" >
+}
+
+/* Production 1 */
+
+Specification specification(String fileName) :
+{
+  logi("Processing '" + fileName + "'.");
+  List<Definition> definitions = new ArrayList<Definition>();
+  Definition definition;
+}
+{
+  (
+    definition = definition()
+    { definitions.add(definition); }
+  )+
+  { return new Specification(fileName, definitions); }
+}
+
+/* Production 2 */
+
+Definition definition() :
+{
+  Definition res = null;
+}
+{
+  (
+      res = type_dcl() ";"
+    |
+      res = const_dcl() ";"
+    |
+      res = except_dcl() ";"
+    |
+      res = interfacex() ";"
+    |
+      res = module() ";"
+  )
+  { return res; }
+}
+
+/* Production 3 */
+
+Module module() :
+{
+  String name;
+  List<Definition> definitions = new ArrayList<Definition>();
+  Definition definition;
+}
+{
+  "module"
+  name = identifier()
+  "{"
+  (
+    definition = definition()
+    { definitions.add(definition); }
+  )+
+  "}"
+  { return new Module(name, definitions); }
+}
+
+/* Production 4 */
+
+Interface interfacex() :
+{
+  { logw("'interfacex' not supported, parsing only interface stub"); }
+  String name;
+}
+{
+  (
+    LOOKAHEAD(3)
+    name = interface_dcl()
+  |
+    name = forward_dcl()
+  )
+  { return new Interface(name); }
+}
+
+/* Production 5 */
+
+String interface_dcl() :
+{
+  String name;
+}
+{
+  name = interface_header() 
+  "{" 
+  interface_body() 
+  "}"
+  { return name; }
+}
+
+/* Production 6 */
+
+String forward_dcl() :
+{
+  String name;
+}
+{
+  "interface" 
+  name = identifier()
+  { return name; }
+}
+
+/* Production 7 */
+
+String interface_header() :
+{
+  String name;
+}
+{
+  "interface" 
+  name = identifier() 
+  [ 
+    inheritance_spec() 
+  ]
+  { return name; }
+}
+
+/* Production 8 */
+
+void interface_body() :
+{}
+{
+  ( export() )*
+}
+
+/* Production 9 */
+
+void export() :
+{}
+{
+  type_dcl() ";"
+|
+  const_dcl() ";"
+|
+  except_dcl() ";"
+|
+  attr_dcl() ";"
+|
+  op_dcl() ";"
+}
+
+/* Production 10 */
+
+void inheritance_spec() :
+{}
+{
+  ":" scoped_name() ( "," scoped_name() )*
+}
+
+/* Production 11 */
+
+ScopedName scoped_name() :
+{
+  List<String> scopedName = new ArrayList<String>();
+  boolean fullyQualified = false;
+  String name;
+}
+{
+  [
+    "::"
+    { fullyQualified = true; }
+  ]
+    name = identifier()
+    { scopedName.add(name); }
+    (
+      "::" 
+      name = identifier()
+      { scopedName.add(name); }
+    )*
+    { return new ScopedName(scopedName, fullyQualified); }
+}
+
+/* Production 12 */
+
+ConstDcl const_dcl() :
+{
+  Type type;
+  String name;
+  List<ExpressionElement> elements = new ArrayList<ExpressionElement>();
+}
+{
+  "const" 
+  type = const_type() 
+  name = identifier() 
+  "=" 
+  const_exp(elements)
+  { return new ConstDcl(name, type, new ConstExp(elements)); }
+}
+
+/* Production 13 */
+
+Type const_type() :
+{
+  Type res;
+}
+{
+  (
+    res = integer_type()
+  |
+    res = char_type()
+  |
+    res = boolean_type()
+  |
+    res = floating_pt_type()
+  |
+    res = string_type()
+  |
+    res = scoped_name()
+  )
+  { return res; }
+}
+
+/* Production 14 */
+
+void const_exp(List<ExpressionElement> result) :
+{}
+{
+  or_expr(result)
+}
+
+/* Production 15 */
+
+void or_expr(List<ExpressionElement> result) :
+{}
+{
+  xor_expr(result) 
+  ( 
+    "|" 
+    { result.add(new PrimitiveElement(PrimitiveElement.Type.OR)); }
+    xor_expr(result)
+  )*
+}
+
+/* Production 16 */
+
+void xor_expr(List<ExpressionElement> result) :
+{}
+{
+  and_expr(result)
+  ( 
+    "^" 
+    { result.add(new PrimitiveElement(PrimitiveElement.Type.XOR)); }
+    and_expr(result) 
+  )*
+}
+
+/* Production 17 */
+
+void and_expr(List<ExpressionElement> result) :
+{}
+{
+  shift_expr(result)
+  ( 
+    "&" 
+    { result.add(new PrimitiveElement(PrimitiveElement.Type.AND)); }
+    shift_expr(result) 
+  )*
+}
+
+/* Production 18 */
+
+void shift_expr(List<ExpressionElement> result) :
+{}
+{
+  add_expr(result) 
+  ( 
+    ( 
+      ">>" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.SHIFT_RIGHT)); }
+      | 
+      "<<" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.SHIFT_LEFT)); }
+    ) 
+    add_expr(result) 
+  )*
+}
+
+/* Production 19 */
+
+void add_expr(List<ExpressionElement> result) :
+{}
+{
+  mult_expr(result) 
+  ( 
+    ( 
+      "+" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.ADD)); }
+      | 
+      "-" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.SUBTRACT)); }
+    ) 
+    mult_expr(result) 
+  )*
+}
+
+/* Production 20 */
+
+void mult_expr(List<ExpressionElement> result) :
+{}
+{
+  unary_expr(result) 
+  ( 
+    ( 
+      "*" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.MULTIPLY)); }
+      | 
+      "/" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.DIVIDE)); }
+      | 
+      "%" 
+      { result.add(new PrimitiveElement(PrimitiveElement.Type.MODULO)); }
+    ) 
+    unary_expr(result) 
+  )*
+}
+
+/* Production 21 */
+
+void unary_expr(List<ExpressionElement> result) :
+{}
+{
+  [ 
+    unary_operator(result) 
+  ] 
+  primary_expr(result)
+}
+
+/* Production 22 */
+void unary_operator(List<ExpressionElement> result) :
+{}
+{
+  "-"
+  { result.add(new PrimitiveElement(PrimitiveElement.Type.UNARY_MINUS)); }
+|
+  "+"
+  { result.add(new PrimitiveElement(PrimitiveElement.Type.UNARY_PLUS)); }
+|
+  "~"
+  { result.add(new PrimitiveElement(PrimitiveElement.Type.UNARY_NEGATE)); }
+}
+
+/* Production 23 */
+
+void primary_expr(List<ExpressionElement> result) :
+{
+  ExpressionElement element;
+}
+{
+  element = scoped_name()
+  { result.add(element); }
+|
+  literal(result)
+|
+  "(" 
+  { result.add(new PrimitiveElement(PrimitiveElement.Type.OPENING_BRACKET)); }
+  const_exp(result) 
+  ")"
+  { result.add(new PrimitiveElement(PrimitiveElement.Type.CLOSING_BRACKET)); }
+}
+
+/* Production 24 */
+
+void literal(List<ExpressionElement> result) :
+{
+  ExpressionElement res;
+}
+{
+  (
+    res = integer_literal()
+  |
+    res = string_literal()
+  |
+    res = character_literal()
+  |
+    res = floating_pt_literal()
+  |
+    res = boolean_literal()
+  )
+  { result.add(res); }
+}
+
+/* Production 25 */
+
+BooleanLiteral boolean_literal() :
+{}
+{
+  "TRUE"
+  { return new BooleanLiteral(true); }
+|
+  "FALSE"
+  { return new BooleanLiteral(false); }
+}
+
+/* Production 26 */
+
+ConstExp positive_int_const() :
+{
+  List<ExpressionElement> elements = new ArrayList<ExpressionElement>();
+}
+{
+  const_exp(elements)
+  { return new ConstExp(elements); }
+}
+
+/* Production 27 */
+
+Definition type_dcl() :
+{
+  Definition result = null;
+}
+{
+  (
+    "typedef" 
+    result = type_declarator()
+  |
+    result = struct_type()
+  |
+    result = union_type()
+  |
+    result = enum_type()
+  )
+  { return result; }
+}
+
+/* Production 28 */
+
+Definition type_declarator() :
+{
+  Type type;
+  List<Declarator> declarators;
+}
+{
+  type = type_spec() 
+  declarators = declarators()
+  { return new TypeDeclarator(type, declarators); }
+}
+
+/* Production 29 */
+
+Type type_spec() :
+{
+  Type type;
+}
+{
+  (
+    type = simple_type_spec()
+  |
+    type = constr_type_spec()
+  )
+  { return type; }
+}
+
+/* Production 30 */
+
+Type simple_type_spec() :
+{
+  Type type;
+}
+{
+  (
+    type = base_type_spec()
+  |
+    type = template_type_spec()
+  |
+    type = scoped_name()
+  )
+  { return type; }
+}
+
+/* Production 31 */
+
+Type base_type_spec() :
+{
+  Type type;
+}
+{
+  (
+    type = floating_pt_type()
+  |
+    type = integer_type()
+  |
+    type = char_type()
+  |
+    type = boolean_type()
+  |
+    type = octet_type()
+  |
+    type = any_type()
+  )
+  { return type; }
+}
+
+/* Production 32 */
+
+Type template_type_spec() :
+{
+  Type type;
+}
+{
+  (
+    type = sequence_type()
+  |
+    type = string_type()
+  )
+  { return type; }
+}
+
+/* Production 33 */
+
+Type constr_type_spec() :
+{
+  logw("'constr_type_spec' is not supported");
+  Type res;
+}
+{
+  (
+    struct_type()
+    { res = new UnsupportedType("constr_type_spec: struct_type"); }
+  |
+    union_type()
+    { res = new UnsupportedType("constr_type_spec: union_type"); }
+  |
+    enum_type()
+    { res = new UnsupportedType("constr_type_spec: enum_type"); }
+  )
+  { return res; }
+}
+
+/* Production 34 */
+
+List<Declarator> declarators() :
+{
+  List<Declarator> declarators = new ArrayList<Declarator>();
+  Declarator declarator;
+}
+{
+  declarator = declarator() 
+  { declarators.add(declarator); }
+  ( 
+    "," 
+    declarator = declarator() 
+    { declarators.add(declarator); }
+  )*
+  { return declarators; }
+}
+
+/* Production 35 */
+
+Declarator declarator() :
+{
+  Declarator result;
+}
+{
+  (
+    LOOKAHEAD(2)
+    result = complex_declarator()
+  |
+    result = simple_declarator()
+  )
+  { return result; }
+}
+
+/* Production 36 */
+
+Declarator simple_declarator() :
+{
+  String name;
+}
+{
+  name = identifier()
+  { return new Declarator(name); }
+}
+
+/* Production 37 */
+
+ArrayDeclarator complex_declarator() :
+{
+  ArrayDeclarator result;
+}
+{
+  result = array_declarator()
+  { return result; }
+}
+
+/* Production 38 */
+
+Type floating_pt_type() :
+{}
+{
+  "float"
+  { return new PrimitiveType(PrimitiveType.Type.FLOAT); }
+|
+  "double"
+  { return new PrimitiveType(PrimitiveType.Type.DOUBLE); }
+}
+
+/* Production 39 */
+
+Type integer_type() :
+{
+  Type res;
+}
+{
+(
+  res = signed_int()
+|
+  res = unsigned_int()
+)
+  { return res; }
+}
+
+/* Production 40 */
+
+Type signed_int() :
+{}
+{
+  LOOKAHEAD(2)
+  signed_long_long_int()
+  { return new PrimitiveType(PrimitiveType.Type.SIGNED_LONG_LONG_INT); }
+|
+  signed_long_int()
+  { return new PrimitiveType(PrimitiveType.Type.SIGNED_LONG_INT); }
+|
+  signed_short_int()
+  { return new PrimitiveType(PrimitiveType.Type.SIGNED_SHORT_INT); }
+}
+
+/* Production 41 */
+
+void signed_long_long_int() :
+{}
+{
+  "long" "long"
+}
+
+void signed_long_int() :
+{}
+{
+  "long"
+}
+
+/* Production 42 */
+
+void signed_short_int() :
+{}
+{
+  "short"
+}
+
+/* Production 43 */
+
+Type unsigned_int() :
+{}
+{
+  LOOKAHEAD(3)
+  unsigned_long_long_int()
+  { return new PrimitiveType(PrimitiveType.Type.UNSIGNED_LONG_LONG_INT); }
+|
+  LOOKAHEAD(2)
+  unsigned_long_int()
+  { return new PrimitiveType(PrimitiveType.Type.UNSIGNED_LONG_INT); }
+|
+  unsigned_short_int()
+  { return new PrimitiveType(PrimitiveType.Type.UNSIGNED_SHORT_INT); }
+}
+
+/* Production 44 */
+
+void unsigned_long_long_int() :
+{}
+{
+  "unsigned" "long" "long"
+}
+
+void unsigned_long_int() :
+{}
+{
+  "unsigned" "long"
+}
+
+/* Production 45 */
+
+void unsigned_short_int() :
+{}
+{
+  "unsigned" "short"
+}
+
+/* Production 46 */
+
+Type char_type() :
+{}
+{
+  "char"
+  { return new PrimitiveType(PrimitiveType.Type.CHAR); }
+}
+
+/* Production 47 */
+
+Type boolean_type() :
+{}
+{
+  "boolean"
+  { return new PrimitiveType(PrimitiveType.Type.BOOL); }
+}
+
+/* Production 48 */
+
+Type octet_type() :
+{}
+{
+  "octet"
+  { return new PrimitiveType(PrimitiveType.Type.OCTET); }
+}
+
+/* Production 49 */
+
+Type any_type() :
+{}
+{
+  "any"
+  { return new AnyType(); }
+}
+
+/* Production 50 */
+
+StructType struct_type() :
+{
+  String name;
+  List<Member> members;
+}
+{
+  "struct" 
+  name = identifier() 
+  "{" 
+  members = member_list() 
+  "}"
+  { return new StructType(name, members); }
+}
+
+/* Production 51 */
+
+List<Member> member_list() :
+{
+  List<Member> members = new ArrayList<Member>();
+  List<Member> member;
+}
+{
+  ( 
+    member = member() 
+    { members.addAll(member); }
+  )+
+  { return members; }
+}
+
+/* Production 52 */
+
+List<Member> member() :
+{
+  Type type;
+  List<Declarator> declarators;
+}
+{
+  type = type_spec() 
+  declarators = declarators() 
+  ";"
+  {
+    ArrayList<Member> result = new ArrayList<Member>(declarators.size());
+    for (Declarator d : declarators) {
+      result.add(new Member(d, type));
+    }
+    return result;
+  }
+}
+
+/* Production 53 */
+
+UnionType union_type() :
+{
+  String name;
+  Type type;
+  List<UnionField> fields;
+}
+{
+  "union" 
+  name = identifier() 
+  "switch" 
+  "(" 
+  type = switch_type_spec() 
+  ")" 
+  "{" 
+  fields = switch_body() 
+  "}"
+  { return new UnionType(name, type, fields); }
+}
+
+/* Production 54 */
+
+Type switch_type_spec() :
+{
+  Type type;
+}
+{
+  (
+    type = integer_type()
+  |
+    type = char_type()
+  |
+    type = boolean_type()
+  |
+    type = enum_type()
+  |
+    type = scoped_name()
+  )
+  { return type; }
+}
+
+/* Production 55 */
+
+List<UnionField> switch_body() :
+{
+  List<UnionField> fields = new ArrayList<UnionField>();
+  UnionField field;
+}
+{
+  ( 
+    field = casex() 
+    { fields.add(field); }
+  )+
+  { return fields; }
+}
+
+/* Production 56 */
+
+UnionField casex() :
+{
+  Type type;
+  Declarator declarator;
+  List<CaseLabel> labels = new ArrayList<CaseLabel>();
+  CaseLabel label;
+}
+{
+  ( 
+    label = case_label() 
+    { labels.add(label); }
+  )+ 
+  type = type_spec() 
+  declarator = declarator() 
+  ";"
+  { return new UnionField(type, declarator, labels); }
+}
+
+/* Production 57 */
+
+CaseLabel case_label() :
+{
+  List<ExpressionElement> expression = new ArrayList<ExpressionElement>();
+  CaseLabel result;
+}
+{
+  (
+    "case" const_exp(expression) ":"
+    { result = new ExpressionLabel(new ConstExp(expression)); }
+  |
+    "default" ":"
+    { result = new DefaultLabel(); }
+  )
+  { return result; }
+}
+
+// inlined, only used in casex() to declare unionmembers field
+// /* Production 58 */
+//
+// void element_spec() :
+// {}
+// {
+//   type_spec() declarator()
+// }
+
+/* Production 59 */
+
+EnumType enum_type() :
+{
+  String name;
+  String value;
+  List<String> values = new ArrayList<String>();
+}
+{
+  "enum" 
+  name = identifier() 
+  "{" 
+  value = enumerator() 
+  { values.add(value); }
+  ( 
+    "," 
+    value = enumerator() 
+    { values.add(value); }
+  )* 
+  "}"
+  { return new EnumType(name, values); }
+}
+
+/* Production 60 */
+
+String enumerator() :
+{
+  String res;
+}
+{
+  res = identifier()
+  { return res; }
+}
+
+/* Production 61 */
+
+SequenceType sequence_type() :
+{
+  Type elementType;
+  ConstExp bounds = null;
+}
+{
+  "sequence" 
+  "<" 
+  elementType = simple_type_spec() 
+  [ 
+    "," 
+    bounds = positive_int_const() 
+  ] 
+  ">"
+  { return new SequenceType(elementType, bounds); }
+}
+
+/* Production 62 */
+
+Type string_type() :
+{}
+{
+  "string"
+  [ 
+    "<" 
+    positive_int_const() 
+    ">" 
+    { logw("'string_type' with bounded length not supported"); }
+  ]
+  { return new StringType(); }
+}
+
+/* Production 63 */
+
+ArrayDeclarator array_declarator() :
+{
+  String name;
+  List<ConstExp> dimensions = new ArrayList<ConstExp>();
+  ConstExp dimension;
+}
+{
+  name = identifier() 
+  ( 
+    dimension = fixed_array_size() 
+    { dimensions.add(dimension); }
+  )+
+  { return new ArrayDeclarator(name, dimensions); }
+}
+
+/* Production 64 */
+
+ConstExp fixed_array_size() :
+{
+  ConstExp result;
+}
+{
+  "[" 
+  result = positive_int_const() 
+  "]"
+  { return result; }
+}
+
+/* Production 65 */
+
+void attr_dcl() :
+{}
+{
+  [ "readonly" ] "attribute" param_type_spec() simple_declarator() ( "," simple_declarator() )*
+}
+
+/* Production 66 */
+
+ExceptDcl except_dcl() :
+{
+  String name;
+  List<Member> members = new ArrayList<Member>();
+  List<Member> member;
+}
+{
+  "exception" 
+  name = identifier() 
+  "{" 
+  ( 
+    member = member() 
+    { members.addAll(member); }
+  )* 
+  "}"
+  { return new ExceptDcl(name, members); }
+}
+
+/* Production 67 */
+
+void op_dcl() :
+{}
+{
+  [ op_attribute() ] op_type_spec() identifier() parameter_dcls() [ raises_expr() ] [ context_expr() ]
+}
+
+/* Production 68 */
+
+void op_attribute() :
+{}
+{
+  "oneway"
+}
+
+/* Production 69 */
+
+void op_type_spec() :
+{}
+{
+  param_type_spec()
+|
+  "void"
+}
+
+/* Production 70 */
+
+void parameter_dcls() :
+{}
+{
+  "(" [ param_dcl() ( "," param_dcl() )* ] ")"
+}
+
+/* Production 71 */
+
+void param_dcl() :
+{}
+{
+  param_attribute() param_type_spec() simple_declarator()
+}
+
+/* Production 72 */
+
+void param_attribute() :
+{}
+{
+  "in"
+|
+  "out"
+|
+  "inout"
+}
+
+/* Production 73 */
+
+void raises_expr() :
+{}
+{
+  "raises" "(" scoped_name() ( "," scoped_name() )* ")"
+}
+
+/* Production 74 */
+
+void context_expr() :
+{}
+{
+  "context" "(" string_literal() ( "," string_literal() )* ")"
+}
+
+/* Production 75 */
+
+void param_type_spec() :
+{}
+{
+  base_type_spec()
+|
+  string_type()
+|
+  scoped_name()
+}
+
+/* Definitions of complex regular expressions follow */
+
+String identifier() :
+{
+Token t;
+}
+{
+  t = <ID>
+  {return t.image;}
+}
+
+Literal integer_literal() :
+{
+  Token t;
+}
+{
+  (
+    t = <OCTALINT>
+  |
+    t = <DECIMALINT>
+  |
+    t = <HEXADECIMALINT>
+  )
+  { return new Literal(t.image); }
+}
+
+Literal string_literal() :
+{
+  Token t;
+}
+{
+  t = <STRING>
+  { return new Literal(t.image); }
+}
+
+Literal character_literal() :
+{
+  Token t;
+}
+{
+  t = <CHARACTER>
+  { return new Literal(t.image); }
+}
+
+Literal floating_pt_literal() :
+{
+  Token t;
+}
+{
+  (
+    t = <FLOATONE>
+  |
+    t = <FLOATTWO>
+  )
+  { return new Literal(t.image); }
+}
+
+TOKEN :
+{
+  <  ID : ["a"-"z","A"-"Z", "_"] (["a"-"z","A"-"Z","0"-"9","_"])* >
+| <  OCTALINT : "0" (["0"-"7"])* (["u","U","l","L"])? >
+| <  DECIMALINT : ["1"-"9"] (["0"-"9"])* (["u","U","l","L"])? >
+| <  HEXADECIMALINT : ("0x"|"0X") (["0"-"9","a"-"f","A"-"F"])+ (["u","U","l","L"])? >
+| <  FLOATONE : ((["0"-"9"])+ "." (["0"-"9"])* | (["0"-"9"])* "." (["0"-"9"])+)
+   (["e","E"] (["-","+"])? (["0"-"9"])+)? (["f","F","l","L"])? >
+| <  FLOATTWO : (["0"-"9"])+ ["e","E"] (["-","+"])?
+   (["0"-"9"])+ (["f","F","l","L"])? >
+| <  CHARACTER : "'"
+   (   (~["'","\\","\n","\r"])
+   | ("\\" (
+             ["n","t","v","b","r","f","a","\\","?","'","\""]
+            |
+             "0" (["0"-"7"])*
+            |
+             ["1"-"9"] (["0"-"9"])*
+            |
+             ("0x" | "0X") (["0"-"9","a"-"f","A"-"F"])+
+           )
+     )
+   )
+   "'" >
+| <  STRING : "\""
+   ( ( ~["\"","\\","\n","\r"])
+   | ("\\" (
+             ["n","t","v","b","r","f","a","\\","?","'","\""]
+            |
+             "0" (["0"-"7"])*
+            |
+             ["1"-"9"] (["0"-"9"])*
+            |
+             ("0x" | "0X") (["0"-"9","a"-"f","A"-"F"])+
+           )
+     )
+   )*
+   "\"" >
+}

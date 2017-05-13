@@ -1,0 +1,18 @@
+#include "included.idl"
+
+module MainIdl
+{
+
+  const long IDL_VERSION = 1;
+  const long COMPOSED_CONST = 2 + MainIdl::IDL_VERSION + IncludedIdl::IDL_VERSION;
+
+  struct SimpleStruct
+  {
+    string stringMember;
+    long intMember;
+    IncludedIdl::IncludedStruct includedMember;
+    ::IncludedIdl::IncludedStruct fullyScopedIncludedMember;
+    string duplicate1, duplicate2;
+  };
+
+};

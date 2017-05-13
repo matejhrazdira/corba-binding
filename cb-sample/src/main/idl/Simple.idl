@@ -1,0 +1,38 @@
+module SimpleIdl
+{
+
+  const long IDL_VERSION = 1;
+
+  struct SimpleStruct
+  {
+    string stringMember;
+    long intMember;
+  };
+
+  typedef sequence <SimpleStruct> Structs;
+
+  struct StructWithArrays
+  {
+    Structs structSequence;
+  };
+
+  enum SimpleEnum
+  {
+    EN_VAL_A,
+    EN_VAL_B,
+    EN_VAL_C,
+    EN_VAL_D
+  };
+
+  union SimpleUnion switch(SimpleEnum)
+  {
+    case EN_VAL_A:
+      string strInUnion;
+    case EN_VAL_B:
+      unsigned long long ullInUnion;
+    case EN_VAL_C:
+      SimpleStruct simpleStructInUnion;
+    case EN_VAL_D:
+      Structs structSequenceInUnion;
+  };
+};

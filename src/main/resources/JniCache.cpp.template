@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2016 Matej Hrazdira.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$$$ BGN $$$
+#include "JniCache.h"
+
+namespace corbabinding {
+
+JniCache::JniCache(JNIEnv * $$$ENV$$$) {
+
+	$$$ JNI CACHE IMPL $$$
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Boolean");
+		java.lang.Boolean.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Boolean.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(Z)V");
+		java.lang.Boolean.booleanValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "booleanValue", "()Z");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Byte");
+		java.lang.Byte.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Byte.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(B)V");
+		java.lang.Byte.byteValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "byteValue", "()B");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Integer");
+		java.lang.Integer.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Integer.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(I)V");
+		java.lang.Integer.intValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "intValue", "()I");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Long");
+		java.lang.Long.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Long.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(J)V");
+		java.lang.Long.longValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "longValue", "()J");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Float");
+		java.lang.Float.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Float.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(F)V");
+		java.lang.Float.floatValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "floatValue", "()F");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Double");
+		java.lang.Double.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Double.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(D)V");
+		java.lang.Double.doubleValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "doubleValue", "()D");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Character");
+		java.lang.Character.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.lang.Character.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(C)V");
+		java.lang.Character.charValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "charValue", "()C");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/util/ArrayList");
+		java.util.ArrayList.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		java.util.ArrayList.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(I)V");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/util/List");
+		java.util.List.add = $$$ENV$$$->GetMethodID($$$CLS$$$, "add", "(Ljava/lang/Object;)Z");
+		java.util.List.get = $$$ENV$$$->GetMethodID($$$CLS$$$, "get", "(I)Ljava/lang/Object;");
+		java.util.List.size = $$$ENV$$$->GetMethodID($$$CLS$$$, "size", "()I");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+}
+
+JniCache::~JniCache() {}
+
+} /* namespace corbabinding */

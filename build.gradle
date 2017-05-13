@@ -1,0 +1,65 @@
+group 'com.matejhrazdira.corbabinding'
+version '0.01.000'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.8.0'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.matejhrazdira.corbabinding.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+test {
+    workingDir = "tests"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "src/main/gen"
+        }
+    }
+}
+
+task createProperties(dependsOn: processResources) {
+    File pf = new File("$buildDir/resources/main/version.properties")
+    pf.parentFile.mkdirs()
+    pf.withWriter { w ->
+        Properties p = new Properties()
+        p['version'] = project.version.toString()
+        p['timestamp'] = System.currentTimeMillis().toString()
+        p.store w, null
+    }
+}
+
+classes {
+    dependsOn createProperties
+}
+
+task javacc(type: Exec) {
+    def input = "src/main/javacc/idl.jj"
+    def outDir = "src/main/gen/com/matejhrazdira/corbabinding/gen"
+    def outFile = "IDLParser.java"
+    inputs.file(input)
+    outputs.file("$outDir/$outFile")
+    commandLine "javacc", "-OUTPUT_DIRECTORY=$outDir", input
+}
+
+compileJava {
+    dependsOn javacc
+}

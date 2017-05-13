@@ -1,0 +1,11 @@
+module IncludedIdl
+{
+
+  const long IDL_VERSION = 3;
+
+  struct IncludedStruct
+  {
+    string someMember;
+  };
+
+};

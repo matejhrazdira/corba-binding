@@ -1,0 +1,235 @@
+/*
+ * Copyright (C) 2016 Matej Hrazdira.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$$$ BGN $$$
+#include "corbabinding.h"
+
+namespace corbabinding {
+
+JniCache * $$$JNI$$$;
+
+void init(JNIEnv * $$$ENV$$$) {
+	if (!$$$JNI$$$) {
+		$$$JNI$$$ = new JniCache($$$ENV$$$);
+	}
+}
+
+$$$ CONVERSION IMPL $$$
+jboolean $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Boolean & $$$IN_ARG$$$) {
+	return (jboolean) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jboolean $$$IN_ARG$$$, ::CORBA::Boolean & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Boolean) $$$IN_ARG$$$;
+}
+
+jbyte $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Octet & $$$IN_ARG$$$) {
+	return (jbyte) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jbyte $$$IN_ARG$$$, ::CORBA::Octet& $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Octet) $$$IN_ARG$$$;
+}
+
+jint $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Short & $$$IN_ARG$$$) {
+	return (jint) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jint $$$IN_ARG$$$, ::CORBA::Short & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Short) $$$IN_ARG$$$;
+}
+
+jint $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::UShort & $$$IN_ARG$$$) {
+	return (jint) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jint $$$IN_ARG$$$, ::CORBA::UShort & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::UShort) $$$IN_ARG$$$;
+}
+
+jint $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Long & $$$IN_ARG$$$) {
+	return (jint) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jint $$$IN_ARG$$$, ::CORBA::Long & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Long) $$$IN_ARG$$$;
+}
+
+jlong $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::ULong & $$$IN_ARG$$$) {
+	return (jlong) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jlong $$$IN_ARG$$$, ::CORBA::ULong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::ULong) $$$IN_ARG$$$;
+}
+
+jlong $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::LongLong & $$$IN_ARG$$$) {
+	return (jlong) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jint $$$IN_ARG$$$, ::CORBA::LongLong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::LongLong) $$$IN_ARG$$$;
+}
+
+jlong $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::ULongLong & $$$IN_ARG$$$) {
+	return (jlong) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jlong $$$IN_ARG$$$, ::CORBA::ULongLong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::ULongLong) $$$IN_ARG$$$;
+}
+
+jfloat $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Float & $$$IN_ARG$$$) {
+	return (jfloat) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jfloat $$$IN_ARG$$$, ::CORBA::Float & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Float) $$$IN_ARG$$$;
+}
+
+jdouble $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Double & $$$IN_ARG$$$) {
+	return (jdouble) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jdouble $$$IN_ARG$$$, ::CORBA::Double & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Double) $$$IN_ARG$$$;
+}
+
+jchar $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Char & $$$IN_ARG$$$) {
+	return (jchar) $$$IN_ARG$$$;
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jchar $$$IN_ARG$$$, ::CORBA::Char & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = (::CORBA::Char) $$$IN_ARG$$$;
+}
+
+jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::TAO::String_Manager & $$$IN_ARG$$$) {
+	return $$$CONVERT$$$($$$ENV$$$, $$$IN_ARG$$$.in());
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::TAO::String_Manager & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$CONVERT$$$<char>($$$ENV$$$, $$$IN_ARG$$$);
+}
+
+template<> jobject $$$CONVERT$$$<const char>(JNIEnv * $$$ENV$$$, const char * $$$IN_ARG$$$) {
+	if ($$$IN_ARG$$$) {
+		return $$$ENV$$$->NewStringUTF($$$IN_ARG$$$);
+	} else {
+		return 0x0;
+	}
+}
+
+template<> char * $$$CONVERT$$$<char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$) {
+	jstring $$$JSTRING_VAR$$$ = (jstring) $$$IN_ARG$$$;
+	if ($$$JSTRING_VAR$$$) {
+		const char * $$$JSTRING_CHARS_VAR$$$ = $$$ENV$$$->GetStringUTFChars($$$JSTRING_VAR$$$, nullptr);
+		CORBA::String_var $$$RESULT$$$($$$JSTRING_CHARS_VAR$$$);
+		$$$ENV$$$->ReleaseStringUTFChars($$$JSTRING_VAR$$$, $$$JSTRING_CHARS_VAR$$$);
+		return $$$RESULT$$$._retn();
+	} else {
+		return 0x0;
+	}
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Boolean>(JNIEnv * $$$ENV$$$, const ::CORBA::Boolean & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Boolean.$$$CLS$$$, $$$JNI$$$->java.lang.Boolean._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Boolean>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Boolean & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallBooleanMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Boolean.booleanValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Octet>(JNIEnv * $$$ENV$$$, const ::CORBA::Octet & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Byte.$$$CLS$$$, $$$JNI$$$->java.lang.Byte._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Octet>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Octet& $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallByteMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Byte.byteValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Short>(JNIEnv * $$$ENV$$$, const ::CORBA::Short & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Short>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Short & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallIntMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Integer.intValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::UShort>(JNIEnv * $$$ENV$$$, const ::CORBA::UShort & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::UShort>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::UShort & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallIntMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Integer.intValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<CORBA::Long>(JNIEnv * $$$ENV$$$, const CORBA::Long & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<CORBA::Long>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, CORBA::Long & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallIntMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Integer.intValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::ULong>(JNIEnv * $$$ENV$$$, const ::CORBA::ULong & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::ULong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallLongMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Long.longValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::LongLong>(JNIEnv * $$$ENV$$$, const ::CORBA::LongLong & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::LongLong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::LongLong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallLongMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Long.longValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::ULongLong>(JNIEnv * $$$ENV$$$, const ::CORBA::ULongLong & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULongLong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::ULongLong & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallLongMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Long.longValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Float>(JNIEnv * $$$ENV$$$, const ::CORBA::Float & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Float.$$$CLS$$$, $$$JNI$$$->java.lang.Float._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Float>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Float & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallFloatMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Float.floatValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Double>(JNIEnv * $$$ENV$$$, const ::CORBA::Double & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Double.$$$CLS$$$, $$$JNI$$$->java.lang.Double._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Double>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Double & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallDoubleMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Double.doubleValue);
+}
+
+template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, const ::CORBA::Char & $$$IN_ARG$$$) {
+	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Character.$$$CLS$$$, $$$JNI$$$->java.lang.Character._ctor_, $$$IN_ARG$$$);
+}
+
+template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Char & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->CallCharMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Character.charValue);
+}
+
+} /* namespace corbabinding */

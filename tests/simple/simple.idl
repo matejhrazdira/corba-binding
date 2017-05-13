@@ -1,0 +1,81 @@
+module IncludedIdl {
+  struct IncludedStruct
+  {
+    string someMember;
+  };
+};
+
+module SimpleIdl
+{
+
+  const long IDL_VERSION = 1;
+  const long COMPOSED_CONST = 2 + 6 * (1 - 3) * ( -5/2) - 5 + ::SimpleIdl::IDL_VERSION;
+  const string STRING_CONSTANT = "This is some string!";
+
+  typedef long long time;
+
+  typedef long long someReally, someReallyWeird, someReallyWeirdTypedef;
+
+  struct SimpleStruct
+  {
+    string stringMember;
+    long intMember;
+    time typedefedMember;
+    unsigned long uintMember;
+    long long longMember;
+    unsigned long long ulongMember;
+    long longArr[5];
+    IncludedIdl::IncludedStruct includedMember;
+    ::IncludedIdl::IncludedStruct fullyScopedIncludedMember;
+    string duplicate1, duplicate2;
+  };
+
+  typedef sequence <SimpleStruct> structs;
+
+  typedef SimpleStruct typedefedStruct;
+
+  struct StructWithArrays
+  {
+    structs typedefedArray;
+    sequence<SimpleStruct> directArray;
+  };
+
+  enum SimpleEnum
+  {
+    EN_VAL_A,
+    EN_VAL_B,
+    EN_VAL_C
+  };
+  union SimpleUnion switch(SimpleEnum)
+  {
+    case EN_VAL_A:
+      string strInUnion;
+    case EN_VAL_B:
+      unsigned long long ullInUnion;
+    case EN_VAL_C:
+      SimpleStruct simpleStructInUnion;
+  };
+  union WeirdUnion switch(long)
+  {
+    case 1+3:
+    case 1 + 2 * 5:
+    case 2 + 6 * (1 - 3) * ( -5/2) - 5:
+      string foo;
+    default:
+      string bar;
+  };
+
+  exception NoMemberException {};
+
+  exception ExceptionWithMembers
+  {
+    string someStringMember;
+  };
+
+  interface SimpleIdlInterface
+  {
+    string someStringMethod();
+    SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
+    SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
+  };
+};

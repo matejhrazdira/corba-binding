@@ -1,0 +1,144 @@
+{
+  "fileName": "main.idl",
+  "definitions": [
+    {
+      "name": "MainIdl",
+      "definitions": [
+        {
+          "name": "IDL_VERSION",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "1",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "COMPOSED_CONST",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "2",
+                "CLASS": "Literal"
+              },
+              {
+                "type": "ADD",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "name": [
+                  "MainIdl",
+                  "IDL_VERSION"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              {
+                "type": "ADD",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "name": [
+                  "IncludedIdl",
+                  "IDL_VERSION"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "SimpleStruct",
+          "members": [
+            {
+              "declarator": {
+                "name": "stringMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "intMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "type": "SIGNED_LONG_INT"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "includedMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "IncludedIdl",
+                  "IncludedStruct"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "fullyScopedIncludedMember",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "IncludedIdl",
+                  "IncludedStruct"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "duplicate1",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "duplicate2",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Member"
+            }
+          ],
+          "CLASS": "StructType"
+        }
+      ],
+      "CLASS": "Module"
+    }
+  ],
+  "CLASS": "Specification"
+}

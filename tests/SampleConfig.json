@@ -1,0 +1,8 @@
+{
+  "inputFiles": [
+    "simple/simple-without-array-declarators.idl"
+  ],
+  "javaOutputDir": "output/java/gen",
+  "javaPackagePrefix": "com.matejhrazdira.generated",
+  "cppCorbaOutputDir": "output/cpp/gen"
+}
