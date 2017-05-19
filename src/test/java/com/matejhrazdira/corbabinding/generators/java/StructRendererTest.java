@@ -430,7 +430,7 @@ public class StructRendererTest {
 				"\tpublic final java.util.List<String> listMember;\n" +
 				"\n" +
 				"\tpublic TestStruct() {\n" +
-				"\t\tthis.listMember = java.util.Collections.unmodifiableList(new java.util.ArrayList<>());\n" +
+				"\t\tthis.listMember = java.util.Collections.unmodifiableList(new java.util.ArrayList<String>());\n" +
 				"\t}\n" +
 				"\n" +
 				"\tpublic TestStruct(java.util.List<String> listMember) {\n" +

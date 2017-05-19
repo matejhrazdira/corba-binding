@@ -65,8 +65,7 @@ public class Main {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 		try (FileInputStream is = new FileInputStream(configFileName)) {
-			ParamsBuilder builder = gson.fromJson(new InputStreamReader(is), ParamsBuilder.class);
-			Params params = builder.createParams();
+			Params params = gson.fromJson(new InputStreamReader(is), Params.class);
 
 			System.out.println("Using config:");
 			System.out.println(gson.toJson(params));
@@ -91,6 +90,7 @@ public class Main {
 			CppCorbaGenerator cppCorbaGenerator = new CppCorbaGeneratorBuilder()
 					.withOutput(new File(params.cppCorbaOutputDir))
 					.withTaoIdlIncludePrefix(params.cppCorbaTaoGeneratedPath)
+					.withCorbaEncoding(params.cppCorbaEncoding)
 					.withEnumProjectionProvider(pojoGenerator.getEnumProjection())
 					.withStructProjectionProvider(pojoGenerator.getStructProjection())
 					.withUnionProjectionProvider(pojoGenerator.getUnionProjection())

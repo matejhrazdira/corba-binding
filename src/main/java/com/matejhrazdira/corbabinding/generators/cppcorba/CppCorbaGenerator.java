@@ -30,10 +30,7 @@ import com.matejhrazdira.corbabinding.idl.definitions.UnionType;
 import com.matejhrazdira.corbabinding.model.Model;
 import com.matejhrazdira.corbabinding.util.OutputListener;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 public class CppCorbaGenerator {
@@ -44,6 +41,7 @@ public class CppCorbaGenerator {
 	private static final String JNI_CACHE_CPP = "JniCache.cpp";
 	private static final String CORBABINDING_H = "corbabinding.h";
 	private static final String CORBABINDING_CPP = "corbabinding.cpp";
+	private static final String UTF_8_DEFINE = "CB_CORBA_USES_UTF_8";
 
 	private final CorbaEnumRenderer mEnumRenderer;
 	private final CorbaStructRenderer mStructRenderer;
@@ -51,12 +49,18 @@ public class CppCorbaGenerator {
 	private final CorbaOutput mOutput;
 	private final OutputListener mOutputListener;
 	private final String mTaoIdlIncludePrefix;
+	private final String mCorbaEncoding;
 
-	public CppCorbaGenerator(final File output, final JavaProjectionProvider enumProjectionProvider, final JavaStructProjectionProvider structProjectionProvider, final JavaUnionProjectionProvider unionProjectionProvider, final OutputListener outputListener, final String taoIdlIncludePrefix) throws IOException {
-		if (taoIdlIncludePrefix != null && !taoIdlIncludePrefix.isEmpty()) {
-			mTaoIdlIncludePrefix = taoIdlIncludePrefix + "/";
+	public CppCorbaGenerator(final File output, final JavaProjectionProvider enumProjectionProvider, final JavaStructProjectionProvider structProjectionProvider, final JavaUnionProjectionProvider unionProjectionProvider, final OutputListener outputListener, final String taoIdlIncludePrefix, final String corbaEncoding) throws IOException {
+		if (corbaEncoding == null || corbaEncoding.isEmpty()) {
+			mCorbaEncoding = CppCorbaGeneratorBuilder.DEFAULT_ENCODING;
 		} else {
+			mCorbaEncoding = corbaEncoding;
+		}
+		if (taoIdlIncludePrefix == null || taoIdlIncludePrefix.isEmpty()) {
 			mTaoIdlIncludePrefix = "";
+		} else {
+			mTaoIdlIncludePrefix = taoIdlIncludePrefix + "/";
 		}
 		output.mkdirs();
 		List<OutputStream> outputStreams = openStreams(
@@ -176,15 +180,25 @@ public class CppCorbaGenerator {
 	}
 
 	private void startConversionImpl(final Model model) throws IOException {
+		String conversionImplEvent = "$$$ CONVERSION IMPL $$$";
+		String encodingDefineEvent = "$$$ DEFINE UTF-8 $$$";
+		LineWriter writer = mOutput.conversionImpl;
 		TemplateSpec spec = new TemplateSpec.Builder()
 				.withTemplateFile(getTemplateForFile(CORBABINDING_CPP))
-				.withOutput(mOutput.conversionImpl.getWriter())
-				.withEvents(new HashSet<>(Arrays.asList("$$$ CONVERSION IMPL $$$")))
+				.withOutput(writer.getWriter())
+				.withEvents(new HashSet<>(Arrays.asList(conversionImplEvent, encodingDefineEvent)))
 				.withReplacements(createReplacementMap())
 				.withListener(new TemplateProcessor.TemplateListener() {
 					@Override
 					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
-						generateSymbols(model);
+						if (event.equals(encodingDefineEvent)) {
+							if (CppCorbaGeneratorBuilder.DEFAULT_ENCODING.equals(mCorbaEncoding)) {
+								writer.writeln("#define ", UTF_8_DEFINE);
+								writer.writeln();
+							}
+						} else {
+							generateSymbols(model);
+						}
 					}
 				})
 				.createTemplateSpec();
@@ -221,6 +235,8 @@ public class CppCorbaGenerator {
 		res.put("$$$ELEMENT$$$", "_element_");
 		res.put("$$$JSTRING_CHARS_VAR$$$", "_j_string_chars_");
 		res.put("$$$JSTRING_VAR$$$", "_j_string_");
+		res.put("$$$CORBA_ENCODING$$$", mCorbaEncoding);
+		res.put("$$$UTF_8_DEFINE$$$", UTF_8_DEFINE);
 		return res;
 	}
 

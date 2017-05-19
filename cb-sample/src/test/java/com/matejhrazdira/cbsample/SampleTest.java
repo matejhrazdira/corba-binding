@@ -40,7 +40,7 @@ public class SampleTest {
 		SimpleUnion input = new SimpleUnion.Builder()
 				.withSimpleStructInUnion(
 						new SimpleStruct().builder()
-								.withStringMember("This is some string.")
+								.withStringMember("This is some ěščřäöü string.")
 								.withIntMember(12345)
 								.build()
 				)
@@ -56,9 +56,18 @@ public class SampleTest {
 		start = System.currentTimeMillis();
 		SimpleUnion output = Sample.copyUnion(input);
 		System.out.println("Acceptance.copyUnion() took " + (System.currentTimeMillis() - start) + " ms");
-		System.out.println(gson.toJson(input));
+		System.out.println("Input:\n" + gson.toJson(input));
+		System.out.println("Output:\n" + gson.toJson(output));
 		assertTrue(input != output);
-		assertEquals(gson.toJson(input), gson.toJson(output));
+		SimpleUnion expected = new SimpleUnion.Builder()
+				.withSimpleStructInUnion(
+						new SimpleStruct().builder()
+								.withStringMember("This is some escräöü string.")
+								.withIntMember(12345)
+								.build()
+				)
+				.build();
+		assertEquals(gson.toJson(expected), gson.toJson(output));
 	}
 
 }

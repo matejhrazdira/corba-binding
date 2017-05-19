@@ -61,7 +61,7 @@ public abstract class JavaClassRenderer extends JavaWithMembersRenderer {
 
 	@FunctionalInterface
 	protected interface SequenceAssignment {
-		void write(LineWriter writer, String name) throws IOException;
+		void write(LineWriter writer, String name, String type) throws IOException;
 	}
 
 	public JavaClassRenderer(final ScopedRenderer scopedRenderer, SymbolResolver resolver, final OutputListener outputListener) {
@@ -128,7 +128,7 @@ public abstract class JavaClassRenderer extends JavaWithMembersRenderer {
 	private void writeFieldInitialization(final LineWriter writer, final Field f, SequenceAssignment sequenceAssignment) throws IOException {
 		writer.write("this.", f.name, " = ");
 		if (f.member.type instanceof SequenceType) {
-			sequenceAssignment.write(writer, "");
+			sequenceAssignment.write(writer, "", f.type);
 		} else if (f.member.type instanceof PrimitiveType) {
 			PrimitiveType primitiveType = (PrimitiveType) f.member.type;
 			switch (primitiveType.type) {
@@ -194,22 +194,35 @@ public abstract class JavaClassRenderer extends JavaWithMembersRenderer {
 	private void writeFieldAssignment(final LineWriter writer, final Field f, SequenceAssignment sequenceAssignment) throws IOException {
 		writer.write("this.", f.name, " = ");
 		if (f.member.type instanceof SequenceType) {
-			sequenceAssignment.write(writer, f.name);
+			sequenceAssignment.write(writer, f.name, f.type);
 		} else {
 			writer.write(f.name);
 		}
 		writer.write(";").endl();
 	}
 
-	private void simpleAssignment(final LineWriter writer, final String name) throws IOException {
+	private void simpleAssignment(final LineWriter writer, final String name, final String type) throws IOException {
 		writer.write(name);
 	}
 
-	private void immutableAssignment(final LineWriter writer, final String name) throws IOException {
-		writeListAssignment(writer, name, "java.util.Collections.unmodifiableList(new java.util.ArrayList<>(", "))");
+	private void immutableAssignment(final LineWriter writer, final String name, final String type) throws IOException {
+		String elementTypeSpec = name.isEmpty() ? extractElementType(type) : "";
+		String listCtor = "java.util.Collections.unmodifiableList(new java.util.ArrayList<" + elementTypeSpec + ">(";
+		writeListAssignment(writer, name, listCtor, "))");
 	}
 
-	private void mutableAssignment(final LineWriter writer, final String name) throws IOException {
+	private String extractElementType(final String type) {
+		int bgn = type.indexOf('<');
+		int end = type.indexOf('>');
+		if (bgn >= 0 && end > bgn) {
+			return type.substring(bgn + 1, end);
+		} else {
+			logw("Failed to extract sequence element type from " + type + ", code might not compile on some platforms.");
+			return "";
+		}
+	}
+
+	private void mutableAssignment(final LineWriter writer, final String name, final String type) throws IOException {
 		writeListAssignment(writer, name, "new java.util.ArrayList<>(", ")");
 	}
 

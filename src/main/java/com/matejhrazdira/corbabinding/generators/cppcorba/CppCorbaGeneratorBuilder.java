@@ -26,12 +26,15 @@ import java.io.IOException;
 
 public class CppCorbaGeneratorBuilder {
 
+	public static final String DEFAULT_ENCODING = "UTF-8";
+
 	private File mOutput;
 	private JavaProjectionProvider mEnumProjectionProvider;
 	private JavaStructProjectionProvider mStructProjectionProvider;
 	private JavaUnionProjectionProvider mUnionProjectionProvider;
 	private OutputListener mOutputListener;
 	private String mTaoIdlIncludePrefix;
+	private String mCorbaEncoding = DEFAULT_ENCODING;
 
 	public CppCorbaGeneratorBuilder withOutput(final File output) {
 		mOutput = output;
@@ -63,7 +66,12 @@ public class CppCorbaGeneratorBuilder {
 		return this;
 	}
 
+	public CppCorbaGeneratorBuilder withCorbaEncoding(final String corbaEncoding) {
+		mCorbaEncoding = corbaEncoding;
+		return this;
+	}
+
 	public CppCorbaGenerator createCppCorbaGenerator() throws IOException {
-		return new CppCorbaGenerator(mOutput, mEnumProjectionProvider, mStructProjectionProvider, mUnionProjectionProvider, mOutputListener, mTaoIdlIncludePrefix);
+		return new CppCorbaGenerator(mOutput, mEnumProjectionProvider, mStructProjectionProvider, mUnionProjectionProvider, mOutputListener, mTaoIdlIncludePrefix, mCorbaEncoding);
 	}
 }

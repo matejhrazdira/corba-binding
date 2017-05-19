@@ -17,6 +17,9 @@
 $$$ BGN $$$
 #include "corbabinding.h"
 
+#include <iconv.h>
+
+$$$ DEFINE UTF-8 $$$
 namespace corbabinding {
 
 JniCache * $$$JNI$$$;
@@ -126,7 +129,38 @@ void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::TAO::String
 
 template<> jobject $$$CONVERT$$$<const char>(JNIEnv * $$$ENV$$$, const char * $$$IN_ARG$$$) {
 	if ($$$IN_ARG$$$) {
+#ifdef $$$UTF_8_DEFINE$$$
 		return $$$ENV$$$->NewStringUTF($$$IN_ARG$$$);
+#else // $$$UTF_8_DEFINE$$$
+		size_t _in_len_ = strlen($$$IN_ARG$$$);
+		if (_in_len_ > 0) {
+			// TODO: Better use UTF-16 (size of output buffer can be determined in advance)
+			// but UTF-16 comes in LE and BE variants which could cause platform-dependent bugs.
+			// Right now using UTF-8 with worst-case buffer size - for single byte input encoding.
+			// For details see "modified UTF-8".
+			size_t _out_len_ = _in_len_ * 3 + 2;
+			char * _out_ = (char *) malloc(_out_len_);
+
+			char * _in_buff_ = (char *) $$$IN_ARG$$$;
+			size_t _in_left_ = _in_len_;
+			char * _out_buff_ = _out_;
+			size_t _out_left_ = _out_len_;
+
+			iconv_t _cd_ = iconv_open("UTF-8", "$$$CORBA_ENCODING$$$");
+			iconv(_cd_, &_in_buff_, &_in_left_, &_out_buff_, &_out_left_);
+			_out_buff_[0] = 0x0;
+			_out_buff_[1] = 0x0;
+			iconv_close(_cd_);
+
+			jobject $$$RESULT$$$ = $$$ENV$$$->NewStringUTF(_out_);
+
+			free(_out_);
+
+			return $$$RESULT$$$;
+		} else {
+			return $$$ENV$$$->NewStringUTF("");
+		}
+#endif // $$$UTF_8_DEFINE$$$
 	} else {
 		return 0x0;
 	}
@@ -136,7 +170,29 @@ template<> char * $$$CONVERT$$$<char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_AR
 	jstring $$$JSTRING_VAR$$$ = (jstring) $$$IN_ARG$$$;
 	if ($$$JSTRING_VAR$$$) {
 		const char * $$$JSTRING_CHARS_VAR$$$ = $$$ENV$$$->GetStringUTFChars($$$JSTRING_VAR$$$, nullptr);
+#ifdef $$$UTF_8_DEFINE$$$
 		CORBA::String_var $$$RESULT$$$($$$JSTRING_CHARS_VAR$$$);
+#else // $$$UTF_8_DEFINE$$$
+		// TODO: Better use UTF-16 and some improved estimation of output buffer size. Current approach
+		// should work for single byte encoding that can be used as c strings.
+		size_t _in_len_ = strlen($$$JSTRING_CHARS_VAR$$$);
+		size_t _out_len_ = _in_len_ + 1;
+		char * _out_ = (char *) malloc(_out_len_);
+
+		char * _in_buff_ = (char *) $$$JSTRING_CHARS_VAR$$$;
+		size_t _in_left_ = _in_len_;
+		char * _out_buff_ = _out_;
+		size_t _out_left_ = _out_len_;
+
+		iconv_t _cd_ = iconv_open("$$$CORBA_ENCODING$$$", "UTF-8");
+		iconv(_cd_, &_in_buff_, &_in_left_, &_out_buff_, &_out_left_);
+		_out_buff_[0] = 0x0;
+		iconv_close(_cd_);
+
+		CORBA::String_var $$$RESULT$$$((const char *) _out_);
+
+		free(_out_);
+#endif // $$$UTF_8_DEFINE$$$
 		$$$ENV$$$->ReleaseStringUTFChars($$$JSTRING_VAR$$$, $$$JSTRING_CHARS_VAR$$$);
 		return $$$RESULT$$$._retn();
 	} else {

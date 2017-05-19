@@ -25,49 +25,57 @@ public class Params {
 	public final String javaPackagePrefix;
 	public final String cppCorbaOutputDir;
 	public final String cppCorbaTaoGeneratedPath;
+	public final String cppCorbaEncoding;
 
-	private Params(final List<String> inputFiles, final String javaOutputDir, final String javaPackagePrefix, String cppCorbaOutputDir, final String cppCorbaTaoGeneratedPath) {
+	private Params(final List<String> inputFiles, final String javaOutputDir, final String javaPackagePrefix, String cppCorbaOutputDir, final String cppCorbaTaoGeneratedPath, final String cppCorbaEncoding) {
 		this.inputFiles = inputFiles;
 		this.javaOutputDir = javaOutputDir;
 		this.javaPackagePrefix = javaPackagePrefix;
 		this.cppCorbaOutputDir = cppCorbaOutputDir;
 		this.cppCorbaTaoGeneratedPath = cppCorbaTaoGeneratedPath;
+		this.cppCorbaEncoding = cppCorbaEncoding;
 	}
 
 	public static class ParamsBuilder {
-		private List<String> inputFiles;
-		private String javaOutputDir;
-		private String javaPackagePrefix;
-		private String cppCorbaOutputDir;
-		private String cppCorbaTaoGeneratedPath;
+		private List<String> mInputFiles;
+		private String mJavaOutputDir;
+		private String mJavaPackagePrefix;
+		private String mCppCorbaOutputDir;
+		private String mCppCorbaTaoGeneratedPath;
+		private String mCppCorbaEncoding;
 
 		public ParamsBuilder setInputFiles(final List<String> inputFiles) {
-			this.inputFiles = inputFiles;
+			mInputFiles = inputFiles;
 			return this;
 		}
 
 		public ParamsBuilder setJavaOutputDir(final String javaOutputDir) {
-			this.javaOutputDir = javaOutputDir;
+			mJavaOutputDir = javaOutputDir;
 			return this;
 		}
 
 		public ParamsBuilder setJavaPackagePrefix(final String javaPackagePrefix) {
-			this.javaPackagePrefix = javaPackagePrefix;
+			mJavaPackagePrefix = javaPackagePrefix;
 			return this;
 		}
 
 		public ParamsBuilder setCppCorbaOutputDir(final String cppCorbaOutputDir) {
-			this.cppCorbaOutputDir = cppCorbaOutputDir;
+			mCppCorbaOutputDir = cppCorbaOutputDir;
 			return this;
 		}
 
 		public ParamsBuilder setCppCorbaTaoGeneratedPath(final String cppCorbaTaoGeneratedPath) {
-			this.cppCorbaTaoGeneratedPath = cppCorbaTaoGeneratedPath;
+			mCppCorbaTaoGeneratedPath = cppCorbaTaoGeneratedPath;
+			return this;
+		}
+
+		public ParamsBuilder setCppCorbaEncoding(final String cppCorbaEncoding) {
+			mCppCorbaEncoding = cppCorbaEncoding;
 			return this;
 		}
 
 		public Params createParams() {
-			return new Params(inputFiles, javaOutputDir, javaPackagePrefix, cppCorbaOutputDir, cppCorbaTaoGeneratedPath);
+			return new Params(mInputFiles, mJavaOutputDir, mJavaPackagePrefix, mCppCorbaOutputDir, mCppCorbaTaoGeneratedPath, mCppCorbaEncoding);
 		}
 	}
 }

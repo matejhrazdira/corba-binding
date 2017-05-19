@@ -6,8 +6,8 @@ public class StructWithArrays {
 	public final java.util.List<com.matejhrazdira.pojos.SimpleIdl.SimpleStruct> directArray;
 
 	public StructWithArrays() {
-		this.typedefedArray = java.util.Collections.unmodifiableList(new java.util.ArrayList<>());
-		this.directArray = java.util.Collections.unmodifiableList(new java.util.ArrayList<>());
+		this.typedefedArray = java.util.Collections.unmodifiableList(new java.util.ArrayList<com.matejhrazdira.pojos.SimpleIdl.SimpleStruct>());
+		this.directArray = java.util.Collections.unmodifiableList(new java.util.ArrayList<com.matejhrazdira.pojos.SimpleIdl.SimpleStruct>());
 	}
 
 	public StructWithArrays(java.util.List<com.matejhrazdira.pojos.SimpleIdl.SimpleStruct> typedefedArray, java.util.List<com.matejhrazdira.pojos.SimpleIdl.SimpleStruct> directArray) {
