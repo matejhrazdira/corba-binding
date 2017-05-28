@@ -84,6 +84,31 @@ JniCache::JniCache(JNIEnv * $$$ENV$$$) {
 		java.util.List.size = $$$ENV$$$->GetMethodID($$$CLS$$$, "size", "()I");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("$$$VAR_TYPE_SIG$$$");
+		$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(Ljava/lang/Object;)V");
+		$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$VAR_GET$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "$$$VAR_GET_NAME$$$", "()Ljava/lang/Object;");
+		$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$VAR_SET$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "$$$VAR_SET_NAME$$$", "(Ljava/lang/Object;)V");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("$$$CORBA_EXCEPTION_TYPE_SIG$$$");
+		$$$CACHE_IMPL$$$.$$$CACHE_CORBA_EXCEPTION$$$.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		$$$CACHE_IMPL$$$.$$$CACHE_CORBA_EXCEPTION$$$.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("$$$ALREADY_DISPOSED_EXCEPTION_TYPE_SIG$$$");
+		$$$CACHE_IMPL$$$.$$$CACHE_ALREADY_DISPOSED_EXCEPTION$$$.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
+		$$$CACHE_IMPL$$$.$$$CACHE_ALREADY_DISPOSED_EXCEPTION$$$.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "()V");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("$$$EVENT_CONSUMER_TYPE_SIG$$$");
+		_impl_._event_consumer_._callback_ = _env_->GetMethodID(_cls_, "$$$EVENT_CONSUMER_CALLBACK_NAME$$$", "(Ljava/lang/Object;)V");
+		_env_->DeleteLocalRef(_cls_);
+	}
 }
 
 JniCache::~JniCache() {}

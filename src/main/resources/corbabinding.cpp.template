@@ -127,6 +127,28 @@ void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::TAO::String
 	$$$OUT_ARG$$$ = $$$CONVERT$$$<char>($$$ENV$$$, $$$IN_ARG$$$);
 }
 
+jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::String_var & $$$IN_ARG$$$) {
+	return $$$CONVERT$$$($$$ENV$$$, $$$IN_ARG$$$.in());
+}
+
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::String_var & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$CONVERT$$$<char>($$$ENV$$$, $$$IN_ARG$$$);
+}
+
+jthrowable $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Exception & $$$IN_ARG$$$) {
+	jobject name = convert($$$ENV$$$, $$$IN_ARG$$$._name());
+	jobject info = convert($$$ENV$$$, $$$IN_ARG$$$._info().c_str());
+	jobject repositoryId = convert($$$ENV$$$, $$$IN_ARG$$$._rep_id());
+
+	jobject $$$RESULT$$$ = $$$ENV$$$->NewObject($$$JNI$$$->$$$CACHE_IMPL$$$.$$$CACHE_CORBA_EXCEPTION$$$.$$$CLS$$$, $$$JNI$$$->$$$CACHE_IMPL$$$.$$$CACHE_CORBA_EXCEPTION$$$.$$$CTOR$$$, name, info, repositoryId);
+
+	$$$ENV$$$->DeleteLocalRef(name);
+	$$$ENV$$$->DeleteLocalRef(info);
+	$$$ENV$$$->DeleteLocalRef(repositoryId);
+
+	return (jthrowable) $$$RESULT$$$;
+}
+
 template<> jobject $$$CONVERT$$$<const char>(JNIEnv * $$$ENV$$$, const char * $$$IN_ARG$$$) {
 	if ($$$IN_ARG$$$) {
 #ifdef $$$UTF_8_DEFINE$$$
@@ -286,6 +308,14 @@ template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, cons
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Char & $$$OUT_ARG$$$) {
 	$$$OUT_ARG$$$ = $$$ENV$$$->CallCharMethod($$$IN_ARG$$$, $$$JNI$$$->java.lang.Character.charValue);
+}
+
+jobject getVarObject(JNIEnv * $$$ENV$$$, const jobject _var_) {
+	return $$$ENV$$$->CallObjectMethod(_var_, $$$JNI$$$->$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$VAR_GET$$$);
+}
+
+void setVarObject(JNIEnv * $$$ENV$$$, jobject _var_, jobject _value_) {
+	$$$ENV$$$->CallVoidMethod(_var_, $$$JNI$$$->$$$CACHE_IMPL$$$.$$$CACHE_VAR$$$.$$$VAR_SET$$$, _value_);
 }
 
 } /* namespace corbabinding */

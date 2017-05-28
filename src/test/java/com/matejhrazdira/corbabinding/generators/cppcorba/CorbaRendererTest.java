@@ -28,6 +28,7 @@ public class CorbaRendererTest {
 	protected StringWriter mJniCacheImpl;
 	protected StringWriter mConversionHeader;
 	protected StringWriter mConversionImpl;
+	protected StringWriter mJniImplPrivate;
 
 	@Before
 	public void setup() {
@@ -35,6 +36,7 @@ public class CorbaRendererTest {
 		mJniCacheImpl = new StringWriter();
 		mConversionHeader = new StringWriter();
 		mConversionImpl = new StringWriter();
+		mJniImplPrivate = new StringWriter();
 		mOutput = new CorbaOutput.Builder()
 				.withJniCacheHeader(
 						new JniCacheHeaderWriter(new LineWriter(INDENTATION, mJniCacheHeader))
@@ -42,6 +44,7 @@ public class CorbaRendererTest {
 				.withJniCacheImpl(new LineWriter(INDENTATION, mJniCacheImpl))
 				.withConversionHeader(new LineWriter(INDENTATION, mConversionHeader))
 				.withConversionImpl(new LineWriter(INDENTATION, mConversionImpl))
-				.build();
+				.withJniImplPrivateImpl(new LineWriter(INDENTATION, mJniImplPrivate))
+				.createCorbaOutput();
 	}
 }

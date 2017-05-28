@@ -21,6 +21,7 @@ import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.ConstDcl;
+import com.matejhrazdira.corbabinding.idl.definitions.Module;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 
 public class JavaExpressionRenderer extends ExpressionRenderer {
@@ -36,7 +37,7 @@ public class JavaExpressionRenderer extends ExpressionRenderer {
 	protected void render(final StringBuilder result, final ScopedName element) {
 		super.render(result, element);
 		Symbol symbol = mResolver.findSymbol(element);
-		if (symbol != null && symbol.element instanceof ConstDcl) {
+		if (symbol != null && symbol.element instanceof ConstDcl && !symbol.innerSymbol) {
 			result.append(mScopedRenderer.getScopeDelimiter());
 			result.append(ConstantRenderer.VALUE_FIELD);
 		}

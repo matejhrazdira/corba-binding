@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2016 Matej Hrazdira.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$$$ BGN $$$
+#include "corbabindinglib.h"
+
+namespace corbabinding {
+
+NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName) {
+	mOrb = CORBA::ORB_init(argc, argv);
+
+	CORBA::Object_var poaObject = mOrb->resolve_initial_references("RootPOA");
+	mPoa = PortableServer::POA::_narrow(poaObject);
+	mPoaManager = mPoa->the_POAManager();
+	mPoaManager->activate();
+
+	CORBA::Object_var naming_context_object = mOrb->resolve_initial_references("NameService");
+	mNameService = CosNaming::NamingContext::_narrow(naming_context_object.in());
+
+	CosNaming::Name name(1);
+	name.length(1);
+	name[0].id = CORBA::string_dup(eventServiceName);
+	CORBA::Object_var ec_object = mNameService->resolve(name);
+	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(ec_object.in());
+
+	mThreadManager.spawn(runOrb, this);
+}
+
+NativeWrapper::~NativeWrapper() {
+	mPoaManager->deactivate(true, true);
+	mOrb->shutdown(true);
+	mOrb->destroy();
+	mThreadManager.wait();
+}
+
+void NativeWrapper::unbind(const char * name) {
+	CosNaming::Name n(1);
+	n.length(1);
+	n[0].id = CORBA::string_dup(name);
+	mNameService->unbind(n);
+}
+
+CORBA::Object_ptr NativeWrapper::resolveName(const char * name) {
+	CosNaming::Name n(1);
+	n.length(1);
+	n[0].id = CORBA::string_dup(name);
+	return mNameService->resolve(n);
+}
+
+void * NativeWrapper::runOrb(void * arg) {
+	NativeWrapper * instance = (NativeWrapper *) arg;
+	instance->mOrb->run();
+	return 0x0;
+}
+
+} /* namespace corbabinding */

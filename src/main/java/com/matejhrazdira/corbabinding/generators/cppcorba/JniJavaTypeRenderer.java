@@ -19,10 +19,7 @@ package com.matejhrazdira.corbabinding.generators.cppcorba;
 import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.TypeRenderer;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
-import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
-import com.matejhrazdira.corbabinding.idl.types.SequenceType;
-import com.matejhrazdira.corbabinding.idl.types.StringType;
-import com.matejhrazdira.corbabinding.idl.types.Type;
+import com.matejhrazdira.corbabinding.idl.types.*;
 
 public class JniJavaTypeRenderer extends TypeRenderer {
 
@@ -73,6 +70,14 @@ public class JniJavaTypeRenderer extends TypeRenderer {
 
 	@Override
 	protected String render(final StringType string) {
+		// Should return "jstring" but doing this would completely break
+		// templates in cpp code for arrays, var types, dynamic allocation etc
+		// because cpp templates cannot return or accept "subtype" i.e.
+		// template<typename T> T * convert(jobject in)
+		// cannot be specialized as
+		// template<> char * convert<char>(jstring in)
+		// unfortunately this means that there will be plenty of checks for strings
+		// but on the other hand, strings get special treatment anyway...
 		return "jobject";
 	}
 
@@ -92,5 +97,10 @@ public class JniJavaTypeRenderer extends TypeRenderer {
 			emptyValue = "nullptr";
 		}
 		return emptyValue;
+	}
+
+	@Override
+	protected String render(final VoidType voidType) {
+		return "void";
 	}
 }

@@ -25,7 +25,7 @@ public class JniCacheRenderer {
 	private final ScopedRenderer mJniCacheInitRenderer;
 
 	public JniCacheRenderer() {
-		mJniCacheAccessRenderer = new ScopedRenderer(JniConfig.ARG_JNI_CACHE_VAR + "->", ".", true);
+		mJniCacheAccessRenderer = new ScopedRenderer(JniConfig.JNI_CACHE_VAR + "->", ".", true);
 		mJniCacheInitRenderer = new ScopedRenderer("", ".", true);
 	}
 

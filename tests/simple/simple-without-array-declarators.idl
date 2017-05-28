@@ -81,8 +81,22 @@ module SimpleIdl
 
   interface SimpleIdlInterface
   {
+    const long NESTED_CONST = 123;
+    enum NestedEnum
+    {
+      NESTED_VAL_A,
+      NESTED_VAL_B
+    };
+    exception NestedException {};
+    readonly attribute long someAttribute;
     string someStringMethod();
+    time methodWithTypedefedValues(in time timeArg, out typedefedStruct structArg);
     SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
     SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
+  };
+
+  interface InheritedInterface : SimpleIdlInterface
+  {
+    string someAdditionalMethod();
   };
 };

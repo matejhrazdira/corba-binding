@@ -37,6 +37,8 @@ public abstract class TypeRenderer {
 
 	protected abstract String render(StringType string);
 
+	protected abstract String render(VoidType voidType);
+
 	private class TypeVisitorImpl implements TypeVisitor {
 
 		private String mResult;
@@ -74,6 +76,11 @@ public abstract class TypeRenderer {
 		@Override
 		public void visit(final UnsupportedType unsupportedType) {
 			failWithException(unsupportedType);
+		}
+
+		@Override
+		public void visit(final VoidType voidType) {
+			mResult = render(voidType);
 		}
 
 		private void failWithException(final Type type) {

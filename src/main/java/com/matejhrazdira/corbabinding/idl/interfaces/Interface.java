@@ -24,7 +24,7 @@ public class Interface extends IdlElement implements Definition {
 
 	public final String name;
 
-	public Interface(final String name) {
+	public Interface(String name) {
 		this.name = Validator.assertNotEmpty(name, "Name cannot be empty.");
 	}
 }

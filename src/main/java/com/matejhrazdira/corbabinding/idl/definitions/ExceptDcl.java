@@ -25,20 +25,15 @@ import com.matejhrazdira.corbabinding.util.Validator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExceptDcl extends IdlElement implements Definition {
-
-	public final String name;
-	public final List<Member> members;
+public class ExceptDcl extends StructType implements Definition {
 
 	public ExceptDcl(final String name, final List<Member> members) {
-		this.name = Validator.assertNotEmpty(name, "Name cannot be empty.");
-		this.members = CollectionUtil.immutableList(members);
+		super(name, members);
 	}
 
 	@Override
 	public ExceptDcl resolved(IdlElement scope, final SymbolResolver resolver) {
-		List<Member> resolved = members.stream().map( m -> m.resolved(this, resolver)).collect(Collectors.toList());
-		return new ExceptDcl(name, resolved);
+		return new ExceptDcl(name, resolvedImpl(resolver));
 	}
 
 }

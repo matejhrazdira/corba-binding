@@ -30,4 +30,5 @@ public interface TypeVisitor {
 	void visit(SequenceType sequence);
 	void visit(StringType string);
 	void visit(UnsupportedType unsupportedType);
+	void visit(VoidType voidType);
 }

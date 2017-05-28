@@ -24,6 +24,11 @@ module SimpleIdl
     EN_VAL_D
   };
 
+  typedef SimpleStruct TypedefedStruct;
+  typedef sequence <long> Longs;
+  typedef sequence <SimpleEnum> SimpleEnums;
+  typedef sequence <string> Strings;
+
   union SimpleUnion switch(SimpleEnum)
   {
     case EN_VAL_A:
@@ -34,5 +39,88 @@ module SimpleIdl
       SimpleStruct simpleStructInUnion;
     case EN_VAL_D:
       Structs structSequenceInUnion;
+  };
+
+  typedef sequence <SimpleUnion> Unions;
+
+  exception SimpleException
+  {
+    long intMember;
+  };
+
+  exception ExceptionWithMembers
+  {
+    long intMember;
+    string stringMember;
+    SimpleStruct structMember;
+  };
+
+  interface SimpleServer
+  {
+    string getString();
+    void throwException() raises(SimpleException);
+    void exit();
+  };
+
+  interface SimpleIdlInterface
+  {
+    const long NESTED_CONST = 123;
+    enum NestedEnum
+    {
+      NESTED_VAL_A,
+      NESTED_VAL_B
+    };
+    exception NestedException {};
+    readonly attribute long someAttribute;
+    string someStringMethod();
+    SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
+    SimpleEnum someMethodWithArgs2(out string strArg, out unsigned long long ullArg, out SimpleStruct structArg);
+    SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
+  };
+
+  interface InheritedInterface : SimpleIdlInterface
+  {
+    string someAdditionalMethod();
+    void exampleOfInOutArgs(
+      in long inLong,
+      out long outLong,
+      inout long inoutLong,
+
+      in SimpleEnum inSimpleEnum,
+      out SimpleEnum outSimpleEnum,
+      inout SimpleEnum inoutSimpleEnum,
+
+      in string inString,
+      out string outString,
+      inout string inoutString,
+
+      in SimpleStruct inStruct,
+      out SimpleStruct outStruct,
+      inout SimpleStruct inoutStruct,
+
+      in SimpleUnion inUnion,
+      out SimpleUnion outUnion,
+      inout SimpleUnion inoutUnion,
+
+      in Longs inLongs,
+      out Longs outLongs,
+      inout Longs inoutLongs,
+
+      in SimpleEnums inSimpleEnums,
+      out SimpleEnums outSimpleEnums,
+      inout SimpleEnums inoutSimpleEnums,
+
+      in Strings inStrings,
+      out Strings outStrings,
+      inout Strings inoutStrings,
+
+      in Structs inStructs,
+      out Structs outStructs,
+      inout Structs inoutStructs,
+
+      in Unions inUnions,
+      out Unions outUnions,
+      inout Unions inoutUnions
+    );
   };
 };

@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2016 Matej Hrazdira.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$$$ BGN $$$
+#include <jni.h>
+
+#ifndef JNIIMPL_PRIVATE_H_
+#define JNIIMPL_PRIVATE_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv *, jobject, jobjectArray, jstring);
+
+JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
+
+JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_connectConsumer(JNIEnv *, jobject, jlong, jint, jstring);
+
+JNIEXPORT void JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* JNIIMPL_PRIVATE_H_ */

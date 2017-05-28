@@ -9,3 +9,5 @@ CMakeCache.txt
 Makefile
 cmake_*
 *.so
+*.a
+server

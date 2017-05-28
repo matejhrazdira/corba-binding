@@ -16,9 +16,8 @@
 
 package com.matejhrazdira.corbabinding.generators.cppcorba;
 
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.*;
+import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.util.OutputListener;
 
 import java.io.File;
@@ -35,6 +34,9 @@ public class CppCorbaGeneratorBuilder {
 	private OutputListener mOutputListener;
 	private String mTaoIdlIncludePrefix;
 	private String mCorbaEncoding = DEFAULT_ENCODING;
+	private JavaTemplateProjection mJavaTemplateProjection;
+	private JavaInterfaceProjectionProvider mInterfaceProjectionProvider;
+	private SymbolResolver mSymbolResolver;
 
 	public CppCorbaGeneratorBuilder withOutput(final File output) {
 		mOutput = output;
@@ -71,7 +73,22 @@ public class CppCorbaGeneratorBuilder {
 		return this;
 	}
 
+	public CppCorbaGeneratorBuilder withJavaTemplateProjection(final JavaTemplateProjection javaTemplateProjection) {
+		mJavaTemplateProjection = javaTemplateProjection;
+		return this;
+	}
+
+	public CppCorbaGeneratorBuilder withInterfaceProjectionProvider(final JavaInterfaceProjectionProvider interfaceProjectionProvider) {
+		mInterfaceProjectionProvider = interfaceProjectionProvider;
+		return this;
+	}
+
+	public CppCorbaGeneratorBuilder withSymbolResolver(final SymbolResolver symbolResolver) {
+		mSymbolResolver = symbolResolver;
+		return this;
+	}
+
 	public CppCorbaGenerator createCppCorbaGenerator() throws IOException {
-		return new CppCorbaGenerator(mOutput, mEnumProjectionProvider, mStructProjectionProvider, mUnionProjectionProvider, mOutputListener, mTaoIdlIncludePrefix, mCorbaEncoding);
+		return new CppCorbaGenerator(mOutput, mSymbolResolver, mEnumProjectionProvider, mStructProjectionProvider, mUnionProjectionProvider, mJavaTemplateProjection, mInterfaceProjectionProvider, mOutputListener, mTaoIdlIncludePrefix, mCorbaEncoding);
 	}
 }

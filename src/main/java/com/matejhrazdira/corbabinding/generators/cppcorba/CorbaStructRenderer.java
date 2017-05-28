@@ -46,8 +46,8 @@ public class CorbaStructRenderer extends AbsCorbaStructRenderer {
 				localRefs.add(name);
 			}
 			writer.writeln(
-					mJniJavaTypeRenderer.render(type), " ", name, " = ", CONVERSION_FUNCTION,  "(",
-					JniConfig.ARG_JNI_ENV, ", ", CONVERSION_IN_ARG, ".", name ,
+					mJniJavaTypeRenderer.render(type), " ", name, " = ", JniConfig.CONVERSION_FUNCTION,  "(",
+					JniConfig.ARG_JNI_ENV, ", ", JniConfig.CONVERSION_IN_ARG, ".", name ,
 					");"
 			);
 		}
@@ -67,17 +67,17 @@ public class CorbaStructRenderer extends AbsCorbaStructRenderer {
 					mJniJavaTypeRenderer.render(type), " ", name,
 					" = ",
 					jniCall(
-							mJniFieldAccessRenderer.render(type),
-							CONVERSION_IN_ARG,
+							mJniFieldAccessRenderer.getMethod(type),
+							JniConfig.CONVERSION_IN_ARG,
 							mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, name))
 					),
 					";"
 			);
 			writer.writeln(
-					CONVERSION_FUNCTION, "(",
+					JniConfig.CONVERSION_FUNCTION, "(",
 					JniConfig.ARG_JNI_ENV, ", ",
 					name, ", ",
-					CONVERSION_OUT_ARG, ".", name,
+					JniConfig.CONVERSION_OUT_ARG, ".", name,
 					");"
 			);
 			if (!(type instanceof PrimitiveType)) {

@@ -18,6 +18,8 @@ package com.matejhrazdira.corbabinding.generators.cppcorba;
 
 import com.matejhrazdira.corbabinding.acceptance.AbsAcceptanceTest;
 import com.matejhrazdira.corbabinding.generators.java.PojoGenerator;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaTemplateProjection;
+import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.model.Model;
 import com.matejhrazdira.corbabinding.util.NoOpOutputListener;
 import org.junit.Test;
@@ -25,8 +27,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static org.junit.Assert.*;
+import java.util.Arrays;
 
 public class CppCorbaGeneratorTest extends AbsAcceptanceTest {
 
@@ -40,9 +41,17 @@ public class CppCorbaGeneratorTest extends AbsAcceptanceTest {
 		PojoGenerator pojoGenerator = new PojoGenerator(new File(getActualDir(), "java"), "com.matejhrazdira.generated", model);
 		CppCorbaGenerator cppCorbaGenerator = new CppCorbaGeneratorBuilder()
 				.withOutput(new File(getActualDir(), "cpp"))
+				.withSymbolResolver(model.getResolver())
 				.withEnumProjectionProvider(pojoGenerator.getEnumProjection())
 				.withStructProjectionProvider(pojoGenerator.getStructProjection())
 				.withUnionProjectionProvider(pojoGenerator.getUnionProjection())
+				.withInterfaceProjectionProvider(pojoGenerator.getInterfaceProjection())
+				.withJavaTemplateProjection(new JavaTemplateProjection(
+						new ScopedName(Arrays.asList("Var"), true),
+						new ScopedName(Arrays.asList("CorbaException"), true),
+						new ScopedName(Arrays.asList("AlreadyDisposedException"), true),
+						new ScopedName(Arrays.asList("CorbaProvider"), true),
+						new ScopedName(Arrays.asList("EventConsumer"), true)))
 				.withOutputListener(new NoOpOutputListener())
 				.createCppCorbaGenerator();
 		cppCorbaGenerator.generate(model);

@@ -23,13 +23,23 @@ public class Symbol {
 
 	public final ScopedName name;
 	public final IdlElement element;
+	public final boolean innerSymbol;
 
 	public Symbol(final ScopedName name, final IdlElement element) {
+		this(name, element, false);
+	}
+
+	private Symbol(final ScopedName name, final IdlElement element, final boolean innerSymbol) {
 		this.name = Validator.assertNotNull(name, "Name cannot be null.");
 		this.element = Validator.assertNotNull(element, "Element cannot be null.");
+		this.innerSymbol = innerSymbol;
 	}
 
 	public Symbol withName(ScopedName name) {
-		return new Symbol(name, element);
+		return new Symbol(name, element, innerSymbol);
+	}
+
+	public Symbol asInner() {
+		return new Symbol(name, element, true);
 	}
 }

@@ -39,6 +39,9 @@ public class JavaExpressionRendererTest {
 	private static final String SIMPLE_IDL =
 			"module foo {\n" +
 			"    const long bar = 5;\n" +
+			"    interface SomeInterface {\n" +
+			"        const long baz = 6;\n" +
+			"    };" +
 			"};";
 
 	@Test
@@ -63,6 +66,25 @@ public class JavaExpressionRendererTest {
 		);
 		String actual = rendered.render(expression);
 		String expected = "5 + 6 - (scope.foo.bar.value * 2)";
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void renderWithInnerConstantTest() {
+		ConstExp expression = new ConstExp(
+				Arrays.asList(
+						new Literal("5"),
+						new PrimitiveElement(PrimitiveElement.Type.ADD),
+						new ScopedName(Arrays.asList("foo", "SomeInterface", "baz"), true)
+				)
+		);
+		ScopedRenderer scopedRenderer = new JavaScopedRenderer(new ScopedName(Arrays.asList("scope"), true));
+		ExpressionRenderer rendered = new JavaExpressionRenderer(
+				scopedRenderer,
+				createSymbolResolver()
+		);
+		String actual = rendered.render(expression);
+		String expected = "5 + scope.foo.SomeInterface.baz";
 		assertEquals(expected, actual);
 	}
 

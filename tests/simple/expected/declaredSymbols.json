@@ -28,7 +28,8 @@
         }
       ],
       "CLASS": "Module"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -54,7 +55,8 @@
         }
       ],
       "CLASS": "StructType"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -740,12 +742,164 @@
           "CLASS": "ExceptDcl"
         },
         {
+          "innerDefinitions": [
+            {
+              "name": "NESTED_CONST",
+              "type": {
+                "type": "SIGNED_LONG_INT"
+              },
+              "value": {
+                "elements": [
+                  {
+                    "value": "123",
+                    "CLASS": "Literal"
+                  }
+                ],
+                "CLASS": "ConstExp"
+              },
+              "CLASS": "ConstDcl"
+            }
+          ],
+          "inheritance": [],
+          "operations": [
+            {
+              "name": "someStringMethod",
+              "oneway": false,
+              "returnType": {
+                "CLASS": "StringType"
+              },
+              "params": [],
+              "exceptions": [],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "someMethodWithArgs",
+              "oneway": false,
+              "returnType": {
+                "name": [
+                  "SimpleEnum"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "params": [
+                {
+                  "name": "strArg",
+                  "direction": "IN",
+                  "type": {
+                    "CLASS": "StringType"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "ullArg",
+                  "direction": "IN",
+                  "type": {
+                    "type": "UNSIGNED_LONG_LONG_INT"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "structArg",
+                  "direction": "OUT",
+                  "type": {
+                    "name": [
+                      "SimpleStruct"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                }
+              ],
+              "exceptions": [],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "someMethodWithArgsThatThrows",
+              "oneway": false,
+              "returnType": {
+                "name": [
+                  "SimpleStruct"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "params": [
+                {
+                  "name": "strArg",
+                  "direction": "IN",
+                  "type": {
+                    "CLASS": "StringType"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "ullArg",
+                  "direction": "IN",
+                  "type": {
+                    "type": "UNSIGNED_LONG_LONG_INT"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "structArg",
+                  "direction": "IN_OUT",
+                  "type": {
+                    "name": [
+                      "SimpleStruct"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                }
+              ],
+              "exceptions": [
+                {
+                  "name": [
+                    "ExceptionWithMembers"
+                  ],
+                  "fullyQualified": false,
+                  "CLASS": "ScopedName"
+                }
+              ],
+              "CLASS": "Operation"
+            }
+          ],
           "name": "SimpleIdlInterface",
-          "CLASS": "Interface"
+          "CLASS": "Declaration"
+        },
+        {
+          "innerDefinitions": [],
+          "inheritance": [
+            {
+              "name": [
+                "SimpleIdlInterface"
+              ],
+              "fullyQualified": false,
+              "CLASS": "ScopedName"
+            }
+          ],
+          "operations": [
+            {
+              "name": "someAdditionalMethod",
+              "oneway": false,
+              "returnType": {
+                "CLASS": "StringType"
+              },
+              "params": [],
+              "exceptions": [],
+              "CLASS": "Operation"
+            }
+          ],
+          "name": "InheritedInterface",
+          "CLASS": "Declaration"
         }
       ],
       "CLASS": "Module"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -771,7 +925,8 @@
         "CLASS": "ConstExp"
       },
       "CLASS": "ConstDcl"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -877,7 +1032,8 @@
         "CLASS": "ConstExp"
       },
       "CLASS": "ConstDcl"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -903,7 +1059,8 @@
         "CLASS": "ConstExp"
       },
       "CLASS": "ConstDcl"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -925,7 +1082,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -955,7 +1113,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -985,7 +1144,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1015,7 +1175,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1166,7 +1327,8 @@
         }
       ],
       "CLASS": "StructType"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1194,7 +1356,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1220,7 +1383,8 @@
         }
       ],
       "CLASS": "TypeDeclarator"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1266,7 +1430,8 @@
         }
       ],
       "CLASS": "StructType"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1294,7 +1459,8 @@
         }
       ],
       "CLASS": "EnumType"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1309,7 +1475,8 @@
     "element": {
       "name": "EN_VAL_A",
       "CLASS": "EnumValue"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1324,7 +1491,8 @@
     "element": {
       "name": "EN_VAL_B",
       "CLASS": "EnumValue"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1339,7 +1507,8 @@
     "element": {
       "name": "EN_VAL_C",
       "CLASS": "EnumValue"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1447,7 +1616,8 @@
         }
       ],
       "CLASS": "UnionType"
-    }
+    },
+    "innerSymbol": false
   },
   {
     "name": {
@@ -1621,6 +1791,255 @@
         }
       ],
       "CLASS": "UnionType"
-    }
+    },
+    "innerSymbol": false
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
+        "NoMemberException"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "name": "NoMemberException",
+      "members": [],
+      "CLASS": "ExceptDcl"
+    },
+    "innerSymbol": false
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
+        "ExceptionWithMembers"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "name": "ExceptionWithMembers",
+      "members": [
+        {
+          "declarator": {
+            "name": "someStringMember",
+            "CLASS": "Declarator"
+          },
+          "type": {
+            "CLASS": "StringType"
+          },
+          "CLASS": "Member"
+        }
+      ],
+      "CLASS": "ExceptDcl"
+    },
+    "innerSymbol": false
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
+        "SimpleIdlInterface"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "innerDefinitions": [
+        {
+          "name": "NESTED_CONST",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "123",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        }
+      ],
+      "inheritance": [],
+      "operations": [
+        {
+          "name": "someStringMethod",
+          "oneway": false,
+          "returnType": {
+            "CLASS": "StringType"
+          },
+          "params": [],
+          "exceptions": [],
+          "CLASS": "Operation"
+        },
+        {
+          "name": "someMethodWithArgs",
+          "oneway": false,
+          "returnType": {
+            "name": [
+              "SimpleEnum"
+            ],
+            "fullyQualified": false,
+            "CLASS": "ScopedName"
+          },
+          "params": [
+            {
+              "name": "strArg",
+              "direction": "IN",
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Param"
+            },
+            {
+              "name": "ullArg",
+              "direction": "IN",
+              "type": {
+                "type": "UNSIGNED_LONG_LONG_INT"
+              },
+              "CLASS": "Param"
+            },
+            {
+              "name": "structArg",
+              "direction": "OUT",
+              "type": {
+                "name": [
+                  "SimpleStruct"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Param"
+            }
+          ],
+          "exceptions": [],
+          "CLASS": "Operation"
+        },
+        {
+          "name": "someMethodWithArgsThatThrows",
+          "oneway": false,
+          "returnType": {
+            "name": [
+              "SimpleStruct"
+            ],
+            "fullyQualified": false,
+            "CLASS": "ScopedName"
+          },
+          "params": [
+            {
+              "name": "strArg",
+              "direction": "IN",
+              "type": {
+                "CLASS": "StringType"
+              },
+              "CLASS": "Param"
+            },
+            {
+              "name": "ullArg",
+              "direction": "IN",
+              "type": {
+                "type": "UNSIGNED_LONG_LONG_INT"
+              },
+              "CLASS": "Param"
+            },
+            {
+              "name": "structArg",
+              "direction": "IN_OUT",
+              "type": {
+                "name": [
+                  "SimpleStruct"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Param"
+            }
+          ],
+          "exceptions": [
+            {
+              "name": [
+                "ExceptionWithMembers"
+              ],
+              "fullyQualified": false,
+              "CLASS": "ScopedName"
+            }
+          ],
+          "CLASS": "Operation"
+        }
+      ],
+      "name": "SimpleIdlInterface",
+      "CLASS": "Declaration"
+    },
+    "innerSymbol": false
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
+        "SimpleIdlInterface",
+        "NESTED_CONST"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "name": "NESTED_CONST",
+      "type": {
+        "type": "SIGNED_LONG_INT"
+      },
+      "value": {
+        "elements": [
+          {
+            "value": "123",
+            "CLASS": "Literal"
+          }
+        ],
+        "CLASS": "ConstExp"
+      },
+      "CLASS": "ConstDcl"
+    },
+    "innerSymbol": true
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
+        "InheritedInterface"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "innerDefinitions": [],
+      "inheritance": [
+        {
+          "name": [
+            "SimpleIdlInterface"
+          ],
+          "fullyQualified": false,
+          "CLASS": "ScopedName"
+        }
+      ],
+      "operations": [
+        {
+          "name": "someAdditionalMethod",
+          "oneway": false,
+          "returnType": {
+            "CLASS": "StringType"
+          },
+          "params": [],
+          "exceptions": [],
+          "CLASS": "Operation"
+        }
+      ],
+      "name": "InheritedInterface",
+      "CLASS": "Declaration"
+    },
+    "innerSymbol": false
   }
 ]

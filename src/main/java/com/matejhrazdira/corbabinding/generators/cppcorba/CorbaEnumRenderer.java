@@ -43,8 +43,8 @@ public class CorbaEnumRenderer extends AbsCorbaRenderer {
 				"return ",
 				jniCall(
 						"GetStaticObjectField",
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_CLASS)),
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_ENUM_VALUES)) + "[(int) " + CONVERSION_IN_ARG + "]"
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)),
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_ENUM_VALUES)) + "[(int) " + JniConfig.CONVERSION_IN_ARG + "]"
 				),
 				";"
 		);
@@ -54,10 +54,10 @@ public class CorbaEnumRenderer extends AbsCorbaRenderer {
 	protected void renderConversionFromJava(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.conversionImpl;
 		writer.writeln(
-				CONVERSION_OUT_ARG, " = ", "(", mCorbaScopedRenderer.render(projection.symbol.name), ")", " ",
+				JniConfig.CONVERSION_OUT_ARG, " = ", "(", mCorbaScopedRenderer.render(projection.symbol.name), ")", " ",
 				jniCall(
 						"CallIntMethod",
-						CONVERSION_IN_ARG,
+						JniConfig.CONVERSION_IN_ARG,
 						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_ENUM_ORDINAL))
 				),
 				";"
@@ -85,7 +85,7 @@ public class CorbaEnumRenderer extends AbsCorbaRenderer {
 					enumValues, ".push_back(",
 					jniCall(
 							"GetStaticFieldID",
-							LOCAL_CLASS, quoted(valueName), quoted(mJniSignatureTypeRenderer.render(projection.name))),
+							JniConfig.JNI_CACHE_CLASS, quoted(valueName), quoted(mJniSignatureTypeRenderer.render(projection.name))),
 					");"
 			);
 		}
@@ -93,7 +93,7 @@ public class CorbaEnumRenderer extends AbsCorbaRenderer {
 
 		writer.writeln(
 				mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(projection.name, CACHE_ENUM_ORDINAL)), " = ",
-				jniCall("GetMethodID",LOCAL_CLASS, quoted("ordinal"), quoted("()I")), ";"
+				jniCall("GetMethodID", JniConfig.JNI_CACHE_CLASS, quoted("ordinal"), quoted("()I")), ";"
 		);
 	}
 

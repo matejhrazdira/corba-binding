@@ -18,3 +18,8 @@
 ::SimpleIdl::SimpleEnum::EN_VAL_C
 ::SimpleIdl::SimpleUnion
 ::SimpleIdl::WeirdUnion
+::SimpleIdl::NoMemberException
+::SimpleIdl::ExceptionWithMembers
+::SimpleIdl::SimpleIdlInterface
+::SimpleIdl::SimpleIdlInterface::NESTED_CONST
+::SimpleIdl::InheritedInterface

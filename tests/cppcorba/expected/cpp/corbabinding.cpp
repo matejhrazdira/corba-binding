@@ -293,6 +293,41 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::DefaultUnionFromEn
 	_out_._d(_type_);
 }
 
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::NoMemberException & _in_) {
+
+	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.NoMemberException._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.NoMemberException._ctor_);
+
+
+	return _result_;
+}
+
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::NoMemberException & _out_) {
+}
+
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::ExceptionWithMembers & _in_) {
+	jobject someStringMember = convert(_env_, _in_.someStringMember);
+
+	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers._ctor_, someStringMember);
+
+	_env_->DeleteLocalRef(someStringMember);
+
+	return _result_;
+}
+
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::ExceptionWithMembers & _out_) {
+	jobject someStringMember = _env_->GetObjectField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers.someStringMember);
+	convert(_env_, someStringMember, _out_.someStringMember);
+	_env_->DeleteLocalRef(someStringMember);
+}
+
+template<> jobject convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, ::SimpleIdl::SimpleIdlInterface * _in_) {
+	return _in_ ? _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._ctor_, (jlong) _in_) : nullptr;
+}
+
+template<> ::SimpleIdl::SimpleIdlInterface * convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, const jobject _in_) {
+	return _in_ ? (::SimpleIdl::SimpleIdlInterface * ) _env_->GetLongField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_) : nullptr;
+}
+
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_) {
 	return (jboolean) _in_;
 }
@@ -387,6 +422,28 @@ jobject convert(JNIEnv * _env_, const ::TAO::String_Manager & _in_) {
 
 void convert(JNIEnv * _env_, const jobject _in_, ::TAO::String_Manager & _out_) {
 	_out_ = convert<char>(_env_, _in_);
+}
+
+jobject convert(JNIEnv * _env_, const ::CORBA::String_var & _in_) {
+	return convert(_env_, _in_.in());
+}
+
+void convert(JNIEnv * _env_, const jobject _in_, ::CORBA::String_var & _out_) {
+	_out_ = convert<char>(_env_, _in_);
+}
+
+jthrowable convert(JNIEnv * _env_, const ::CORBA::Exception & _in_) {
+	jobject name = convert(_env_, _in_._name());
+	jobject info = convert(_env_, _in_._info().c_str());
+	jobject repositoryId = convert(_env_, _in_._rep_id());
+
+	jobject _result_ = _env_->NewObject(_jni_->_impl_._corba_exception_._cls_, _jni_->_impl_._corba_exception_._ctor_, name, info, repositoryId);
+
+	_env_->DeleteLocalRef(name);
+	_env_->DeleteLocalRef(info);
+	_env_->DeleteLocalRef(repositoryId);
+
+	return (jthrowable) _result_;
 }
 
 template<> jobject convert<const char>(JNIEnv * _env_, const char * _in_) {
@@ -548,6 +605,14 @@ template<> jobject convertElement<::CORBA::Char>(JNIEnv * _env_, const ::CORBA::
 
 template<> void convertElement<::CORBA::Char>(JNIEnv * _env_, const jobject _in_, ::CORBA::Char & _out_) {
 	_out_ = _env_->CallCharMethod(_in_, _jni_->java.lang.Character.charValue);
+}
+
+jobject getVarObject(JNIEnv * _env_, const jobject _var_) {
+	return _env_->CallObjectMethod(_var_, _jni_->_impl_._var_._get_);
+}
+
+void setVarObject(JNIEnv * _env_, jobject _var_, jobject _value_) {
+	_env_->CallVoidMethod(_var_, _jni_->_impl_._var_._set_, _value_);
 }
 
 } /* namespace corbabinding */

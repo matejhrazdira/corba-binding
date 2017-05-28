@@ -16,17 +16,17 @@
 
 package com.matejhrazdira.corbabinding.generators.cppcorba;
 
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.*;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.generators.util.TemplateProcessor;
 import com.matejhrazdira.corbabinding.generators.util.TemplateSpec;
 import com.matejhrazdira.corbabinding.idl.IdlElement;
 import com.matejhrazdira.corbabinding.idl.Symbol;
+import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.EnumType;
 import com.matejhrazdira.corbabinding.idl.definitions.StructType;
 import com.matejhrazdira.corbabinding.idl.definitions.UnionType;
+import com.matejhrazdira.corbabinding.idl.interfaces.Declaration;
 import com.matejhrazdira.corbabinding.model.Model;
 import com.matejhrazdira.corbabinding.util.OutputListener;
 
@@ -35,23 +35,27 @@ import java.util.*;
 
 public class CppCorbaGenerator {
 
-	private static final String INDENTATION = "\t";
-	private static final String IDL_SUFFIX = ".idl";
-	private static final String JNI_CACHE_H = "JniCache.h";
-	private static final String JNI_CACHE_CPP = "JniCache.cpp";
-	private static final String CORBABINDING_H = "corbabinding.h";
-	private static final String CORBABINDING_CPP = "corbabinding.cpp";
-	private static final String UTF_8_DEFINE = "CB_CORBA_USES_UTF_8";
-
 	private final CorbaEnumRenderer mEnumRenderer;
 	private final CorbaStructRenderer mStructRenderer;
 	private final CorbaUnionRenderer mUnionRenderer;
+	private final CorbaInterfaceRenderer mInterfaceRenderer;
 	private final CorbaOutput mOutput;
 	private final OutputListener mOutputListener;
 	private final String mTaoIdlIncludePrefix;
 	private final String mCorbaEncoding;
+	private final Map<String, String> mReplacementMap;
 
-	public CppCorbaGenerator(final File output, final JavaProjectionProvider enumProjectionProvider, final JavaStructProjectionProvider structProjectionProvider, final JavaUnionProjectionProvider unionProjectionProvider, final OutputListener outputListener, final String taoIdlIncludePrefix, final String corbaEncoding) throws IOException {
+	CppCorbaGenerator(
+			final File output,
+			final SymbolResolver symbolResolver, final JavaProjectionProvider enumProjectionProvider,
+			final JavaStructProjectionProvider structProjectionProvider,
+			final JavaUnionProjectionProvider unionProjectionProvider,
+			final JavaTemplateProjection javaTemplateProjection,
+			final JavaInterfaceProjectionProvider interfaceProjectionProvider,
+			final OutputListener outputListener,
+			final String taoIdlIncludePrefix,
+			final String corbaEncoding
+	) throws IOException {
 		if (corbaEncoding == null || corbaEncoding.isEmpty()) {
 			mCorbaEncoding = CppCorbaGeneratorBuilder.DEFAULT_ENCODING;
 		} else {
@@ -62,23 +66,37 @@ public class CppCorbaGenerator {
 		} else {
 			mTaoIdlIncludePrefix = taoIdlIncludePrefix + "/";
 		}
+		mReplacementMap = JniConfig.getStringStringMap(mCorbaEncoding, javaTemplateProjection);
 		output.mkdirs();
 		List<OutputStream> outputStreams = openStreams(
-				new File(output, JNI_CACHE_H),
-				new File(output, JNI_CACHE_CPP),
-				new File(output, CORBABINDING_H),
-				new File(output, CORBABINDING_CPP)
+				new File(output, JniConfig.JNI_CACHE_H),
+				new File(output, JniConfig.JNI_CACHE_CPP),
+				new File(output, JniConfig.CORBABINDING_H),
+				new File(output, JniConfig.CORBABINDING_CPP),
+				new File(output, JniConfig.JNI_IMPL_H),
+				new File(output, JniConfig.JNI_IMPL_CPP),
+				new File(output, JniConfig.JNI_IMPL_PRIVATE_H),
+				new File(output, JniConfig.JNI_IMPL_PRIVATE_CPP),
+				new File(output, JniConfig.CB_LIB_H),
+				new File(output, JniConfig.CB_LIB_CPP)
 		);
 		mOutput = new CorbaOutput.Builder()
-				.withJniCacheHeader(new JniCacheHeaderWriter(new LineWriter(INDENTATION, outputStreams.get(0))))
-				.withJniCacheImpl(new LineWriter(INDENTATION, outputStreams.get(1)))
-				.withConversionHeader(new LineWriter(INDENTATION, outputStreams.get(2)))
-				.withConversionImpl(new LineWriter(INDENTATION, outputStreams.get(3)))
-				.build();
+				.withJniCacheHeader(new JniCacheHeaderWriter(new LineWriter(JniConfig.INDENTATION, outputStreams.get(0))))
+				.withJniCacheImpl(new LineWriter(JniConfig.INDENTATION, outputStreams.get(1)))
+				.withConversionHeader(new LineWriter(JniConfig.INDENTATION, outputStreams.get(2)))
+				.withConversionImpl(new LineWriter(JniConfig.INDENTATION, outputStreams.get(3)))
+				.withJniImplHeader(new LineWriter(JniConfig.INDENTATION, outputStreams.get(4)))
+				.withJniImplImpl(new LineWriter(JniConfig.INDENTATION, outputStreams.get(5)))
+				.withJniImplPrivateHeader(new LineWriter(JniConfig.INDENTATION, outputStreams.get(6)))
+				.withJniImplPrivateImpl(new LineWriter(JniConfig.INDENTATION, outputStreams.get(7)))
+				.withLibHeader(new LineWriter(JniConfig.INDENTATION, outputStreams.get(8)))
+				.withLibImpl(new LineWriter(JniConfig.INDENTATION, outputStreams.get(9)))
+				.createCorbaOutput();
 		mOutputListener = outputListener;
 		mEnumRenderer = new CorbaEnumRenderer(enumProjectionProvider, mOutput, outputListener);
 		mStructRenderer = new CorbaStructRenderer(structProjectionProvider, mOutput, outputListener);
 		mUnionRenderer = new CorbaUnionRenderer(unionProjectionProvider, mOutput, outputListener);
+		mInterfaceRenderer = new CorbaInterfaceRenderer(symbolResolver, interfaceProjectionProvider, mOutput, outputListener);
 	}
 
 	private List<OutputStream> openStreams(File ... outputs) throws IOException {
@@ -102,19 +120,48 @@ public class CppCorbaGenerator {
 
 	public void generate(Model model) throws IOException {
 		try {
-			startJniCacheHeader(model);
-		} catch (IOException e) {
+			generateImpl(model);
+		} finally {
 			mOutput.close();
-			throw e;
 		}
+	}
+
+	protected void generateImpl(final Model model) throws IOException {
+		new TemplateProcessor().process(new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.CB_LIB_H))
+				.withOutput(mOutput.libHeader.getWriter())
+				.createTemplateSpec());
+		new TemplateProcessor().process(new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.CB_LIB_CPP))
+				.withOutput(mOutput.libImpl.getWriter())
+				.createTemplateSpec());
+		new TemplateProcessor().process(new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_IMPL_PRIVATE_H))
+				.withOutput(mOutput.jniImplPrivateHeader.getWriter())
+				.withReplacements(mReplacementMap)
+				.createTemplateSpec());
+		new TemplateProcessor().process(new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_IMPL_PRIVATE_CPP))
+				.withOutput(mOutput.jniImplPrivateImpl.getWriter())
+				.withReplacements(mReplacementMap)
+				.withEvents(new HashSet<>(Arrays.asList("$$$ TYPE CACHE ENTRIES $$$")))
+				.withListener(new TemplateProcessor.TemplateListener() {
+					@Override
+					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
+						mOutput.jniImplPrivateImpl.increaseLevel();
+						startJniCacheHeader(model);
+						mOutput.jniImplPrivateImpl.decreaseLevel();
+					}
+				})
+				.createTemplateSpec());
 	}
 
 	private void startJniCacheHeader(final Model model) throws IOException {
 		TemplateSpec spec = new TemplateSpec.Builder()
-				.withTemplateFile(getTemplateForFile(JNI_CACHE_H))
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_CACHE_H))
 				.withOutput(mOutput.jniCacheHeader.getWriter().getWriter())
 				.withEvents(new HashSet<>(Arrays.asList("$$$ JNI CACHE HEADER $$$")))
-				.withReplacements(createReplacementMap())
+				.withReplacements(mReplacementMap)
 				.withListener(new TemplateProcessor.TemplateListener() {
 					@Override
 					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
@@ -129,14 +176,46 @@ public class CppCorbaGenerator {
 
 	private void startJniCacheImpl(final Model model) throws IOException {
 		TemplateSpec spec = new TemplateSpec.Builder()
-				.withTemplateFile(getTemplateForFile(JNI_CACHE_CPP))
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_CACHE_CPP))
 				.withOutput(mOutput.jniCacheImpl.getWriter())
 				.withEvents(new HashSet<>(Arrays.asList("$$$ JNI CACHE IMPL $$$")))
-				.withReplacements(createReplacementMap())
+				.withReplacements(mReplacementMap)
 				.withListener(new TemplateProcessor.TemplateListener() {
 					@Override
 					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
 						mOutput.jniCacheImpl.increaseLevel();
+						startJniImplHeader(model);
+					}
+				})
+				.createTemplateSpec();
+		new TemplateProcessor().process(spec);
+	}
+
+	private void startJniImplHeader(final Model model) throws IOException {
+		TemplateSpec spec = new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_IMPL_H))
+				.withOutput(mOutput.jniImpHeader.getWriter())
+				.withEvents(new HashSet<>(Arrays.asList("$$$ JNI IMPL HEADER $$$")))
+				.withReplacements(mReplacementMap)
+				.withListener(new TemplateProcessor.TemplateListener() {
+					@Override
+					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
+						startJniImplImpl(model);
+					}
+				})
+				.createTemplateSpec();
+		new TemplateProcessor().process(spec);
+	}
+
+	private void startJniImplImpl(final Model model) throws IOException {
+		TemplateSpec spec = new TemplateSpec.Builder()
+				.withTemplateFile(getTemplateForFile(JniConfig.JNI_IMPL_CPP))
+				.withOutput(mOutput.jniImplImpl.getWriter())
+				.withEvents(new HashSet<>(Arrays.asList("$$$ JNI IMPL IMPL $$$")))
+				.withReplacements(mReplacementMap)
+				.withListener(new TemplateProcessor.TemplateListener() {
+					@Override
+					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
 						startConversionHeader(model);
 					}
 				})
@@ -147,14 +226,14 @@ public class CppCorbaGenerator {
 	private void startConversionHeader(final Model model) throws IOException {
 		final String conversionIncludesEvent = "$$$ CONVERSION INCLUDES $$$";
 		TemplateSpec spec = new TemplateSpec.Builder()
-				.withTemplateFile(getTemplateForFile(CORBABINDING_H))
+				.withTemplateFile(getTemplateForFile(JniConfig.CORBABINDING_H))
 				.withOutput(mOutput.conversionHeader.getWriter())
 				.withEvents(new HashSet<>(Arrays.asList(
 						conversionIncludesEvent,
 						"$$$ CONVERSION HEADER $$$"
 						)
 				))
-				.withReplacements(createReplacementMap())
+				.withReplacements(mReplacementMap)
 				.withListener(new TemplateProcessor.TemplateListener() {
 					@Override
 					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
@@ -172,8 +251,8 @@ public class CppCorbaGenerator {
 	private void generateConversionIncludes(final Model model) throws IOException {
 		for (String file : model.mFiles) {
 			file = new File(file).getName();
-			if (file.endsWith(IDL_SUFFIX)) {
-				file = file.substring(0, file.length() - IDL_SUFFIX.length());
+			if (file.endsWith(JniConfig.IDL_SUFFIX)) {
+				file = file.substring(0, file.length() - JniConfig.IDL_SUFFIX.length());
 			}
 			mOutput.conversionHeader.writeln("#include \"", mTaoIdlIncludePrefix, file, "C.h\"");
 		}
@@ -184,16 +263,16 @@ public class CppCorbaGenerator {
 		String encodingDefineEvent = "$$$ DEFINE UTF-8 $$$";
 		LineWriter writer = mOutput.conversionImpl;
 		TemplateSpec spec = new TemplateSpec.Builder()
-				.withTemplateFile(getTemplateForFile(CORBABINDING_CPP))
+				.withTemplateFile(getTemplateForFile(JniConfig.CORBABINDING_CPP))
 				.withOutput(writer.getWriter())
 				.withEvents(new HashSet<>(Arrays.asList(conversionImplEvent, encodingDefineEvent)))
-				.withReplacements(createReplacementMap())
+				.withReplacements(mReplacementMap)
 				.withListener(new TemplateProcessor.TemplateListener() {
 					@Override
 					public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
 						if (event.equals(encodingDefineEvent)) {
 							if (CppCorbaGeneratorBuilder.DEFAULT_ENCODING.equals(mCorbaEncoding)) {
-								writer.writeln("#define ", UTF_8_DEFINE);
+								writer.writeln("#define ", JniConfig.UTF_8_DEFINE);
 								writer.writeln();
 							}
 						} else {
@@ -221,25 +300,6 @@ public class CppCorbaGenerator {
 		return "/" + file + ".template";
 	}
 
-	private Map<String, String> createReplacementMap() {
-		final Map<String, String> res = new HashMap<>();
-		res.put("$$$ENV$$$", JniConfig.ARG_JNI_ENV);
-		res.put("$$$JNI$$$", JniConfig.ARG_JNI_CACHE_VAR);
-		res.put("$$$CLS$$$", AbsCorbaRenderer.CACHE_CLASS);
-		res.put("$$$CONVERT$$$", AbsCorbaRenderer.CONVERSION_FUNCTION);
-		res.put("$$$IN_ARG$$$", AbsCorbaRenderer.CONVERSION_IN_ARG);
-		res.put("$$$OUT_ARG$$$", AbsCorbaRenderer.CONVERSION_OUT_ARG);
-		res.put("$$$CTOR$$$", AbsCorbaStructRenderer.CACHE_CTOR);
-		res.put("$$$RESULT$$$", AbsCorbaStructRenderer.CONVERSION_RESULT_VAR);
-		res.put("$$$CONVERT_ELEMENT$$$", AbsCorbaRenderer.CONVERSION_FUNCTION + "Element");
-		res.put("$$$ELEMENT$$$", "_element_");
-		res.put("$$$JSTRING_CHARS_VAR$$$", "_j_string_chars_");
-		res.put("$$$JSTRING_VAR$$$", "_j_string_");
-		res.put("$$$CORBA_ENCODING$$$", mCorbaEncoding);
-		res.put("$$$UTF_8_DEFINE$$$", UTF_8_DEFINE);
-		return res;
-	}
-
 	private void logSymbol(final Symbol s) {
 		mOutputListener.onInfo("Processing cppcorba for '" + s.name.getQualifiedName() + "'.");
 	}
@@ -252,6 +312,8 @@ public class CppCorbaGenerator {
 			return mUnionRenderer;
 		} else if (element instanceof EnumType) {
 			return mEnumRenderer;
+		} else if (element instanceof Declaration) {
+			return mInterfaceRenderer;
 		} else {
 			return null;
 		}

@@ -22,6 +22,7 @@ import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
+import com.matejhrazdira.corbabinding.idl.types.VoidType;
 
 public class JniSignatureTypeRenderer extends TypeRenderer {
 
@@ -86,5 +87,10 @@ public class JniSignatureTypeRenderer extends TypeRenderer {
 	@Override
 	protected String render(final StringType string) {
 		return "Ljava/lang/String;";
+	}
+
+	@Override
+	protected String render(final VoidType voidType) {
+		return "V";
 	}
 }

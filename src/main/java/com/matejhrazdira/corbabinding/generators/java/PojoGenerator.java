@@ -16,15 +16,14 @@
 
 package com.matejhrazdira.corbabinding.generators.java;
 
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjectionProvider;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.*;
 import com.matejhrazdira.corbabinding.idl.IdlElement;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.*;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
-import com.matejhrazdira.corbabinding.idl.interfaces.Interface;
+import com.matejhrazdira.corbabinding.idl.interfaces.Declaration;
+import com.matejhrazdira.corbabinding.idl.interfaces.ForwardDeclaration;
 import com.matejhrazdira.corbabinding.model.Model;
 import com.matejhrazdira.corbabinding.util.NoOpOutputListener;
 import com.matejhrazdira.corbabinding.util.OutputListener;
@@ -40,10 +39,13 @@ public class PojoGenerator {
 	private final Model mModel;
 	private final SymbolResolver mResolver;
 	private final JavaScopedRenderer mScopedRenderer;
+	private final TemplateRenderer mTemplateRenderer;
 	private final ConstantRenderer mConstantRenderer;
 	private final EnumRenderer mEnumRenderer;
 	private final StructRenderer mStructRenderer;
+	private final ExceptionRenderer mExceptionRenderer;
 	private final UnionRenderer mUnionRenderer;
+	private final InterfaceRenderer mInterfaceRenderer;
 
 	public PojoGenerator(File outputDir, String packagePrefix, Model model) {
 		this(outputDir, packagePrefix, model, new NoOpOutputListener());
@@ -57,10 +59,13 @@ public class PojoGenerator {
 		JavaScopedRenderer tmpRenderer = new JavaScopedRenderer(true);
 		ScopedName prefix = tmpRenderer.parse(packagePrefix);
 		mScopedRenderer = new JavaScopedRenderer(prefix);
+		mTemplateRenderer = new TemplateRenderer(mScopedRenderer);
 		mStructRenderer = new StructRenderer(mScopedRenderer, mResolver, outputListener);
 		mConstantRenderer = new ConstantRenderer(mScopedRenderer, mResolver, outputListener);
 		mEnumRenderer = new EnumRenderer(mScopedRenderer, outputListener);
+		mExceptionRenderer = new ExceptionRenderer(mScopedRenderer, mResolver, outputListener);
 		mUnionRenderer = new UnionRenderer(mScopedRenderer, mResolver, outputListener);
+		mInterfaceRenderer = new InterfaceRenderer(mScopedRenderer, mResolver, outputListener, mTemplateRenderer.getVarType(), mTemplateRenderer.getCorbaExceptionType());
 	}
 
 	private File getPackageDir(File root, String packagePrefix) {
@@ -73,6 +78,7 @@ public class PojoGenerator {
 	}
 
 	public void generatePojos() throws IOException {
+		mTemplateRenderer.render(mOutputDir);
 		for (Symbol s : mModel.getSymbols()) {
 			logSymbol(s);
 			AbsJavaRenderer renderer = getRendererForSymbol(s);
@@ -87,8 +93,13 @@ public class PojoGenerator {
 
 	private void logSymbol(final Symbol s) {
 		IdlElement element = s.element;
+		if (s.innerSymbol) {
+			return;
+		}
 		File file = getFileForName(s.name);
-		if (element instanceof StructType) {
+		if (element instanceof ExceptDcl) {
+			mOutputListener.onInfo("Creating class for exception '" + s.name.getQualifiedName() + "'.");
+		} else if (element instanceof StructType) {
 			mOutputListener.onInfo("Creating class for struct '" + s.name.getQualifiedName() + "' in '" + file.getAbsolutePath() + "'.");
 		} else if (element instanceof UnionType) {
 			mOutputListener.onInfo("Creating class for union '" + s.name.getQualifiedName() + "' in '" + file.getAbsolutePath() + "'.");
@@ -102,33 +113,31 @@ public class PojoGenerator {
 			mOutputListener.onInfo("Ignoring typedef '" + s.name.getQualifiedName() + "'.");
 		} else if (element instanceof Module){
 			mOutputListener.onInfo("Entering module '" + s.name.getQualifiedName() + "'.");
-		} else if (element instanceof ExceptDcl) {
-			mOutputListener.onInfo("Exceptions not yet supported, skipping '" + s.name.getQualifiedName() + "'.");
-		} else if (element instanceof Interface) {
-			mOutputListener.onInfo("Interfaces not yet supported, skipping '" + s.name.getQualifiedName() + "'.");
+		} else if (element instanceof ForwardDeclaration) {
+			mOutputListener.onInfo("Ignoring forward declaration '" + s.name.getQualifiedName() + "'.");
+		} else if (element instanceof Declaration) {
+			mOutputListener.onInfo("Creating class for interface '" + s.name.getQualifiedName() + "'.");
 		} else {
 			mOutputListener.onWarning("Encountered unexpected element '" + s.name.getQualifiedName() + "' of class " + element.getClass().getName() + ", this is most probably a bug - please report!");
 		}
 	}
 
-	private File prepareFileForName(ScopedName name) {
-		File result = getFileForName(name);
-		result.getParentFile().mkdirs();
-		return result;
+	public File prepareFileForName(ScopedName name) {
+		return Util.prepareFileForName(mOutputDir, name);
 	}
 
 	private File getFileForName(final ScopedName name) {
-		File result = mOutputDir;
-		for (String pkg : name.getScope()) {
-			result = new File(result, pkg);
-		}
-		result = new File(result, name.getBaseName() + ".java");
-		return result;
+		return Util.getFileForName(mOutputDir, name);
 	}
 
 	private AbsJavaRenderer getRendererForSymbol(Symbol s) {
+		if (s.innerSymbol) {
+			return null;
+		}
 		IdlElement element = s.element;
-		if (element instanceof StructType) {
+		if (element instanceof ExceptDcl) {
+			return mExceptionRenderer;
+		} else if (element instanceof StructType) {
 			return mStructRenderer;
 		} else if (element instanceof UnionType) {
 			return mUnionRenderer;
@@ -136,6 +145,8 @@ public class PojoGenerator {
 			return mConstantRenderer;
 		} else if (element instanceof EnumType) {
 			return mEnumRenderer;
+		} else if (element instanceof Declaration) {
+			return mInterfaceRenderer;
 		} else {
 			return null;
 		}
@@ -151,5 +162,13 @@ public class PojoGenerator {
 
 	public JavaUnionProjectionProvider getUnionProjection() {
 		return mUnionRenderer;
+	}
+
+	public JavaTemplateProjection getTemplateProjection() {
+		return mTemplateRenderer.getProjection();
+	}
+
+	public JavaInterfaceProjectionProvider getInterfaceProjection() {
+		return mInterfaceRenderer;
 	}
 }

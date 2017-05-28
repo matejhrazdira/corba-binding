@@ -82,6 +82,7 @@ module SimpleIdl
   interface SimpleIdlInterface
   {
     string someStringMethod();
+    time methodWithTypedefedValues(in time timeArg, out typedefedStruct structArg);
     SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
     SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
   };

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.matejhrazdira.cbsample;
+$$$ BGN $$$
+#include "jniimpl.h"
 
-import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleUnion;
+#include "corbabinding.h"
 
-public class Sample {
+using namespace corbabinding;
 
-	public static native void initCache();
-
-	public static native SimpleUnion copyUnion(SimpleUnion input);
-}
+$$$ JNI IMPL IMPL $$$

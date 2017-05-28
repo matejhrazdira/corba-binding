@@ -73,13 +73,13 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 		}
 		writer.writeln();
 
-		writer.writeln(projection.typeMember.declarator.name, " = ", CONVERSION_FUNCTION, "(", JniConfig.ARG_JNI_ENV, ", ", CONVERSION_IN_ARG, "._d()", ")", ";");
+		writer.writeln(projection.typeMember.declarator.name, " = ", JniConfig.CONVERSION_FUNCTION, "(", JniConfig.ARG_JNI_ENV, ", ", JniConfig.CONVERSION_IN_ARG, "._d()", ")", ";");
 
 		final boolean enumBased = !(projection.typeMember.type instanceof PrimitiveType);
 		final SwitchData<Member> switchData = new SwitchDataBuilder<Member>()
 				.withWriter(writer)
 				.withEnumBased(enumBased)
-				.withSwitchExpr(CONVERSION_IN_ARG + "._d()")
+				.withSwitchExpr(JniConfig.CONVERSION_IN_ARG + "._d()")
 				.withFields(createDataForSwitch(projection))
 				.withCaseRenderer(this::renderConversionToJavaCaseBody)
 				.build();
@@ -94,9 +94,9 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 		writer.writeln(
 				name,
 				" = ",
-				CONVERSION_FUNCTION, "(" ,
+				JniConfig.CONVERSION_FUNCTION, "(" ,
 				JniConfig.ARG_JNI_ENV, ", ",
-				CONVERSION_IN_ARG, ".", name, "()",
+				JniConfig.CONVERSION_IN_ARG, ".", name, "()",
 				");");
 		writer.writeln("break;");
 	}
@@ -130,7 +130,7 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 
 		writer.writeln();
 
-		writer.writeln(CONVERSION_OUT_ARG, "._d(", typeMembername, ")", ";");
+		writer.writeln(JniConfig.CONVERSION_OUT_ARG, "._d(", typeMembername, ")", ";");
 	}
 
 	private void renderConversionFromJavaCaseBody(final SwitchData<Member> data, final Data<UnionField, Member> field) throws IOException {
@@ -141,14 +141,14 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 		Type type = field.extra.type;
 		writeJavaFieldAccess(writer, projection, type, name, jname);
 		if (type instanceof StringType) { // Needs special handling because of string being allocated dynamically. Since char * is not const, target should take ownership.
-			writer.writeln("char * ", name, " = ", CONVERSION_FUNCTION, "<char>", "(", JniConfig.ARG_JNI_ENV, ", ", jname, ")", ";");
+			writer.writeln("char * ", name, " = ", JniConfig.CONVERSION_FUNCTION, "<char>", "(", JniConfig.ARG_JNI_ENV, ", ", jname, ")", ";");
 		} else {
 			writeConversionOfMemberFromJava(writer, field.data.type, name, jname); // use raw type -> takes care of typedefed sequences
 		}
 		if (!(type instanceof PrimitiveType)) {
 			writeDeleteLocalRef(writer, jname);
 		}
-		writer.writeln(CONVERSION_OUT_ARG, ".", name, "(", name, ")", ";");
+		writer.writeln(JniConfig.CONVERSION_OUT_ARG, ".", name, "(", name, ")", ";");
 		writer.writeln("break;");
 	}
 
@@ -157,8 +157,8 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 				mJniJavaTypeRenderer.render(type), " ", jname,
 				" = ",
 				jniCall(
-						mJniFieldAccessRenderer.render(type),
-						CONVERSION_IN_ARG,
+						mJniFieldAccessRenderer.getMethod(type),
+						JniConfig.CONVERSION_IN_ARG,
 						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, name))
 				),
 				";");
@@ -167,7 +167,7 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 	private void writeConversionOfMemberFromJava(final LineWriter writer, final Type type, final String name, final String jname) throws IOException {
 		writer.writeln(mCorbaTypeRenderer.render(type), " ", name, ";");
 		writer.writeln(
-				CONVERSION_FUNCTION, "(", JniConfig.ARG_JNI_ENV, ", ", jname, ", ", name, ")", ";"
+				JniConfig.CONVERSION_FUNCTION, "(", JniConfig.ARG_JNI_ENV, ", ", jname, ", ", name, ")", ";"
 		);
 	}
 

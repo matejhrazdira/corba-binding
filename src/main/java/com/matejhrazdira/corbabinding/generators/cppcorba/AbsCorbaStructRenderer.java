@@ -30,80 +30,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbsCorbaStructRenderer extends AbsCorbaRenderer {
-
-	public static final String CACHE_CTOR = "_ctor_";
-	public static final String CONVERSION_RESULT_VAR = "_result_";
-	protected static final String CTOR_JNI_NAME = "<init>";
-	protected static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
-	protected static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-	protected final JniJavaTypeRenderer mJniJavaTypeRenderer = new JniJavaTypeRenderer();
-	protected final JniFieldAccessRenderer mJniFieldAccessRenderer = new JniFieldAccessRenderer();
-
-	protected final JniSignatureTypeRenderer mJniSignatureTypeRenderer;
-	private final JniSignatureRenderer mSignatureRenderer;
+public abstract class AbsCorbaStructRenderer extends AbsCorbaWithMembersRenderer {
 
 	public AbsCorbaStructRenderer(final JavaProjectionProvider projectionProvider, final OutputListener outputListener, final CorbaOutput output) {
 		super(projectionProvider, outputListener, output);
-		mJniSignatureTypeRenderer = new JniSignatureTypeRenderer(projectionProvider.getProjectionPrefix());
-		mSignatureRenderer = new JniSignatureRenderer(mJniSignatureTypeRenderer);
 	}
 
 	@Override
-	protected void writeJniCacheMembersDeclarationImpl(final JavaProjection projection) throws IOException {
-		JniCacheHeaderWriter writer = mOutput.jniCacheHeader;
-		JavaStructProjection structProjection = (JavaStructProjection) projection;
-		writer.writeln("jmethodID ", CACHE_CTOR, ";");
-		for (final Member member : structProjection.members) {
-			writer.writeln("jfieldID ", member.declarator.name, ";");
-		}
-	}
-
-	@Override
-	protected void writeJniCacheMemersInitializationImpl(final JavaProjection projection) throws IOException {
-		LineWriter writer = mOutput.jniCacheImpl;
-		JavaStructProjection structProjection = (JavaStructProjection) projection;
-		writeCacheCtorInitialization(writer, structProjection);
-		writer.writeln();
-		writeCacheFieldsInitialization(writer, structProjection);
-	}
-
-	private void writeCacheCtorInitialization(final LineWriter writer, final JavaStructProjection structProjection) throws IOException {
+	protected void renderTypeCacheEntries(final JavaProjection projection) throws IOException {
+		LineWriter writer = mOutput.jniImplPrivateImpl;
 		writer.writeln(
-				mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(structProjection.name, CACHE_CTOR)),
+				JniConfig.TYPE_CACHE_ANY_TABLE,
+				"[\"", mJavaScopedRenderer.render(projection.name) , "\"]",
 				" = ",
-				jniCall(
-						"GetMethodID",
-						LOCAL_CLASS,
-						quoted(CTOR_JNI_NAME),
-						quoted(mSignatureRenderer.renderMethodSignature(
-								null,
-								structProjection.members.stream()
-										.map(member -> member.type)
-										.collect(Collectors.toList())
-										.toArray(EMPTY_TYPE_ARRAY)
-								)
-						)
-				),
+				JniConfig.TYPE_CACHE_CONVERT_ANY, "<", mCorbaScopedRenderer.render(projection.symbol.name), ">",
 				";"
 		);
-	}
-
-	private void writeCacheFieldsInitialization(final LineWriter writer, final JavaStructProjection structProjection) throws IOException {
-		for (final Member member : structProjection.members) {
-			writer.writeln(
-					mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(structProjection.name, member.declarator.name)),
-					" = ",
-					jniCall(
-							"GetFieldID",
-							LOCAL_CLASS,
-							quoted(member.declarator.name),
-							quoted(mJniSignatureTypeRenderer.render(member.type))
-					),
-					";"
-			);
-		}
 	}
 
 	@Override
@@ -127,15 +69,15 @@ public abstract class AbsCorbaStructRenderer extends AbsCorbaRenderer {
 
 	private void writeConversionToJavaResultCreation(final LineWriter writer, final JavaStructProjection projection) throws IOException {
 		List<String> newObjectArgs = new ArrayList<>();
-		newObjectArgs.add(mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_CLASS)));
-		newObjectArgs.add(mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_CTOR)));
+		newObjectArgs.add(mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)));
+		newObjectArgs.add(mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CTOR)));
 		newObjectArgs.addAll(
 				projection.members.stream()
 						.map(member -> member.declarator.name)
 						.collect(Collectors.toList())
 		);
 		writer.writeln(
-				"jobject", " ", CONVERSION_RESULT_VAR,
+				"jobject", " ", JniConfig.RESULT_VAR,
 				" = ",
 				jniCall(
 						"NewObject",
@@ -152,6 +94,6 @@ public abstract class AbsCorbaStructRenderer extends AbsCorbaRenderer {
 	}
 
 	private void writeConversionToJavaReturn(final LineWriter writer) throws IOException {
-		writer.writeln("return ", CONVERSION_RESULT_VAR, ";");
+		writer.writeln("return ", JniConfig.RESULT_VAR, ";");
 	}
 }

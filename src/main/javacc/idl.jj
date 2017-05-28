@@ -51,6 +51,16 @@ public class IdlParser {
     void onError(String error);
   }
 
+  private static final class InterfaceHeader {
+    public final String name;
+    public final List<ScopedName> inheritance;
+
+    public InterfaceHeader(final String name, final List<ScopedName> inheritance) {
+        this.name = name;
+        this.inheritance = inheritance;
+    }
+  }
+
   private static final OutputListener NO_OP_LISTENER = new OutputListener() {
     @Override public void onInfo(final String info) {}
     @Override public void onWarning(final String warning) {}
@@ -165,90 +175,119 @@ Module module() :
 
 Interface interfacex() :
 {
-  { logw("'interfacex' not supported, parsing only interface stub"); }
-  String name;
+  Interface result;
 }
 {
   (
     LOOKAHEAD(3)
-    name = interface_dcl()
+    result = interface_dcl()
   |
-    name = forward_dcl()
+    result = forward_dcl()
   )
-  { return new Interface(name); }
+  { return result; }
 }
 
 /* Production 5 */
 
-String interface_dcl() :
+Declaration interface_dcl() :
 {
-  String name;
+  InterfaceHeader header;
+  List<IdlElement> elements;
 }
 {
-  name = interface_header() 
+  header = interface_header() 
   "{" 
-  interface_body() 
+  elements = interface_body() 
   "}"
-  { return name; }
+  { return new Declaration(header.name, header.inheritance, elements); }
 }
 
 /* Production 6 */
 
-String forward_dcl() :
+ForwardDeclaration forward_dcl() :
 {
   String name;
 }
 {
   "interface" 
   name = identifier()
-  { return name; }
+  { return new ForwardDeclaration(name); }
 }
 
 /* Production 7 */
 
-String interface_header() :
+InterfaceHeader interface_header() :
 {
   String name;
+  List<ScopedName> inheritance = new ArrayList<ScopedName>();
+  List<ScopedName> tmp;
 }
 {
   "interface" 
   name = identifier() 
   [ 
-    inheritance_spec() 
+    tmp = inheritance_spec() 
+    { inheritance.addAll(tmp); }
   ]
-  { return name; }
+  { return new InterfaceHeader(name, inheritance); }
 }
 
 /* Production 8 */
 
-void interface_body() :
-{}
+List<IdlElement> interface_body() :
 {
-  ( export() )*
+	List<IdlElement> result = new ArrayList<IdlElement>();
+	IdlElement tmp;
+}
+{
+  ( 
+  	tmp = export()
+  	{ if (tmp != null) { result.add(tmp); } } 
+  )*
+  { return result; }
 }
 
 /* Production 9 */
 
-void export() :
-{}
+IdlElement export() :
 {
-  type_dcl() ";"
-|
-  const_dcl() ";"
-|
-  except_dcl() ";"
-|
-  attr_dcl() ";"
-|
-  op_dcl() ";"
+	IdlElement result = null;
+}
+{
+  (
+    type_dcl() ";"
+    { logw("Nested types are not supported."); }
+  |
+    result = const_dcl() ";"
+  |
+    except_dcl() ";"
+    { logw("Nested exceptions are not supported."); }
+  |
+    attr_dcl() ";"
+    { logw("Attributes are not supported."); }
+  |
+    result = op_dcl() ";"
+  )
+  { return result; }
 }
 
 /* Production 10 */
 
-void inheritance_spec() :
-{}
+List<ScopedName> inheritance_spec() :
 {
-  ":" scoped_name() ( "," scoped_name() )*
+	List<ScopedName> inheritance = new ArrayList<ScopedName>();
+	ScopedName tmp;
+}
+{
+  ":" 
+  tmp = scoped_name() 
+  { inheritance.add(tmp); }
+  ( 
+  	"," 
+  	tmp = scoped_name() 
+  	{ inheritance.add(tmp); }
+  )*
+  { return inheritance; }
 }
 
 /* Production 11 */
@@ -1109,64 +1148,132 @@ ExceptDcl except_dcl() :
 
 /* Production 67 */
 
-void op_dcl() :
-{}
+Operation op_dcl() :
 {
-  [ op_attribute() ] op_type_spec() identifier() parameter_dcls() [ raises_expr() ] [ context_expr() ]
+	String name;
+	boolean oneway = false;
+	Type returnType;
+	List<Param> parameters;
+	List<ScopedName> exceptions = new ArrayList<ScopedName>();
+}
+{
+  [ 
+    oneway = op_attribute()
+  ] 
+  returnType = op_type_spec()
+  name = identifier()
+  parameters = parameter_dcls() 
+  [ 
+    exceptions = raises_expr() 
+  ] 
+  [ 
+    context_expr() 
+    { logw("Operation context is not supported."); }
+  ]
+  { return new Operation(name, oneway, returnType, parameters, exceptions); }
 }
 
 /* Production 68 */
 
-void op_attribute() :
+boolean op_attribute() :
 {}
 {
   "oneway"
+  { return true; }
 }
 
 /* Production 69 */
 
-void op_type_spec() :
-{}
+Type op_type_spec() :
 {
-  param_type_spec()
-|
-  "void"
+	Type result = null;
+}
+{
+  (
+    result = param_type_spec()
+  |
+    "void"
+    { result = new VoidType(); }
+  )
+  { return result; }
 }
 
 /* Production 70 */
 
-void parameter_dcls() :
-{}
+List<Param> parameter_dcls() :
 {
-  "(" [ param_dcl() ( "," param_dcl() )* ] ")"
+	List<Param> result = new ArrayList<Param>();
+	Param tmp;
+}
+{
+  "(" 
+  [ 
+    tmp = param_dcl() 
+    { result.add(tmp); }
+    ( 
+      "," 
+      tmp = param_dcl()
+      { result.add(tmp); }
+    )* 
+  ] 
+  ")"
+  { return result; }
 }
 
 /* Production 71 */
 
-void param_dcl() :
-{}
+Param param_dcl() :
 {
-  param_attribute() param_type_spec() simple_declarator()
+	Param.Direction direction;
+	Type type;
+	Declarator name;
+}
+{
+  direction = param_attribute() 
+  type = param_type_spec() 
+  name = simple_declarator()
+  { return new Param(name.name, direction, type); }
 }
 
 /* Production 72 */
 
-void param_attribute() :
-{}
+Param.Direction param_attribute() :
 {
-  "in"
-|
-  "out"
-|
-  "inout"
+	Param.Direction result = null;
+}
+{
+  (
+    "in"
+    { result = Param.Direction.IN; }
+  |
+    "out"
+    { result = Param.Direction.OUT; }
+  |
+    "inout"
+    { result = Param.Direction.IN_OUT; }
+  )
+  { return result; }
 }
 
 /* Production 73 */
 
-void raises_expr() :
-{}
+List<ScopedName> raises_expr() :
 {
-  "raises" "(" scoped_name() ( "," scoped_name() )* ")"
+	List<ScopedName> names = new ArrayList<ScopedName>();
+	ScopedName tmp;
+}
+{
+  "raises" 
+  "(" 
+  tmp = scoped_name() 
+  { names.add(tmp); }
+  ( 
+  	"," 
+  	tmp = scoped_name()
+  	{ names.add(tmp); }
+  )* 
+  ")"
+  { return names; }
 }
 
 /* Production 74 */
@@ -1179,14 +1286,19 @@ void context_expr() :
 
 /* Production 75 */
 
-void param_type_spec() :
-{}
+Type param_type_spec() :
 {
-  base_type_spec()
-|
-  string_type()
-|
-  scoped_name()
+	Type result = null;
+}
+{
+  (
+    result = base_type_spec()
+  |
+    result = string_type()
+  |
+    result = scoped_name()
+  )
+  { return result; }
 }
 
 /* Definitions of complex regular expressions follow */

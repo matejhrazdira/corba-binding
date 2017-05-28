@@ -66,6 +66,20 @@ struct JniCache {
 						jfieldID foo;
 						jfieldID bar;
 					} DefaultUnionFromEnum;
+					struct {
+						jclass _cls_;
+						jmethodID _ctor_;
+					} NoMemberException;
+					struct {
+						jclass _cls_;
+						jmethodID _ctor_;
+						jfieldID someStringMember;
+					} ExceptionWithMembers;
+					struct {
+						jclass _cls_;
+						jmethodID _ctor_;
+						jfieldID _native_address_;
+					} SimpleIdlInterface;
 				} SimpleIdl;
 			} pojos;
 		} matejhrazdira;
@@ -120,6 +134,25 @@ struct JniCache {
 			} List;
 		} util;
 	} java;
+	struct {
+		struct {
+			jclass _cls_;
+			jmethodID _ctor_;
+			jmethodID _get_;
+			jmethodID _set_;
+		} _var_;
+		struct {
+			jclass _cls_;
+			jmethodID _ctor_;
+		} _corba_exception_;
+		struct {
+			jclass _cls_;
+			jmethodID _ctor_;
+		} _already_disposed_exception_;
+		struct {
+			jmethodID _callback_;
+		} _event_consumer_;
+	} _impl_;
 
 	JniCache(JNIEnv * _env_);
 	virtual ~JniCache();

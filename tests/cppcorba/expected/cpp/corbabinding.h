@@ -11,6 +11,9 @@ extern JniCache * _jni_;
 
 void init(JNIEnv * _env_);
 
+template<typename T> jobject convert(JNIEnv * _env_, T * _in_);
+template<typename T> T * convert(JNIEnv * _env_, const jobject _in_);
+
 jobject convert(JNIEnv * _env_, const ::IncludedIdl::IncludedStruct & _in_);
 void convert(JNIEnv * _env_, const jobject _in_, ::IncludedIdl::IncludedStruct & _out_);
 
@@ -31,6 +34,15 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::WeirdUnion & _out_
 
 jobject convert(JNIEnv * _env_, const ::SimpleIdl::DefaultUnionFromEnum & _in_);
 void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::DefaultUnionFromEnum & _out_);
+
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::NoMemberException & _in_);
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::NoMemberException & _out_);
+
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::ExceptionWithMembers & _in_);
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::ExceptionWithMembers & _out_);
+
+template<> jobject convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, ::SimpleIdl::SimpleIdlInterface * _in_);
+template<> ::SimpleIdl::SimpleIdlInterface * convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, const jobject _in_);
 
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_);
 void convert(JNIEnv * _env_, const jboolean _in_, ::CORBA::Boolean & _out_);
@@ -67,6 +79,14 @@ void convert(JNIEnv * _env_, const jchar _in_, ::CORBA::Char & _out_);
 
 jobject convert(JNIEnv * _env_, const ::TAO::String_Manager & _in_);
 void convert(JNIEnv * _env_, const jobject _in_, ::TAO::String_Manager & _out_);
+
+jobject convert(JNIEnv * _env_, const ::CORBA::String_var & _in_);
+void convert(JNIEnv * _env_, const jobject _in_, ::CORBA::String_var & _out_);
+
+jthrowable convert(JNIEnv * _env_, const ::CORBA::Exception & _in_);
+
+template<typename T> jobject convert(JNIEnv * _env_, const T & _in_);
+template<typename T> void convert(JNIEnv * _env_, const jobject _in_, T & _out_);
 
 template<typename T> jobject convert(JNIEnv * _env_, T * _in_) {
 	if (_in_) {
@@ -153,6 +173,38 @@ template<typename T> void convert(JNIEnv * _env_, const jobject _in_, T & _out_)
 		convertElement(_env_, _element_, _out_[i]);
 		_env_->DeleteLocalRef(_element_);
 	}
+}
+
+jobject getVarObject(JNIEnv * _env_, const jobject _var_);
+void setVarObject(JNIEnv * _env_, jobject _var_, jobject _value_);
+
+/** @Deprecated */
+template<typename T> T * getVarPtr(JNIEnv * _env_, const jobject _var_) {
+	jobject _value_ = getVarObject(_env_, _var_);
+	T * _result_ = convert<T>(_env_, _value_);
+	_env_->DeleteLocalRef(_value_);
+	return _result_;
+}
+
+/** @Deprecated */
+template<typename T> T getVarValue(JNIEnv * _env_, const jobject _var_) {
+	jobject _value_ = getVarObject(_env_, _var_);
+	T _result_;
+	convertElement(_env_, _value_, _result_);
+	_env_->DeleteLocalRef(_value_);
+	return _result_;
+}
+
+template<typename T> void convertVar(JNIEnv * _env_, const jobject _var_, T & _out_) {
+	jobject _value_ = getVarObject(_env_, _var_);
+	convertElement(_env_, _value_, _out_);
+	_env_->DeleteLocalRef(_value_);
+}
+
+template<typename T> void setVar(JNIEnv * _env_, jobject _var_, const T & _in_) {
+	jobject _tmp_ = convertElement(_env_, _in_);
+	setVarObject(_env_, _var_, _tmp_);
+	_env_->DeleteLocalRef(_tmp_);
 }
 
 } /* namespace corbabinding */

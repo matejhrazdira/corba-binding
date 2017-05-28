@@ -45,7 +45,11 @@ public class StructType extends IdlElement implements Definition {
 
 	@Override
 	public StructType resolved(IdlElement scope, final SymbolResolver resolver) {
-		List<Member> resolved = members.stream().map( m -> m.resolved(this, resolver)).collect(Collectors.toList());
+		List<Member> resolved = resolvedImpl(resolver);
 		return new StructType(name, resolved);
+	}
+
+	protected List<Member> resolvedImpl(final SymbolResolver resolver) {
+		return members.stream().map( m -> m.resolved(this, resolver)).collect(Collectors.toList());
 	}
 }

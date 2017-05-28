@@ -76,6 +76,25 @@ struct JniCache {
 			} List;
 		} util;
 	} java;
+	struct {
+		struct {
+			jclass $$$CLS$$$;
+			jmethodID $$$CTOR$$$;
+			jmethodID $$$VAR_GET$$$;
+			jmethodID $$$VAR_SET$$$;
+		} $$$CACHE_VAR$$$;
+		struct {
+			jclass $$$CLS$$$;
+			jmethodID $$$CTOR$$$;
+		} $$$CACHE_CORBA_EXCEPTION$$$;
+		struct {
+			jclass $$$CLS$$$;
+			jmethodID $$$CTOR$$$;
+		} $$$CACHE_ALREADY_DISPOSED_EXCEPTION$$$;
+		struct {
+			jmethodID _callback_;
+		} _event_consumer_;
+	} $$$CACHE_IMPL$$$;
 
 	JniCache(JNIEnv * $$$ENV$$$);
 	virtual ~JniCache();

@@ -28,6 +28,9 @@ extern JniCache * $$$JNI$$$;
 
 void init(JNIEnv * $$$ENV$$$);
 
+template<typename T> jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, T * $$$IN_ARG$$$);
+template<typename T> T * $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$);
+
 $$$ CONVERSION HEADER $$$
 jboolean $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Boolean & $$$IN_ARG$$$);
 void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jboolean $$$IN_ARG$$$, ::CORBA::Boolean & $$$OUT_ARG$$$);
@@ -64,6 +67,14 @@ void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jchar $$$IN_ARG$$$, ::CORBA::Char &
 
 jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::TAO::String_Manager & $$$IN_ARG$$$);
 void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::TAO::String_Manager & $$$OUT_ARG$$$);
+
+jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::String_var & $$$IN_ARG$$$);
+void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::String_var & $$$OUT_ARG$$$);
+
+jthrowable $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Exception & $$$IN_ARG$$$);
+
+template<typename T> jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const T & $$$IN_ARG$$$);
+template<typename T> void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, T & $$$OUT_ARG$$$);
 
 template<typename T> jobject $$$CONVERT$$$(JNIEnv * $$$ENV$$$, T * $$$IN_ARG$$$) {
 	if ($$$IN_ARG$$$) {
@@ -150,6 +161,38 @@ template<typename T> void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_
 		$$$CONVERT_ELEMENT$$$($$$ENV$$$, $$$ELEMENT$$$, $$$OUT_ARG$$$[i]);
 		$$$ENV$$$->DeleteLocalRef($$$ELEMENT$$$);
 	}
+}
+
+jobject getVarObject(JNIEnv * $$$ENV$$$, const jobject _var_);
+void setVarObject(JNIEnv * $$$ENV$$$, jobject _var_, jobject _value_);
+
+/** @Deprecated */
+template<typename T> T * getVarPtr(JNIEnv * $$$ENV$$$, const jobject _var_) {
+	jobject _value_ = getVarObject($$$ENV$$$, _var_);
+	T * $$$RESULT$$$ = convert<T>($$$ENV$$$, _value_);
+	$$$ENV$$$->DeleteLocalRef(_value_);
+	return $$$RESULT$$$;
+}
+
+/** @Deprecated */
+template<typename T> T getVarValue(JNIEnv * $$$ENV$$$, const jobject _var_) {
+	jobject _value_ = getVarObject($$$ENV$$$, _var_);
+	T $$$RESULT$$$;
+	convertElement($$$ENV$$$, _value_, $$$RESULT$$$);
+	$$$ENV$$$->DeleteLocalRef(_value_);
+	return $$$RESULT$$$;
+}
+
+template<typename T> void $$$CONVERT$$$Var(JNIEnv * $$$ENV$$$, const jobject _var_, T & $$$OUT_ARG$$$) {
+	jobject _value_ = getVarObject($$$ENV$$$, _var_);
+	convertElement($$$ENV$$$, _value_, $$$OUT_ARG$$$);
+	$$$ENV$$$->DeleteLocalRef(_value_);
+}
+
+template<typename T> void setVar(JNIEnv * $$$ENV$$$, jobject _var_, const T & $$$IN_ARG$$$) {
+	jobject _tmp_ = convertElement($$$ENV$$$, $$$IN_ARG$$$);
+	setVarObject($$$ENV$$$, _var_, _tmp_);
+	$$$ENV$$$->DeleteLocalRef(_tmp_);
 }
 
 } /* namespace corbabinding */

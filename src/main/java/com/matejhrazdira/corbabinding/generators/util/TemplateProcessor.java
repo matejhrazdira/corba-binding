@@ -30,6 +30,13 @@ public class TemplateProcessor {
 		void onTemplateEvent(TemplateSpec template, String event) throws IOException;
 	}
 
+	public static class NoOpListener implements TemplateListener {
+
+		@Override
+		public void onTemplateEvent(final TemplateSpec template, final String event) throws IOException {
+		}
+	}
+
 	public void process(final TemplateSpec spec) throws IOException {
 		try (InputStream stream = getClass().getResourceAsStream(spec.templateFile)) {
 			BufferedReader input = new BufferedReader(new InputStreamReader(stream));
@@ -53,15 +60,13 @@ public class TemplateProcessor {
 						eventFound = true;
 					}
 				}
-				if (eventFound) {
-					continue;
+				if (!eventFound) {
+					for (final Replacement replacement : replacements) {
+						line = replacement.apply(line);
+					}
+					output.write(line);
+					output.write('\n');
 				}
-				for (final Replacement replacement : replacements) {
-					line = replacement.apply(line);
-				}
-				output.write(line);
-				output.write('\n');
-				output.flush();
 			}
 		}
 	}

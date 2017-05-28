@@ -22,6 +22,7 @@ import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
+import com.matejhrazdira.corbabinding.idl.types.VoidType;
 
 public class CorbaTypeRenderer extends TypeRenderer {
 
@@ -83,5 +84,10 @@ public class CorbaTypeRenderer extends TypeRenderer {
 	@Override
 	protected String render(final StringType string) {
 		throw new CorbabindingException("StringType is not supported, should be handled by template resolution.");
+	}
+
+	@Override
+	protected String render(final VoidType voidType) {
+		return "void";
 	}
 }

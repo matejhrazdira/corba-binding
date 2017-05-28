@@ -95,6 +95,35 @@ JniCache::JniCache(JNIEnv * _env_) {
 		_env_->DeleteLocalRef(_cls_);
 	}
 	{
+		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/NoMemberException");
+		com.matejhrazdira.pojos.SimpleIdl.NoMemberException._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+
+		com.matejhrazdira.pojos.SimpleIdl.NoMemberException._ctor_ = _env_->GetMethodID(_cls_, "<init>", "()V");
+
+
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/ExceptionWithMembers");
+		com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+
+		com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/lang/String;)V");
+
+		com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers.someStringMember = _env_->GetFieldID(_cls_, "someStringMember", "Ljava/lang/String;");
+
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/SimpleIdlInterface");
+		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+
+		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(J)V");
+
+		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_ = _env_->GetFieldID(_cls_, "_native_address_", "J");
+
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
 		jclass _cls_ = _env_->FindClass("java/lang/Boolean");
 		java.lang.Boolean._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
 		java.lang.Boolean._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Z)V");
@@ -154,6 +183,31 @@ JniCache::JniCache(JNIEnv * _env_) {
 		java.util.List.add = _env_->GetMethodID(_cls_, "add", "(Ljava/lang/Object;)Z");
 		java.util.List.get = _env_->GetMethodID(_cls_, "get", "(I)Ljava/lang/Object;");
 		java.util.List.size = _env_->GetMethodID(_cls_, "size", "()I");
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("Var");
+		_impl_._var_._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+		_impl_._var_._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/lang/Object;)V");
+		_impl_._var_._get_ = _env_->GetMethodID(_cls_, "get", "()Ljava/lang/Object;");
+		_impl_._var_._set_ = _env_->GetMethodID(_cls_, "set", "(Ljava/lang/Object;)V");
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("CorbaException");
+		_impl_._corba_exception_._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+		_impl_._corba_exception_._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("AlreadyDisposedException");
+		_impl_._already_disposed_exception_._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+		_impl_._already_disposed_exception_._ctor_ = _env_->GetMethodID(_cls_, "<init>", "()V");
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("EventConsumer");
+		_impl_._event_consumer_._callback_ = _env_->GetMethodID(_cls_, "onEvent", "(Ljava/lang/Object;)V");
 		_env_->DeleteLocalRef(_cls_);
 	}
 }

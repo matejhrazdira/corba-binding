@@ -20,10 +20,7 @@ import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.TypeRenderer;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
-import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
-import com.matejhrazdira.corbabinding.idl.types.SequenceType;
-import com.matejhrazdira.corbabinding.idl.types.StringType;
-import com.matejhrazdira.corbabinding.idl.types.Type;
+import com.matejhrazdira.corbabinding.idl.types.*;
 
 public class JavaTypeRenderer extends TypeRenderer {
 
@@ -75,18 +72,18 @@ public class JavaTypeRenderer extends TypeRenderer {
 
 	@Override
 	protected String render(SequenceType sequence) {
-		return "java.util.List<" + renderListElement(sequence.elementType) + ">";
+		return "java.util.List<" + renderGenericType(sequence.elementType) + ">";
 	}
 
-	private String renderListElement(Type type) {
+	public String renderGenericType(Type type) {
 		if (type instanceof PrimitiveType) {
-			return renderListElement((PrimitiveType) type);
+			return renderGenericType((PrimitiveType) type);
 		} else {
 			return render(type);
 		}
 	}
 
-	private String renderListElement(final PrimitiveType type) {
+	private String renderGenericType(final PrimitiveType type) {
 		String result;
 		switch (type.type) {
 			case BOOL:
@@ -125,6 +122,11 @@ public class JavaTypeRenderer extends TypeRenderer {
 		return "String";
 	}
 
+	@Override
+	protected String render(final VoidType voidType) {
+		return "void";
+	}
+
 	public String getEmptyValue(final Type type) {
 		final String emptyValue;
 		if (type instanceof PrimitiveType) {
@@ -158,7 +160,7 @@ public class JavaTypeRenderer extends TypeRenderer {
 			case SIGNED_LONG_LONG_INT:
 			case FLOAT:
 			case DOUBLE:
-				result = renderListElement(type) + ".MIN_VALUE";
+				result = renderGenericType(type) + ".MIN_VALUE";
 				break;
 			case BOOL:
 			default:
@@ -180,7 +182,7 @@ public class JavaTypeRenderer extends TypeRenderer {
 			case SIGNED_LONG_LONG_INT:
 			case FLOAT:
 			case DOUBLE:
-				result = renderListElement(type) + ".MAX_VALUE";
+				result = renderGenericType(type) + ".MAX_VALUE";
 				break;
 			case BOOL:
 			default:

@@ -89,11 +89,14 @@ public class Main {
 
 			CppCorbaGenerator cppCorbaGenerator = new CppCorbaGeneratorBuilder()
 					.withOutput(new File(params.cppCorbaOutputDir))
+					.withSymbolResolver(model.getResolver()) // TODO: either remove model from generate or set resolver there...
 					.withTaoIdlIncludePrefix(params.cppCorbaTaoGeneratedPath)
 					.withCorbaEncoding(params.cppCorbaEncoding)
 					.withEnumProjectionProvider(pojoGenerator.getEnumProjection())
 					.withStructProjectionProvider(pojoGenerator.getStructProjection())
 					.withUnionProjectionProvider(pojoGenerator.getUnionProjection())
+					.withJavaTemplateProjection(pojoGenerator.getTemplateProjection())
+					.withInterfaceProjectionProvider(pojoGenerator.getInterfaceProjection())
 					.withOutputListener(new NoOpOutputListener())
 					.createCppCorbaGenerator();
 			cppCorbaGenerator.generate(model);

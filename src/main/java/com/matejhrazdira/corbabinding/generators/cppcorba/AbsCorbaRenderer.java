@@ -31,13 +31,6 @@ import java.util.stream.Collectors;
 
 public abstract class AbsCorbaRenderer {
 
-	public static final String CACHE_CLASS = "_cls_";
-	public static final String LOCAL_CLASS = "_cls_";
-
-	public static final String CONVERSION_FUNCTION = "convert";
-	public static final String CONVERSION_IN_ARG = "_in_";
-	public static final String CONVERSION_OUT_ARG = "_out_";
-
 	protected final JavaProjectionProvider mJavaProjectionProvider;
 	protected final CorbaOutput mOutput;
 	protected final OutputListener mOutputListener;
@@ -57,6 +50,9 @@ public abstract class AbsCorbaRenderer {
 		renderJniCacheBody(projection);
 		renderConversionHeader(projection);
 		renderConversionBody(projection);
+		renderJniImplHeader(projection);
+		renderJniImplBody(projection);
+		renderTypeCacheEntries(projection);
 	}
 
 	private void renderConversionBody(final JavaProjection projection) throws IOException {
@@ -89,12 +85,12 @@ public abstract class AbsCorbaRenderer {
 		writer.write(";").endl();
 	}
 
-	private void writeConversionFromJavaDeclaration(final LineWriter writer, final JavaProjection projection) throws IOException {
-		writer.write("void ", CONVERSION_FUNCTION, "(JNIEnv * ", JniConfig.ARG_JNI_ENV, ", const jobject ", CONVERSION_IN_ARG, ", ", mCorbaScopedRenderer.render(projection.symbol.name), " & ", CONVERSION_OUT_ARG, ")");
+	protected void writeConversionFromJavaDeclaration(final LineWriter writer, final JavaProjection projection) throws IOException {
+		writer.write("void ", JniConfig.CONVERSION_FUNCTION, "(JNIEnv * ", JniConfig.ARG_JNI_ENV, ", const jobject ", JniConfig.CONVERSION_IN_ARG, ", ", mCorbaScopedRenderer.render(projection.symbol.name), " & ", JniConfig.CONVERSION_OUT_ARG, ")");
 	}
 
 	protected void writeConversionToJavaDeclaration(final LineWriter writer, final JavaProjection projection) throws IOException {
-		writer.write("jobject ", CONVERSION_FUNCTION, "(JNIEnv * ", JniConfig.ARG_JNI_ENV, ", const ", mCorbaScopedRenderer.render(projection.symbol.name), " & ", CONVERSION_IN_ARG, ")");
+		writer.write("jobject ", JniConfig.CONVERSION_FUNCTION, "(JNIEnv * ", JniConfig.ARG_JNI_ENV, ", const ", mCorbaScopedRenderer.render(projection.symbol.name), " & ", JniConfig.CONVERSION_IN_ARG, ")");
 	}
 
 	private void renderJniCacheHeader(final JavaProjection projection) throws IOException {
@@ -104,7 +100,7 @@ public abstract class AbsCorbaRenderer {
 
 	protected void writeJniCacheMembersDeclaration(final JavaProjection projection) throws IOException {
 		JniCacheHeaderWriter writer = mOutput.jniCacheHeader;
-		writer.writeln("jclass ", CACHE_CLASS, ";");
+		writer.writeln("jclass ", JniConfig.JNI_CACHE_CLASS, ";");
 		writeJniCacheMembersDeclarationImpl(projection);
 	}
 
@@ -122,21 +118,33 @@ public abstract class AbsCorbaRenderer {
 	private void writeJniCacheMembersInitialization(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.jniCacheImpl;
 		writer.writeln(
-				"jclass ", LOCAL_CLASS, " = ", jniCall("FindClass", quoted(mClassNameRenderer.render(projection.name))), ";"
+				"jclass ", JniConfig.JNI_CACHE_CLASS, " = ", jniCall("FindClass", quoted(mClassNameRenderer.render(projection.name))), ";"
 		);
 		writer.writeln(
-				mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(projection.name, CACHE_CLASS)), " = ",
-				"(jclass) ", jniCall("NewGlobalRef", LOCAL_CLASS), ";"
+				mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)), " = ",
+				"(jclass) ", jniCall("NewGlobalRef", JniConfig.JNI_CACHE_CLASS), ";"
 		);
 		writer.writeln();
 
 		writeJniCacheMemersInitializationImpl(projection);
 
 		writer.writeln();
-		writeDeleteLocalRef(writer, LOCAL_CLASS);
+		writeDeleteLocalRef(writer, JniConfig.JNI_CACHE_CLASS);
 	}
 
 	protected abstract void writeJniCacheMemersInitializationImpl(JavaProjection projection) throws IOException;
+
+	protected void renderJniImplHeader(final JavaProjection projection) throws IOException {
+
+	}
+
+	protected void renderJniImplBody(final JavaProjection projection) throws IOException {
+
+	}
+
+	protected void renderTypeCacheEntries(final JavaProjection projection) throws IOException {
+
+	}
 
 	protected String quoted(String arg) {
 		return "\"" + arg + "\"";

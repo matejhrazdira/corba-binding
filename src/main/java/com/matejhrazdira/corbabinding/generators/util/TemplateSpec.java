@@ -17,6 +17,8 @@
 package com.matejhrazdira.corbabinding.generators.util;
 
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,10 +26,10 @@ public class TemplateSpec {
 
 	public static class Builder {
 		private String mTemplateFile;
-		private Set<String> mEvents;
-		private Map<String, String> mReplacements;
+		private Set<String> mEvents = new HashSet<>();
+		private Map<String, String> mReplacements = new HashMap<>();
 		private Writer mOutput;
-		private TemplateProcessor.TemplateListener mListener;
+		private TemplateProcessor.TemplateListener mListener = new TemplateProcessor.NoOpListener();
 
 		public Builder withTemplateFile(final String templateFile) {
 			mTemplateFile = templateFile;
@@ -59,13 +61,13 @@ public class TemplateSpec {
 		}
 	}
 
-	public String templateFile;
-	public Set<String> events;
-	public Map<String, String> replacements;
-	public Writer output;
-	public TemplateProcessor.TemplateListener listener;
+	public final String templateFile;
+	public final Set<String> events;
+	public final Map<String, String> replacements;
+	public final Writer output;
+	public final TemplateProcessor.TemplateListener listener;
 
-	public TemplateSpec(final String templateFile, final Set<String> events, final Map<String, String> replacements, final Writer output, final TemplateProcessor.TemplateListener listener) {
+	private TemplateSpec(final String templateFile, final Set<String> events, final Map<String, String> replacements, final Writer output, final TemplateProcessor.TemplateListener listener) {
 		this.templateFile = templateFile;
 		this.events = events;
 		this.replacements = replacements;

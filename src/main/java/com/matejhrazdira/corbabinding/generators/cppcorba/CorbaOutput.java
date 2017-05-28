@@ -23,12 +23,24 @@ public class CorbaOutput {
 	public final LineWriter jniCacheImpl;
 	public final LineWriter conversionHeader;
 	public final LineWriter conversionImpl;
+	public final LineWriter jniImpHeader;
+	public final LineWriter jniImplImpl;
+	public final LineWriter libHeader;
+	public final LineWriter libImpl;
+	public final LineWriter jniImplPrivateHeader;
+	public final LineWriter jniImplPrivateImpl;
 
-	CorbaOutput(final JniCacheHeaderWriter jniCacheHeader, final LineWriter jniCacheImpl, final LineWriter conversionHeader, final LineWriter conversionImpl) {
+	private CorbaOutput(final JniCacheHeaderWriter jniCacheHeader, final LineWriter jniCacheImpl, final LineWriter conversionHeader, final LineWriter conversionImpl, final LineWriter jniImpHeader, final LineWriter jniImplImpl, final LineWriter libHeader, final LineWriter libImpl, final LineWriter jniImplPrivateHeader, final LineWriter jniImplPrivateImpl) {
 		this.jniCacheHeader = jniCacheHeader;
 		this.jniCacheImpl = jniCacheImpl;
 		this.conversionHeader = conversionHeader;
 		this.conversionImpl = conversionImpl;
+		this.jniImpHeader = jniImpHeader;
+		this.jniImplImpl = jniImplImpl;
+		this.libHeader = libHeader;
+		this.libImpl = libImpl;
+		this.jniImplPrivateHeader = jniImplPrivateHeader;
+		this.jniImplPrivateImpl = jniImplPrivateImpl;
 	}
 
 	public void close() {
@@ -36,6 +48,12 @@ public class CorbaOutput {
 		jniCacheImpl.close();
 		conversionHeader.close();
 		conversionImpl.close();
+		jniImpHeader.close();
+		jniImplImpl.close();
+		libHeader.close();
+		libImpl.close();
+		jniImplPrivateHeader.close();
+		jniImplPrivateImpl.close();
 	}
 
 	public static class Builder {
@@ -43,6 +61,12 @@ public class CorbaOutput {
 		private LineWriter mJniCacheImpl;
 		private LineWriter mConversionHeader;
 		private LineWriter mConversionImpl;
+		private LineWriter mJniImpHeader;
+		private LineWriter mJniImplImpl;
+		private LineWriter mLibHeader;
+		private LineWriter mLibImpl;
+		private LineWriter mJniImplPrivateHeader;
+		private LineWriter mJniImplPrivateImpl;
 
 		public Builder withJniCacheHeader(final JniCacheHeaderWriter jniCacheHeader) {
 			mJniCacheHeader = jniCacheHeader;
@@ -64,8 +88,43 @@ public class CorbaOutput {
 			return this;
 		}
 
-		public CorbaOutput build() {
-			return new CorbaOutput(mJniCacheHeader, mJniCacheImpl, mConversionHeader, mConversionImpl);
+		public Builder withJniImplHeader(final LineWriter jniImpHeader) {
+			mJniImpHeader = jniImpHeader;
+			return this;
+		}
+
+		public Builder withJniImplImpl(final LineWriter jniImplImpl) {
+			mJniImplImpl = jniImplImpl;
+			return this;
+		}
+
+		public Builder withJniImpHeader(final LineWriter jniImpHeader) {
+			mJniImpHeader = jniImpHeader;
+			return this;
+		}
+
+		public Builder withLibHeader(final LineWriter libHeader) {
+			mLibHeader = libHeader;
+			return this;
+		}
+
+		public Builder withLibImpl(final LineWriter libImpl) {
+			mLibImpl = libImpl;
+			return this;
+		}
+
+		public Builder withJniImplPrivateHeader(final LineWriter jniImplPrivateHeader) {
+			mJniImplPrivateHeader = jniImplPrivateHeader;
+			return this;
+		}
+
+		public Builder withJniImplPrivateImpl(final LineWriter jniImplPrivateImpl) {
+			mJniImplPrivateImpl = jniImplPrivateImpl;
+			return this;
+		}
+
+		public CorbaOutput createCorbaOutput() {
+			return new CorbaOutput(mJniCacheHeader, mJniCacheImpl, mConversionHeader, mConversionImpl, mJniImpHeader, mJniImplImpl, mLibHeader, mLibImpl, mJniImplPrivateHeader, mJniImplPrivateImpl);
 		}
 	}
 }

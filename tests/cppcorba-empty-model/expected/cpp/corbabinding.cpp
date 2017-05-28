@@ -110,6 +110,28 @@ void convert(JNIEnv * _env_, const jobject _in_, ::TAO::String_Manager & _out_) 
 	_out_ = convert<char>(_env_, _in_);
 }
 
+jobject convert(JNIEnv * _env_, const ::CORBA::String_var & _in_) {
+	return convert(_env_, _in_.in());
+}
+
+void convert(JNIEnv * _env_, const jobject _in_, ::CORBA::String_var & _out_) {
+	_out_ = convert<char>(_env_, _in_);
+}
+
+jthrowable convert(JNIEnv * _env_, const ::CORBA::Exception & _in_) {
+	jobject name = convert(_env_, _in_._name());
+	jobject info = convert(_env_, _in_._info().c_str());
+	jobject repositoryId = convert(_env_, _in_._rep_id());
+
+	jobject _result_ = _env_->NewObject(_jni_->_impl_._corba_exception_._cls_, _jni_->_impl_._corba_exception_._ctor_, name, info, repositoryId);
+
+	_env_->DeleteLocalRef(name);
+	_env_->DeleteLocalRef(info);
+	_env_->DeleteLocalRef(repositoryId);
+
+	return (jthrowable) _result_;
+}
+
 template<> jobject convert<const char>(JNIEnv * _env_, const char * _in_) {
 	if (_in_) {
 #ifdef CB_CORBA_USES_UTF_8
@@ -269,6 +291,14 @@ template<> jobject convertElement<::CORBA::Char>(JNIEnv * _env_, const ::CORBA::
 
 template<> void convertElement<::CORBA::Char>(JNIEnv * _env_, const jobject _in_, ::CORBA::Char & _out_) {
 	_out_ = _env_->CallCharMethod(_in_, _jni_->java.lang.Character.charValue);
+}
+
+jobject getVarObject(JNIEnv * _env_, const jobject _var_) {
+	return _env_->CallObjectMethod(_var_, _jni_->_impl_._var_._get_);
+}
+
+void setVarObject(JNIEnv * _env_, jobject _var_, jobject _value_) {
+	_env_->CallVoidMethod(_var_, _jni_->_impl_._var_._set_, _value_);
 }
 
 } /* namespace corbabinding */
