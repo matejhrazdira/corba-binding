@@ -52,7 +52,7 @@ public class CorbaProviderTest {
 		} catch (InterruptedException e) {
 			// ignore
 		}
-		provider.dispose();
+		provider._dispose_();
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class CorbaProviderTest {
 		} catch (InterruptedException e) {
 			// ignore
 		}
-		provider.dispose();
+		provider._dispose_();
 	}
 
 	@Test
@@ -96,13 +96,13 @@ public class CorbaProviderTest {
 			} catch (InterruptedException e) {
 				// ignore
 			}
-			provider.dispose();
+			provider._dispose_();
 		}
 
 	}
 
 	@Test
-	public void listenForSomeEvents() throws CorbaException {
+	public void listenForSomeEvents() throws CorbaException, InterruptedException {
 
 		CorbaProvider provider = new CorbaProvider(
 				new String[] {
@@ -113,25 +113,41 @@ public class CorbaProviderTest {
 		);
 
 		try {
-			EventConsumer<SimpleUnion> consumer = new EventConsumer<SimpleUnion>(provider, 1, SimpleUnion.class) {
-
-				@Override
-				public void onEvent(final SimpleUnion event) {
-					System.out.println("got event: " + GSON.toJson(event));
-				}
-			};
+			EventConsumer<SimpleUnion> consumer1 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer2 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer3 = getEventConsumer(provider, 1);
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, "SimpleServer");
+			simpleServer.getString();
+			EventConsumer<SimpleUnion> consumer4 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer5 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer6 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer7 = getEventConsumer(provider, 1);
+			EventConsumer<SimpleUnion> consumer8 = getEventConsumer(provider, 1);
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
-			consumer.dispose();
+			consumer1._dispose_();
+			consumer2._dispose_();
+			consumer3._dispose_();
+			simpleServer._dispose_();
+			consumer4._dispose_();
+			consumer5._dispose_();
+			consumer6._dispose_();
+			consumer7._dispose_();
+			consumer8._dispose_();
 		} finally {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// ignore
-			}
-			provider.dispose();
+			provider._dispose_();
 		}
+	}
+
+	private EventConsumer<SimpleUnion> getEventConsumer(final CorbaProvider provider, final int subscription) throws CorbaException {
+		return new EventConsumer<SimpleUnion>(provider, subscription, SimpleUnion.class) {
+
+			@Override
+			public void onEvent(final SimpleUnion event) {
+				System.out.println("got event: " + GSON.toJson(event));
+			}
+		};
 	}
 }

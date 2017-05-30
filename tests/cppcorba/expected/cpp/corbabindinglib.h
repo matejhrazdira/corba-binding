@@ -25,6 +25,10 @@ public:
 		return mEventService.ptr();
 	}
 
+	PortableServer::POA_ptr getPoa() {
+		return mPoa.ptr();
+	}
+
 	template<typename T> void bindName(const char * name, T object) {
 		CosNaming::Name n(1);
 		n.length(1);
@@ -54,13 +58,14 @@ public:
 	virtual ~AnyEventConsumer() {}
 
 	void connect(NativeWrapper * nativeWraper) {
+		mNativeWrapper = nativeWraper;
 		ACE_ConsumerQOS_Factory qos;
 		qos.start_disjunction_group();
 		qos.insert_type(mType, 0);
 		RtecEventChannelAdmin::ConsumerAdmin_var consumerAdmin = nativeWraper->getEventService()->for_consumers();
 		mSupplierProxy = consumerAdmin->obtain_push_supplier();
-		RtecEventComm::PushConsumer_var myself = _this();
-		mSupplierProxy->connect_push_consumer(myself.in(), qos.get_ConsumerQOS());
+		mMyself = _this();
+		mSupplierProxy->connect_push_consumer(mMyself.in(), qos.get_ConsumerQOS());
 	}
 
 	void push(const RtecEventComm::EventSet& data) {
@@ -74,6 +79,10 @@ public:
 
 	void disconnect() {
 		mSupplierProxy->disconnect_push_supplier();
+		PortableServer::POA_ptr poa = mNativeWrapper->getPoa();
+		PortableServer::ObjectId_var id = poa->reference_to_id(mMyself.ptr());
+		poa->deactivate_object(id);
+		mMyself = RtecEventComm::PushConsumer::_nil();
 	}
 
 	void disconnect_push_consumer() {
@@ -83,6 +92,8 @@ public:
 private:
 	CORBA::ULong mType;
 	RtecEventChannelAdmin::ProxyPushSupplier_var mSupplierProxy;
+	RtecEventComm::PushConsumer_var mMyself;
+	NativeWrapper * mNativeWrapper;
 };
 
 } /* namespace corbabinding */

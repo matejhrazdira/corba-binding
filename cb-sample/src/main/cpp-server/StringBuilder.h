@@ -3,11 +3,13 @@
 
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 namespace testutil {
 
 template <typename T> class IterableWrapper;
 template <typename T, typename U> class ArrayWrapper;
+template <typename T, typename U> class HexWrapper;
 
 class StringBuilder {
 public:
@@ -24,6 +26,11 @@ public:
 	}
 
 	template<typename T, typename U> inline StringBuilder & operator<<(const ArrayWrapper<T, U> & value) {
+		value.append(*this);
+		return *this;
+	}
+
+	template<typename T, typename U> inline StringBuilder & operator<<(const HexWrapper<T, U> & value) {
 		value.append(*this);
 		return *this;
 	}
@@ -97,6 +104,25 @@ private:
 
 template <typename T, typename U> inline ArrayWrapper<T, U> byIndex(const T & array, const U length, const std::string & separator = ", ") {
 	return ArrayWrapper<T, U>(array, length, separator);
+}
+
+template <typename T, typename U>
+class HexWrapper {
+public:
+	HexWrapper(const T & array, const U length) : mArray(array), mLength(length) {}
+	void append(StringBuilder & output) const {
+		output << std::hex << std::setfill('0');
+		for (U i = 0; i < mLength; i++) {
+			output << std::setw(2) << (mArray[i] & 0xff);
+		}
+	}
+private:
+	const T & mArray;
+	const U mLength;
+};
+
+template <typename T, typename U> inline HexWrapper<T, U> asHex(const T & array, const U length) {
+	return HexWrapper<T, U>(array, length);
 }
 
 } /* namespace testutil */

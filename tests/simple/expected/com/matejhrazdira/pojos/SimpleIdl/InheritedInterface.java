@@ -1,6 +1,6 @@
 package com.matejhrazdira.pojos.SimpleIdl;
 
-public class InheritedInterface extends com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface {
+public class InheritedInterface extends com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface implements com.matejhrazdira.pojos.Disposable {
 
 	private long _native_address_;
 

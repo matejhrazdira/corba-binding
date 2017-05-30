@@ -201,11 +201,16 @@ JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject 
 }
 
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaName) {
-	CORBA::String_var className = getStringChars(env, jclassName);
-	CORBA::String_var corbaName = getStringChars(env, jcorbaName);
-	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-	CORBA::Object_var obj = nativeWrapper->resolveName(corbaName);
-	return sTypeCache->convert(env, className, obj);
+	try {
+		CORBA::String_var className = getStringChars(env, jclassName);
+		CORBA::String_var corbaName = getStringChars(env, jcorbaName);
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		CORBA::Object_var obj = nativeWrapper->resolveName(corbaName);
+		return sTypeCache->convert(env, className, obj);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return (jobject) 0x0;
+	}
 }
 
 JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_disposeImpl(JNIEnv * env, jobject thiz, jlong nativeWrapper) {

@@ -111,7 +111,7 @@ public class CorbaEnumRendererTest extends CorbaRendererTest {
 		String actual = mConversionImpl.toString();
 		String expected =
 				"jobject convert(JNIEnv * _env_, const ::SimpleIdl::SomeEnum & _in_) {\n" +
-				"\treturn _env_->GetStaticObjectField(_jni_->com.matejhrazdira.generated.SimpleIdl.SomeEnum._cls_, _jni_->com.matejhrazdira.generated.SimpleIdl.SomeEnum._values_[(int) _in_]);\n" +
+				"\treturn _env_->GetStaticObjectField(_jni_->com.matejhrazdira.generated.SimpleIdl.SomeEnum._cls_, _jni_->com.matejhrazdira.generated.SimpleIdl.SomeEnum._values_[((int) _in_) < _jni_->com.matejhrazdira.generated.SimpleIdl.SomeEnum._values_.size() ? (int) _in_ :  0]);\n" +
 				"}\n" +
 				"\n" +
 				"void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SomeEnum & _out_) {\n" +

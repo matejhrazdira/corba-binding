@@ -17,7 +17,6 @@
 package com.matejhrazdira.corbabinding.generators.cppcorba;
 
 import com.matejhrazdira.corbabinding.generators.java.InterfaceRenderer;
-import com.matejhrazdira.corbabinding.generators.java.JavaScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
@@ -47,6 +46,7 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 	public static final String CORBA_VAR_SFX = "_var ";
 	public static final String CORBA_PTR_SFX = "_ptr";
 	public static final String CORBA_PTR_CALL = ".ptr()";
+	public static final String CORBA_RETN_CALL = "._retn()";
 	private final JniImplSignatureRenderer mJniImplSignatureRenderer = new JniImplSignatureRenderer();
 	private final CorbaTypeRenderer mCorbaTypeRenderer = new CorbaTypeRenderer() {
 		@Override
@@ -212,7 +212,7 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 			final Param nativeParam = nativeOperation.params.get(i);
 			String cparam = "_c_" + param.name + "_";
 			String nativeParamType = mCorbaTypeRenderer.render(nativeParam.type);
-			boolean isPointerType = isPointerType(param.type) && param.direction == Param.Direction.OUT;
+			boolean isPointerType = isPointerType(getType(param.type)) && param.direction == Param.Direction.OUT;
 			final String nativeTypeSuffix = isPointerType ? CORBA_VAR_SFX : "";
 			writer.writeln(nativeParamType, nativeTypeSuffix, " ", cparam, ";");
 			switch (param.direction) {
@@ -232,7 +232,8 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 		}
 
 		boolean hasReturnValue = !(operation.returnType instanceof VoidType);
-		boolean isResultPointer = isPointerType(operation.returnType);
+		final ElementType resultType = getType(operation.returnType);
+		boolean isResultPointer = isPointerType(resultType);
 		if (hasReturnValue) {
 			writer.write(mCorbaTypeRenderer.render(nativeOperation.returnType));
 			if (isResultPointer) {
@@ -260,28 +261,46 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 		}
 
 		if (hasReturnValue) {
+			final String resultCallSfx;
+			switch (resultType) {
+				case POINTER_TYPE:
+					resultCallSfx = CORBA_PTR_CALL;
+					break;
+				case INTERFACE_TYPE:
+					resultCallSfx = CORBA_RETN_CALL;
+					break;
+				default:
+					resultCallSfx = "";
+					break;
+			}
 			writer.writeln(
 					"return ", JniConfig.CONVERSION_FUNCTION, "(",
 					JniConfig.ARG_JNI_ENV, ", ",
-					JniConfig.RESULT_VAR, isResultPointer ? CORBA_PTR_CALL : "",
+					JniConfig.RESULT_VAR, resultCallSfx,
 					");"
 			);
 			writer.writeln();
 		}
 	}
 
-	private boolean isPointerType(final Type type) {
+	private boolean isPointerType(ElementType type) {
+		return type == ElementType.POINTER_TYPE || type == ElementType.INTERFACE_TYPE;
+	}
+
+	private ElementType getType(final Type type) {
 		if (type instanceof PrimitiveType || type instanceof StringType) {
-			return false;
+			return ElementType.VALUE_TYPE;
 		} else if (type instanceof ScopedName) {
 			Symbol typeSymbol = mResolver.findSymbol((ScopedName) type);
 			if (typeSymbol.element instanceof EnumType) {
-				return false;
+				return ElementType.VALUE_TYPE;
+			} else if (typeSymbol.element instanceof Declaration) {
+				return ElementType.INTERFACE_TYPE;
 			} else {
-				return true;
+				return ElementType.POINTER_TYPE;
 			}
 		} else {
-			return true;
+			return ElementType.POINTER_TYPE;
 		}
 	}
 
@@ -373,5 +392,9 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 			this.corbaName = corbaName;
 			this.corbaVarIsPointer = corbaVarIsPointer;
 		}
+	}
+
+	private enum ElementType {
+		VALUE_TYPE, POINTER_TYPE, INTERFACE_TYPE
 	}
 }

@@ -113,7 +113,7 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::StructWithArrays &
 }
 
 jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleEnum & _in_) {
-	return _env_->GetStaticObjectField(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleEnum._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleEnum._values_[(int) _in_]);
+	return _env_->GetStaticObjectField(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleEnum._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleEnum._values_[((int) _in_) < _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleEnum._values_.size() ? (int) _in_ :  0]);
 }
 
 void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SimpleEnum & _out_) {

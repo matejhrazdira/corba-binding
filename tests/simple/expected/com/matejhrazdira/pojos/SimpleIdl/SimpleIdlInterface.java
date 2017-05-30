@@ -1,6 +1,6 @@
 package com.matejhrazdira.pojos.SimpleIdl;
 
-public class SimpleIdlInterface {
+public class SimpleIdlInterface implements com.matejhrazdira.pojos.Disposable {
 
 	public static final int NESTED_CONST = 123;
 

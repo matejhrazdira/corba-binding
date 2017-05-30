@@ -17,7 +17,7 @@
 $$$ BGN $$$
 package $$$PACKAGE$$$;
 
-public abstract class $$$CLS_NAME$$$<T> {
+public abstract class $$$CLS_NAME$$$<T> implements $$$DISPOSABLE$$$ {
 
 	private static final int NULL_PTR = 0x0;
 
@@ -31,12 +31,12 @@ public abstract class $$$CLS_NAME$$$<T> {
 
 	public abstract void $$$ON_EVENT_CALLBACK$$$(T event);
 
-	public void dispose() {
+	public void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeConsumer != NULL_PTR) {
 			disposeImpl(mNativeConsumer);
 			mNativeConsumer = NULL_PTR;
 		}
 	}
 
-	private native void disposeImpl(final long nativeWrapper);
+	private native void disposeImpl(final long nativeWrapper) throws $$$CORBA_SYS_EXCEPTION$$$;
 }

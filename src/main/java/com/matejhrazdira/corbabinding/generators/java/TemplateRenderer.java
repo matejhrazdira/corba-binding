@@ -42,6 +42,8 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 	public static final String CLASS_TOKEN = "$$$CLS_NAME$$$";
 	public static final String VAR_GET = "get";
 	public static final String VAR_SET = "set";
+	public static final String DISPOSABLE = "Disposable";
+	public static final String DISPOSABLE_DISPOSE_NAME = "_dispose_";
 
 	private final ScopedRenderer mScopedRenderer;
 	private final ScopedName mScope;
@@ -50,6 +52,7 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 	private final ScopedName mAlreadyDisposedExceptionType;
 	private final ScopedName mCorbaProviderType;
 	private final ScopedName mEventConsumerType;
+	private final ScopedName mDisposableType;
 
 	public TemplateRenderer(final ScopedRenderer scopedRenderer) {
 		mScopedRenderer = scopedRenderer;
@@ -59,6 +62,7 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 		mAlreadyDisposedExceptionType = createName(ALREADY_DISPOSED_EXCEPTION);
 		mCorbaProviderType = createName(CORBA_PROVIDER);
 		mEventConsumerType = createName(EVENT_CONSUMER_CLASS);
+		mDisposableType = createName(DISPOSABLE);
 	}
 
 	private ScopedName createName(final String name) {
@@ -94,6 +98,7 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 		renderAlreadyDisposedExceptionType(outputDir);
 		renderCorbaProvider(outputDir);
 		renderEventConsumer(outputDir);
+		renderDisposable(outputDir);
 	}
 
 	private void renderVarType(final File outputDir) throws IOException {
@@ -109,23 +114,25 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 
 	private void renderAlreadyDisposedExceptionType(final File outputDir) throws IOException {
 		final Map<String, String> replacements = new HashMap<>();
-		replacements.put("$$$CORBA_SYS_EXCEPTION$$$", CORBA_SYS_EXCEPTION);
 		renderImpl(outputDir, mAlreadyDisposedExceptionType, replacements);
 	}
 
 	private void renderCorbaProvider(final File outputDir) throws IOException {
 		final Map<String, String> replacements = new HashMap<>();
-		replacements.put("$$$CORBA_SYS_EXCEPTION$$$", CORBA_SYS_EXCEPTION);
 		replacements.put("$$$ALREADY_DISPOSED_EXCEPTION$$$", ALREADY_DISPOSED_EXCEPTION);
 		renderImpl(outputDir, mCorbaProviderType, replacements);
 	}
 
 	private void renderEventConsumer(final File outputDir) throws IOException {
 		final Map<String, String> replacements = new HashMap<>();
-		replacements.put("$$$CORBA_SYS_EXCEPTION$$$", CORBA_SYS_EXCEPTION);
 		replacements.put("$$$CORBA_PROVIDER$$$", CORBA_PROVIDER);
 		replacements.put("$$$ON_EVENT_CALLBACK$$$", EVENT_CONSUMER_CALLBACK);
 		renderImpl(outputDir, mEventConsumerType, replacements);
+	}
+
+	private void renderDisposable(final File outputDir) throws IOException {
+		final Map<String, String> replacements = new HashMap<>();
+		renderImpl(outputDir, mDisposableType, replacements);
 	}
 
 	private void renderImpl(final File outputDir, final ScopedName name, final Map<String, String> extraReplacements) throws IOException {
@@ -145,6 +152,9 @@ public class TemplateRenderer implements JavaTemplateProjectionProvider {
 		final Map<String, String> replacements = new HashMap<>();
 		replacements.put(PACKAGE_TOKEN, mScopedRenderer.renderRaw(mScope));
 		replacements.put(CLASS_TOKEN, name);
+		replacements.put("$$$CORBA_SYS_EXCEPTION$$$", CORBA_SYS_EXCEPTION);
+		replacements.put("$$$DISPOSE$$$", DISPOSABLE_DISPOSE_NAME);
+		replacements.put("$$$DISPOSABLE$$$", DISPOSABLE);
 		return replacements;
 	}
 

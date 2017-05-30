@@ -1,6 +1,6 @@
 package com.matejhrazdira.pojos;
 
-public abstract class EventConsumer<T> {
+public abstract class EventConsumer<T> implements Disposable {
 
 	private static final int NULL_PTR = 0x0;
 
@@ -14,12 +14,12 @@ public abstract class EventConsumer<T> {
 
 	public abstract void onEvent(T event);
 
-	public void dispose() {
+	public void _dispose_() throws CorbaException {
 		if (mNativeConsumer != NULL_PTR) {
 			disposeImpl(mNativeConsumer);
 			mNativeConsumer = NULL_PTR;
 		}
 	}
 
-	private native void disposeImpl(final long nativeWrapper);
+	private native void disposeImpl(final long nativeWrapper) throws CorbaException;
 }

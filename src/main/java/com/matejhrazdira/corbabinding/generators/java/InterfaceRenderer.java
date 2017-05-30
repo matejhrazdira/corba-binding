@@ -20,8 +20,8 @@ import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaTemplateProjection;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
-import com.matejhrazdira.corbabinding.idl.IdlElement;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.ConstDcl;
@@ -48,7 +48,6 @@ public class InterfaceRenderer extends JavaWithMembersRenderer implements JavaIn
 
 	public static final String NATIVE_ADDRESS = "_native_address_";
 	public static final Type NATIVE_ADDRESS_TYPE = new PrimitiveType(PrimitiveType.Type.UNSIGNED_LONG_LONG_INT);
-	public static final String DISPOSE_NAME = "_dispose_";
 
 	private final String mVarType;
 	private final String mCorbaExceptionType;
@@ -76,12 +75,13 @@ public class InterfaceRenderer extends JavaWithMembersRenderer implements JavaIn
 	@Override
 	protected String getInheritanceSpec(Symbol symbol) {
 		Declaration declaration = (Declaration) symbol.element;
+		String suffix = "implements " + mScopedRenderer.render(new ScopedName(Arrays.asList(TemplateRenderer.DISPOSABLE), true));
 		if (declaration.inheritance.size() > 0) {
 			return declaration.inheritance.stream()
 					.map(n -> mScopedRenderer.render(n))
-					.collect(Collectors.joining(", ", "extends ", ""));
+					.collect(Collectors.joining(", ", "extends ", " " + suffix));
 		} else {
-			return "";
+			return suffix;
 		}
 	}
 
@@ -136,7 +136,7 @@ public class InterfaceRenderer extends JavaWithMembersRenderer implements JavaIn
 	}
 
 	private Operation getDestructorOperation() {
-		return new Operation(DISPOSE_NAME, false, new VoidType(), Collections.emptyList(), Collections.emptyList());
+		return new Operation(TemplateRenderer.DISPOSABLE_DISPOSE_NAME, false, new VoidType(), Collections.emptyList(), Collections.emptyList());
 	}
 
 	private List<Operation> getJavaOperations(final Declaration declaration) {

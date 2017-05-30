@@ -192,11 +192,16 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 }
 
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaName) {
-	CORBA::String_var className = getStringChars(env, jclassName);
-	CORBA::String_var corbaName = getStringChars(env, jcorbaName);
-	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-	CORBA::Object_var obj = nativeWrapper->resolveName(corbaName);
-	return sTypeCache->convert(env, className, obj);
+	try {
+		CORBA::String_var className = getStringChars(env, jclassName);
+		CORBA::String_var corbaName = getStringChars(env, jcorbaName);
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		CORBA::Object_var obj = nativeWrapper->resolveName(corbaName);
+		return sTypeCache->convert(env, className, obj);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return (jobject) 0x0;
+	}
 }
 
 JNIEXPORT void JNICALL Java_CorbaProvider_disposeImpl(JNIEnv * env, jobject thiz, jlong nativeWrapper) {

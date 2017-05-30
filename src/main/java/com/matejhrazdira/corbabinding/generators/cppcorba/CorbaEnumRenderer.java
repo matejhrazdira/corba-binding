@@ -39,12 +39,15 @@ public class CorbaEnumRenderer extends AbsCorbaRenderer {
 	@Override
 	protected void renderConversionToJava(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.conversionImpl;
+		final String valuesVector = mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_ENUM_VALUES));
 		writer.writeln(
 				"return ",
 				jniCall(
 						"GetStaticObjectField",
 						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)),
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, CACHE_ENUM_VALUES)) + "[(int) " + JniConfig.CONVERSION_IN_ARG + "]"
+						valuesVector +
+						"[((int) " + JniConfig.CONVERSION_IN_ARG + ") < " + valuesVector + ".size() ? " +
+								"(int) " + JniConfig.CONVERSION_IN_ARG + " : " + " 0]"
 				),
 				";"
 		);

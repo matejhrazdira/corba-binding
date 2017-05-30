@@ -1,6 +1,6 @@
 package com.matejhrazdira.pojos;
 
-public class CorbaProvider {
+public class CorbaProvider implements Disposable {
 
 	private static final int NULL_PTR = 0x0;
 
@@ -12,23 +12,23 @@ public class CorbaProvider {
 
 	private native long init(final String[] orbArgs, final String eventServiceName) throws CorbaException;
 
-	public <T> T resolve(Class<T> cls, String name) throws CorbaException {
+	public <T extends Disposable> T resolve(Class<T> cls, String name) throws CorbaException {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new AlreadyDisposedException();
 		}
 		return resolveImpl(mNativeWrapper, cls.getName(), name);
 	}
 
-	private native <T> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws CorbaException;
+	private native <T extends Disposable> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws CorbaException;
 
-	public void dispose() {
+	public void _dispose_() throws CorbaException {
 		if (mNativeWrapper != NULL_PTR) {
 			disposeImpl(mNativeWrapper);
 			mNativeWrapper = NULL_PTR;
 		}
 	}
 
-	private native void disposeImpl(final long nativeWrapper);
+	private native void disposeImpl(final long nativeWrapper) throws CorbaException;
 
 	public long getNativeWrapper() throws AlreadyDisposedException {
 		if (mNativeWrapper == NULL_PTR) {

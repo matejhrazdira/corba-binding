@@ -17,7 +17,7 @@
 $$$ BGN $$$
 package $$$PACKAGE$$$;
 
-public class $$$CLS_NAME$$$ {
+public class $$$CLS_NAME$$$ implements $$$DISPOSABLE$$$ {
 
 	private static final int NULL_PTR = 0x0;
 
@@ -29,23 +29,23 @@ public class $$$CLS_NAME$$$ {
 
 	private native long init(final String[] orbArgs, final String eventServiceName) throws $$$CORBA_SYS_EXCEPTION$$$;
 
-	public <T> T resolve(Class<T> cls, String name) throws $$$CORBA_SYS_EXCEPTION$$$ {
+	public <T extends $$$DISPOSABLE$$$> T resolve(Class<T> cls, String name) throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
 		}
 		return resolveImpl(mNativeWrapper, cls.getName(), name);
 	}
 
-	private native <T> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws $$$CORBA_SYS_EXCEPTION$$$;
+	private native <T extends $$$DISPOSABLE$$$> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws $$$CORBA_SYS_EXCEPTION$$$;
 
-	public void dispose() {
+	public void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper != NULL_PTR) {
 			disposeImpl(mNativeWrapper);
 			mNativeWrapper = NULL_PTR;
 		}
 	}
 
-	private native void disposeImpl(final long nativeWrapper);
+	private native void disposeImpl(final long nativeWrapper) throws $$$CORBA_SYS_EXCEPTION$$$;
 
 	public long getNativeWrapper() throws $$$ALREADY_DISPOSED_EXCEPTION$$$ {
 		if (mNativeWrapper == NULL_PTR) {
