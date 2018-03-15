@@ -11,9 +11,17 @@
 
 namespace corbabinding {
 
+class ThreadCleanup {
+public:
+	ThreadCleanup() {}
+	virtual ~ThreadCleanup() {}
+
+	virtual void cleanup() = 0;
+};
+
 class NativeWrapper {
 public:
-	NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName);
+	NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName, ThreadCleanup * cleanup);
 
 	virtual ~NativeWrapper();
 
@@ -47,6 +55,7 @@ private:
 	CosNaming::NamingContext_var mNameService;
 	RtecEventChannelAdmin::EventChannel_var mEventService;
 	ACE_Thread_Manager mThreadManager;
+	ThreadCleanup * mThreadCleanup;
 
 	static void * runOrb(void * arg);
 };

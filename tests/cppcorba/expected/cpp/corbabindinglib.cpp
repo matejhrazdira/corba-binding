@@ -2,7 +2,7 @@
 
 namespace corbabinding {
 
-NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName) {
+NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName, ThreadCleanup * cleanup) {
 	mOrb = CORBA::ORB_init(argc, argv);
 
 	CORBA::Object_var poaObject = mOrb->resolve_initial_references("RootPOA");
@@ -19,6 +19,8 @@ NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventSer
 	CORBA::Object_var ec_object = mNameService->resolve(name);
 	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(ec_object.in());
 
+	mThreadCleanup = cleanup;
+
 	mThreadManager.spawn(runOrb, this);
 }
 
@@ -27,6 +29,7 @@ NativeWrapper::~NativeWrapper() {
 	mOrb->shutdown(true);
 	mOrb->destroy();
 	mThreadManager.wait();
+	delete mThreadCleanup;
 }
 
 void NativeWrapper::unbind(const char * name) {
@@ -46,6 +49,9 @@ CORBA::Object_ptr NativeWrapper::resolveName(const char * name) {
 void * NativeWrapper::runOrb(void * arg) {
 	NativeWrapper * instance = (NativeWrapper *) arg;
 	instance->mOrb->run();
+	if (instance->mThreadCleanup) {
+		instance->mThreadCleanup->cleanup();
+	}
 	return 0x0;
 }
 

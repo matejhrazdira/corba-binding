@@ -36,7 +36,7 @@ private:
 	std::map<std::string, convertAnyImpl> mAnyTable;
 
 	template<typename T> static jobject convertAny(JNIEnv * env, const CORBA::Any & any) {
-		T * ptr;
+		const T * ptr;
 		if ((any >>= ptr)) {
 			return ::corbabinding::convert(env, ptr);
 		} else {
@@ -125,13 +125,55 @@ private:
 			threadParams.version = mJniVersion;
 			threadParams.name = (char *) "EvnetConsumer thread (native)";
 			threadParams.group = 0x0;
+#ifndef ANDROID
 			jint res = mJvm->AttachCurrentThread((void **) &env, &threadParams);
+#else /* ANDROID */
+			jint res = mJvm->AttachCurrentThread(&env, &threadParams);
+#endif /* ANDROID */
 			return env;
 		}
 	}
 };
 
 } /* namespace corbabinding */
+
+class JvmCleanup: public corbabinding::ThreadCleanup {
+public:
+	JvmCleanup(JNIEnv * env) : ThreadCleanup() {
+		env->GetJavaVM(&mJvm);
+		mJniVersion = env->GetVersion();
+	}
+
+	virtual void cleanup() {
+		JNIEnv * env = attach();
+		if (env) {
+			mJvm->DetachCurrentThread();
+		}
+	}
+
+private:
+	JavaVM * mJvm;
+	jint mJniVersion;
+
+	JNIEnv * attach() {
+		JNIEnv * env = nullptr;
+		mJvm->GetEnv(reinterpret_cast<void**>(&env), mJniVersion);
+		if (env) {
+			return env;
+		} else {
+			JavaVMAttachArgs threadParams;
+			threadParams.version = mJniVersion;
+			threadParams.name = (char *) "ORB::run() thread (native)";
+			threadParams.group = 0x0;
+#ifndef ANDROID
+			jint res = mJvm->AttachCurrentThread((void **) &env, &threadParams);
+#else /* ANDROID */
+			jint res = mJvm->AttachCurrentThread(&env, &threadParams);
+#endif /* ANDROID */
+			return env;
+		}
+	}
+};
 
 static TypeCache * sTypeCache = nullptr;
 
@@ -173,10 +215,12 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 
 	jthrowable pendingException = nullptr;
 	NativeWrapper * result = nullptr;
+	JvmCleanup * cleanup = new JvmCleanup(env);
 	try {
-		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceName);
+		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceName, cleanup);
 	} catch (const CORBA::Exception & e) {
 		pendingException = convert(env, e);
+		delete cleanup;
 	}
 
 	CORBA::string_free(eventServiceName);

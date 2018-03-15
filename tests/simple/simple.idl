@@ -5,6 +5,18 @@ module IncludedIdl {
   };
 };
 
+#ifdef DEFINE_1
+// ...
+#endif
+
+#ifdef DEFINE_2
+// ...
+#endif /* DEFINE_2 */
+
+#ifdef DEFINE_3
+// ...
+#endif // DEFINE_3
+
 module SimpleIdl
 {
 
