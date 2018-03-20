@@ -31,6 +31,10 @@ public class AbsAcceptanceTest {
 	protected File mActualDir;
 	protected File mExpectedDir;
 
+	public AbsAcceptanceTest(String testDir) {
+		this(new File(testDir), "actual", "expected");
+	}
+
 	public AbsAcceptanceTest(final File testDir, final String actualDir, final String expectedDir) {
 		mTestDir = testDir;
 		mActualDir = new File(testDir, actualDir);
@@ -98,5 +102,9 @@ public class AbsAcceptanceTest {
 
 	public File getActualDir() {
 		return mActualDir;
+	}
+
+	public File getTestDir() {
+		return mTestDir;
 	}
 }

@@ -16,13 +16,17 @@
 
 package com.matejhrazdira.corbabinding.generators.java;
 
+import com.matejhrazdira.corbabinding.acceptance.AbsAcceptanceTest;
 import com.matejhrazdira.corbabinding.acceptance.ComposedAcceptanceTest;
 import com.matejhrazdira.corbabinding.acceptance.SimpleAcceptanceTest;
+import com.matejhrazdira.corbabinding.gen.IdlParser;
 import com.matejhrazdira.corbabinding.gen.ParseException;
 import com.matejhrazdira.corbabinding.idl.Specification;
 import com.matejhrazdira.corbabinding.model.Model;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 public class PojoGeneratorTest {
@@ -47,5 +51,16 @@ public class PojoGeneratorTest {
 		PojoGenerator generator = new PojoGenerator(mComposedAcceptanceTest.getActualDir(), "com.matejhrazdira.pojos", model);
 		generator.generatePojos();
 		mComposedAcceptanceTest.assertDirectoryContentEquals("com");
+	}
+
+	@Test
+	public void generatePojosWithCommentsTest() throws IOException, ParseException {
+		final AbsAcceptanceTest test = new AbsAcceptanceTest("comments");
+		IdlParser p = new IdlParser(new FileInputStream(new File(test.getTestDir(), "comments.idl")));
+		Specification specification = p.specification("comments.idl");
+		Model model = new Model(specification);
+		PojoGenerator generator = new PojoGenerator(test.getActualDir(), "com.matejhrazdira.pojos", model);
+		generator.generatePojos();
+		test.assertDirectoryContentEquals("com");
 	}
 }

@@ -96,6 +96,13 @@ PARSER_END(IdlParser)
 /*
  * Tokens to ignore in the BNF follow.
  * + Added preprocessor stuff
+ * + Ignore tokens afeter #endif
+ * + Fix block comments ending with **
+ *   For details see:
+ *      http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm#more
+ *      http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm#states
+ *   And finally applied solution see footnote 4:
+ *      http://www.engr.mun.ca/~theo/JavaCC-FAQ/javacc-faq-moz.htm#tthFtNtAAE
  */
 
 SKIP :
@@ -105,7 +112,7 @@ SKIP :
 | < "\n" >
 | < "\r" >
 | < "//" (~["\n"])* "\n" >
-| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+| <"/*" (~["*"])* "*" (~["*","/"] (~["*"])* "*" | "*")* "/">
 | < "#" ("ifndef" | "ifdef" | "define") ([" ","\t"])* (~["\n"])* ([" ","\t"])* "\n" >
 | < "#endif" ([" ","\t"])* (~["\n"])* ([" ","\t"])* "\n" >
 | < "#include" ([" ","\t"])* "\"" (~["\n"])* "\"" ([" ","\t"])* "\n" >

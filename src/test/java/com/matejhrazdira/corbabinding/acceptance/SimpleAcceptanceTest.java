@@ -27,11 +27,11 @@ import java.io.IOException;
 public class SimpleAcceptanceTest extends AbsAcceptanceTest {
 
 	public SimpleAcceptanceTest() {
-		this("simple");
+		super("simple");
 	}
 
 	public SimpleAcceptanceTest(String root) {
-		super(new File(root), "actual", "expected");
+		super(root);
 	}
 
 	public Specification getSimpleSpecification() throws ParseException, IOException {

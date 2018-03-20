@@ -1,0 +1,33 @@
+#ifdef DEFINE_1
+// ...
+#endif
+
+#ifdef DEFINE_2
+// ...
+#endif /* DEFINE_2 */
+
+#ifdef DEFINE_3
+// ...
+#endif // DEFINE_3
+
+module IdlWithComments {
+  enum SimpleEnum
+  {
+    EN_VAL_A, // one line comment
+    EN_VAL_B,
+    EN_VAL_C,
+    /* comment 1 **/
+    EN_VAL_D,
+    EN_VAL_E,
+    /* comment 2 */
+    EN_VAL_F,
+    /** comment 3 */
+    EN_VAL_G,
+    /** comment 4 */
+    EN_VAL_H,
+    /* comment 5 ***/
+    EN_VAL_I,
+    /*** comment 6 ****/
+    EN_VAL_J
+  };
+};
