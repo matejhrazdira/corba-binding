@@ -37,10 +37,11 @@ JniCache::JniCache(JNIEnv * _env_) {
 		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/StructWithArrays");
 		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
 
-		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/util/List;Ljava/util/List;)V");
+		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V");
 
 		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays.typedefedArray = _env_->GetFieldID(_cls_, "typedefedArray", "Ljava/util/List;");
 		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays.directArray = _env_->GetFieldID(_cls_, "directArray", "Ljava/util/List;");
+		com.matejhrazdira.pojos.SimpleIdl.StructWithArrays.typedefTypedefedArray = _env_->GetFieldID(_cls_, "typedefTypedefedArray", "Ljava/util/List;");
 
 		_env_->DeleteLocalRef(_cls_);
 	}
@@ -120,6 +121,15 @@ JniCache::JniCache(JNIEnv * _env_) {
 		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(J)V");
 
 		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_ = _env_->GetFieldID(_cls_, "_native_address_", "J");
+
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/SimpleIdlInterface$NestedException");
+		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+
+		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException._ctor_ = _env_->GetMethodID(_cls_, "<init>", "()V");
+
 
 		_env_->DeleteLocalRef(_cls_);
 	}

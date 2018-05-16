@@ -23,8 +23,12 @@ module SimpleIdl
   const long IDL_VERSION = 1;
   const long COMPOSED_CONST = 2 + 6 * (1 - 3) * ( -5/2) - 5 + ::SimpleIdl::IDL_VERSION;
   const string STRING_CONSTANT = "This is some string!";
+  const long HEX_A = 0x00001;
+  const long HEX_B = 0x00002;
+  const long HEX_C = HEX_A | HEX_B;
 
   typedef long long time;
+  typedef sequence<time> TimeSequence;
 
   typedef long long someReally, someReallyWeird, someReallyWeirdTypedef;
 
@@ -46,10 +50,13 @@ module SimpleIdl
 
   typedef SimpleStruct typedefedStruct;
 
+  typedef sequence <typedefedStruct> typedefedStructArray;
+
   struct StructWithArrays
   {
     structs typedefedArray;
     sequence<SimpleStruct> directArray;
+    typedefedStructArray typedefTypedefedArray;
   };
 
   enum SimpleEnum
@@ -97,6 +104,8 @@ module SimpleIdl
     string someStringMethod();
     SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
     SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
+    TimeSequence getTimeSequence();
+    void throwsNestedException() raises (NestedException);
   };
 
   interface InheritedInterface : SimpleIdlInterface

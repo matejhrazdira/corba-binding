@@ -65,7 +65,7 @@ public class PojoGenerator {
 		mEnumRenderer = new EnumRenderer(mScopedRenderer, outputListener);
 		mExceptionRenderer = new ExceptionRenderer(mScopedRenderer, mResolver, outputListener);
 		mUnionRenderer = new UnionRenderer(mScopedRenderer, mResolver, outputListener);
-		mInterfaceRenderer = new InterfaceRenderer(mScopedRenderer, mResolver, outputListener, mTemplateRenderer.getVarType(), mTemplateRenderer.getCorbaExceptionType());
+		mInterfaceRenderer = new InterfaceRenderer(mScopedRenderer, mResolver, outputListener, mExceptionRenderer, mTemplateRenderer.getVarType(), mTemplateRenderer.getCorbaExceptionType());
 	}
 
 	private File getPackageDir(File root, String packagePrefix) {

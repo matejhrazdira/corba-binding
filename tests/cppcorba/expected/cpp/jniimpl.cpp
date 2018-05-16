@@ -111,3 +111,39 @@ JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterf
 	return (jobject) 0x0;
 }
 
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_getTimeSequence(JNIEnv * _env_, jobject _this_) {
+	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
+	if (!_c_this_) {
+		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
+		return (jobject) 0x0;
+	}
+
+	try {
+		::SimpleIdl::TimeSequence_var  _result_ = _c_this_->getTimeSequence();
+
+		return convert(_env_, _result_.ptr());
+
+	} catch (const ::CORBA::Exception & e) {
+		_env_->Throw((jthrowable) convert(_env_, e));
+	}
+	return (jobject) 0x0;
+}
+
+JNIEXPORT void JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_throwsNestedException(JNIEnv * _env_, jobject _this_) {
+	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
+	if (!_c_this_) {
+		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
+		return;
+	}
+
+	try {
+		_c_this_->throwsNestedException();
+
+	} catch (const ::SimpleIdl::SimpleIdlInterface::NestedException & e) {
+		_env_->Throw((jthrowable) convert(_env_, e));
+	} catch (const ::CORBA::Exception & e) {
+		_env_->Throw((jthrowable) convert(_env_, e));
+	}
+	return;
+}
+

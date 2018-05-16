@@ -22,6 +22,7 @@ import com.matejhrazdira.cbsample.generated.CorbaException;
 import com.matejhrazdira.cbsample.generated.CorbaProvider;
 import com.matejhrazdira.cbsample.generated.EventConsumer;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer;
+import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer.NestedException;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleUnion;
 import org.junit.Test;
 
@@ -89,6 +90,40 @@ public class CorbaProviderTest {
 			assertNotNull(simpleServer);
 			String string = simpleServer.getString();
 			System.out.println("Resolved server says: " + string);
+			simpleServer._dispose_();
+		} finally {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// ignore
+			}
+			provider._dispose_();
+		}
+
+	}
+
+	@Test
+	public void catchNestedException() throws CorbaException {
+
+		CorbaProvider provider = new CorbaProvider(
+				new String[] {
+						"-ORBDottedDecimalAddresses", "1",
+						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
+				},
+				"EventService"
+		);
+
+		try {
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, "SimpleServer");
+			assertNotNull(simpleServer);
+			NestedException exception = null;
+			try {
+				simpleServer.throwNestedException();
+			} catch (NestedException e) {
+				System.out.println("Caught exception " + e.getClass().getSimpleName() + ": " + e.cause);
+				exception = e;
+			}
+			assertNotNull(exception);
 			simpleServer._dispose_();
 		} finally {
 			try {

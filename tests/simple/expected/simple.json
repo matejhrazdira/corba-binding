@@ -155,12 +155,92 @@
           "CLASS": "ConstDcl"
         },
         {
+          "name": "HEX_A",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "0x00001",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "HEX_B",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "value": "0x00002",
+                "CLASS": "Literal"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
+          "name": "HEX_C",
+          "type": {
+            "type": "SIGNED_LONG_INT"
+          },
+          "value": {
+            "elements": [
+              {
+                "name": [
+                  "HEX_A"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              {
+                "type": "OR",
+                "CLASS": "PrimitiveElement"
+              },
+              {
+                "name": [
+                  "HEX_B"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              }
+            ],
+            "CLASS": "ConstExp"
+          },
+          "CLASS": "ConstDcl"
+        },
+        {
           "type": {
             "type": "SIGNED_LONG_LONG_INT"
           },
           "declarators": [
             {
               "name": "time",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
+          "type": {
+            "elementType": {
+              "name": [
+                "time"
+              ],
+              "fullyQualified": false,
+              "CLASS": "ScopedName"
+            }
+          },
+          "declarators": [
+            {
+              "name": "TimeSequence",
               "CLASS": "Declarator"
             }
           ],
@@ -362,6 +442,24 @@
           "CLASS": "TypeDeclarator"
         },
         {
+          "type": {
+            "elementType": {
+              "name": [
+                "typedefedStruct"
+              ],
+              "fullyQualified": false,
+              "CLASS": "ScopedName"
+            }
+          },
+          "declarators": [
+            {
+              "name": "typedefedStructArray",
+              "CLASS": "Declarator"
+            }
+          ],
+          "CLASS": "TypeDeclarator"
+        },
+        {
           "name": "StructWithArrays",
           "members": [
             {
@@ -391,6 +489,20 @@
                   "fullyQualified": false,
                   "CLASS": "ScopedName"
                 }
+              },
+              "CLASS": "Member"
+            },
+            {
+              "declarator": {
+                "name": "typedefTypedefedArray",
+                "CLASS": "Declarator"
+              },
+              "type": {
+                "name": [
+                  "typedefedStructArray"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
               },
               "CLASS": "Member"
             }
@@ -715,6 +827,11 @@
                 "CLASS": "ConstExp"
               },
               "CLASS": "ConstDcl"
+            },
+            {
+              "name": "NestedException",
+              "members": [],
+              "CLASS": "ExceptDcl"
             }
           ],
           "inheritance": [],
@@ -816,6 +933,36 @@
                 {
                   "name": [
                     "ExceptionWithMembers"
+                  ],
+                  "fullyQualified": false,
+                  "CLASS": "ScopedName"
+                }
+              ],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "getTimeSequence",
+              "oneway": false,
+              "returnType": {
+                "name": [
+                  "TimeSequence"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "params": [],
+              "exceptions": [],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "throwsNestedException",
+              "oneway": false,
+              "returnType": {},
+              "params": [],
+              "exceptions": [
+                {
+                  "name": [
+                    "NestedException"
                   ],
                   "fullyQualified": false,
                   "CLASS": "ScopedName"

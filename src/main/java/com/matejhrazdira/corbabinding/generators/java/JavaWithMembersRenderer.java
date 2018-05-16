@@ -22,6 +22,7 @@ import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.util.OutputListener;
 
@@ -40,7 +41,18 @@ public abstract class JavaWithMembersRenderer extends AbsJavaRenderer {
 
 	protected Type getJavaType(Type type) {
 		if (type instanceof ScopedName) {
-			return mResolver.findBaseType((ScopedName) type);
+			Type baseType = mResolver.findBaseType((ScopedName) type);
+			if (baseType instanceof ScopedName) {
+				ScopedName origName = (ScopedName) type;
+				ScopedName baseName = (ScopedName) baseType;
+				if (origName.name.equals(baseName.name)) {
+					return baseType;
+				}
+			}
+			return getJavaType(baseType);
+		} else if (type instanceof SequenceType) {
+			SequenceType sequence = (SequenceType) type;
+			return new SequenceType(getJavaType(sequence.elementType), sequence.bounds);
 		} else {
 			return type;
 		}

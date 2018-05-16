@@ -23,6 +23,7 @@ public class JniScopedRenderer extends ScopedRenderer {
 
 	private static final String GLOBAL_SCOPE = "";
 	private static final String SCOPE_DELIMITER = "/";
+	private static final String INNER_CLASS_DELIMITER = "$";
 
 	public JniScopedRenderer() {
 		super(GLOBAL_SCOPE, SCOPE_DELIMITER, true);
@@ -30,5 +31,14 @@ public class JniScopedRenderer extends ScopedRenderer {
 
 	public JniScopedRenderer(final ScopedName scope) {
 		super(scope, GLOBAL_SCOPE, SCOPE_DELIMITER);
+	}
+
+	public String renderNested(final ScopedName name) {
+		// FIXME: assumes that only last part of name is inner class
+		final StringBuilder sb = new StringBuilder();
+		render(sb, name);
+		int lastDelimiter = sb.lastIndexOf(SCOPE_DELIMITER);
+		sb.replace(lastDelimiter, lastDelimiter + SCOPE_DELIMITER.length(), INNER_CLASS_DELIMITER);
+		return sb.toString();
 	}
 }

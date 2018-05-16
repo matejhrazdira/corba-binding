@@ -33,6 +33,12 @@ public:
 		mToken.broadcast();
 	}
 
+	virtual void throwNestedException (void) {
+		SimpleIdl::SimpleServer::NestedException e;
+		e.cause = "Method was called.";
+		throw e;
+	}
+
 private:
 	Log log;
 	Token & mToken;

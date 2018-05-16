@@ -267,8 +267,8 @@ IdlElement export() :
   |
     result = const_dcl() ";"
   |
-    except_dcl() ";"
-    { logw("Nested exceptions are not supported."); }
+    result = except_dcl() ";"
+    // { logw("Nested exceptions are not supported."); }
   |
     attr_dcl() ";"
     { logw("Attributes are not supported."); }

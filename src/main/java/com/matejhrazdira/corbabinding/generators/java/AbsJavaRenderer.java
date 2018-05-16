@@ -51,7 +51,16 @@ public abstract class AbsJavaRenderer implements JavaProjectionProvider {
 		LineWriter writer = new LineWriter(INDENTATION, output);
 		ScopedName name = getJavaSymbolName(symbol);
 		writePackageDeclaration(writer, name);
-		writeElementStart(writer, name, symbol);
+		writeElementStart(writer, name, symbol, "public ");
+		writer.increaseLevel();
+		writeBody(writer, symbol, name);
+		writer.decreaseLevel();
+		writeElementEnd(writer);
+	}
+
+	public void renderStatic(LineWriter writer, Symbol symbol) throws IOException {
+		ScopedName name = getJavaSymbolName(symbol);
+		writeElementStart(writer, name, symbol, "public static ");
 		writer.increaseLevel();
 		writeBody(writer, symbol, name);
 		writer.decreaseLevel();
@@ -81,10 +90,10 @@ public abstract class AbsJavaRenderer implements JavaProjectionProvider {
 		}
 	}
 
-	private void writeElementStart(final LineWriter writer, final ScopedName name, final Symbol symbol) throws IOException {
+	private void writeElementStart(final LineWriter writer, final ScopedName name, final Symbol symbol, final String accessSpecifier) throws IOException {
 		String inheritanceSpec = getInheritanceSpec(symbol);
 		inheritanceSpec = inheritanceSpec.isEmpty() ? inheritanceSpec : inheritanceSpec + " ";
-		writer.writeln("public ", getElementType(), " ", name.getBaseName(), " ", inheritanceSpec, "{");
+		writer.writeln(accessSpecifier, getElementType(), " ", name.getBaseName(), " ", inheritanceSpec, "{");
 		writer.writeln();
 	}
 

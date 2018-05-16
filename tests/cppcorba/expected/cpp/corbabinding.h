@@ -44,6 +44,9 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::ExceptionWithMembe
 template<> jobject convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, ::SimpleIdl::SimpleIdlInterface * _in_);
 template<> ::SimpleIdl::SimpleIdlInterface * convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, const jobject _in_);
 
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleIdlInterface::NestedException & _in_);
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SimpleIdlInterface::NestedException & _out_);
+
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_);
 void convert(JNIEnv * _env_, const jboolean _in_, ::CORBA::Boolean & _out_);
 

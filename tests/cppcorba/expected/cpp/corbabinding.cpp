@@ -93,11 +93,13 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SimpleStruct & _ou
 jobject convert(JNIEnv * _env_, const ::SimpleIdl::StructWithArrays & _in_) {
 	jobject typedefedArray = convert(_env_, _in_.typedefedArray);
 	jobject directArray = convert(_env_, _in_.directArray);
+	jobject typedefTypedefedArray = convert(_env_, _in_.typedefTypedefedArray);
 
-	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._ctor_, typedefedArray, directArray);
+	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays._ctor_, typedefedArray, directArray, typedefTypedefedArray);
 
 	_env_->DeleteLocalRef(typedefedArray);
 	_env_->DeleteLocalRef(directArray);
+	_env_->DeleteLocalRef(typedefTypedefedArray);
 
 	return _result_;
 }
@@ -110,6 +112,10 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::StructWithArrays &
 	jobject directArray = _env_->GetObjectField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays.directArray);
 	convert(_env_, directArray, _out_.directArray);
 	_env_->DeleteLocalRef(directArray);
+
+	jobject typedefTypedefedArray = _env_->GetObjectField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.StructWithArrays.typedefTypedefedArray);
+	convert(_env_, typedefTypedefedArray, _out_.typedefTypedefedArray);
+	_env_->DeleteLocalRef(typedefTypedefedArray);
 }
 
 jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleEnum & _in_) {
@@ -326,6 +332,17 @@ template<> jobject convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, ::Si
 
 template<> ::SimpleIdl::SimpleIdlInterface * convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, const jobject _in_) {
 	return _in_ ? (::SimpleIdl::SimpleIdlInterface * ) _env_->GetLongField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_) : nullptr;
+}
+
+jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleIdlInterface::NestedException & _in_) {
+
+	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException._ctor_);
+
+
+	return _result_;
+}
+
+void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SimpleIdlInterface::NestedException & _out_) {
 }
 
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_) {

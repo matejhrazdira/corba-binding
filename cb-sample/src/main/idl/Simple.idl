@@ -57,9 +57,13 @@ module SimpleIdl
 
   interface SimpleServer
   {
+    exception NestedException {
+      string cause;
+    };
     string getString();
     void throwException() raises(SimpleException);
     void exit();
+    void throwNestedException() raises(NestedException);
   };
 
   interface SimpleIdlInterface
@@ -76,6 +80,7 @@ module SimpleIdl
     SimpleEnum someMethodWithArgs(in string strArg, in unsigned long long ullArg, out SimpleStruct structArg);
     SimpleEnum someMethodWithArgs2(out string strArg, out unsigned long long ullArg, out SimpleStruct structArg);
     SimpleStruct someMethodWithArgsThatThrows(in string strArg, in unsigned long long ullArg, inout SimpleStruct structArg) raises(ExceptionWithMembers);
+    void someMethodTahtThrowsNestedException() raises(NestedException);
   };
 
   interface InheritedInterface : SimpleIdlInterface

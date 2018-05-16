@@ -20,12 +20,12 @@ import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaTemplateProjection;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.ConstDcl;
 import com.matejhrazdira.corbabinding.idl.definitions.Definition;
+import com.matejhrazdira.corbabinding.idl.definitions.ExceptDcl;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Declarator;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
@@ -49,12 +49,14 @@ public class InterfaceRenderer extends JavaWithMembersRenderer implements JavaIn
 	public static final String NATIVE_ADDRESS = "_native_address_";
 	public static final Type NATIVE_ADDRESS_TYPE = new PrimitiveType(PrimitiveType.Type.UNSIGNED_LONG_LONG_INT);
 
+	private ExceptionRenderer mExceptionRenderer;
 	private final String mVarType;
 	private final String mCorbaExceptionType;
 	private final String mAddressType;
 
-	public InterfaceRenderer(final ScopedRenderer scopedRenderer, final SymbolResolver resolver, final OutputListener outputListener, final String varType, final String corbaExceptionType) {
+	public InterfaceRenderer(final ScopedRenderer scopedRenderer, final SymbolResolver resolver, final OutputListener outputListener, final ExceptionRenderer exceptionRenderer, final String varType, final String corbaExceptionType) {
 		super(scopedRenderer, resolver, outputListener);
+		mExceptionRenderer = exceptionRenderer;
 		mVarType = varType;
 		mCorbaExceptionType = corbaExceptionType;
 		mAddressType = mTypeRenderer.render(NATIVE_ADDRESS_TYPE);
@@ -101,16 +103,27 @@ public class InterfaceRenderer extends JavaWithMembersRenderer implements JavaIn
 
 	private void writeInnerConstants(final LineWriter writer, final Symbol symbol) throws IOException {
 		Declaration declaration = (Declaration) symbol.element;
-		for (Definition definition : declaration.innerDefinitions) {
-			if (definition instanceof ConstDcl) {
-				ConstDcl c = (ConstDcl) definition;
-				Type javaType = getJavaType(c.type);
-				writer.writeln("public static final ", mTypeRenderer.render(javaType), " ", c.name, " = ", mExpressionRenderer.render(c.value), ";");
-			}
+		List<ConstDcl> constants = filterDeclarations(declaration, ConstDcl.class);
+		for (final ConstDcl c : constants) {
+			Type javaType = getJavaType(c.type);
+			writer.writeln("public static final ", mTypeRenderer.render(javaType), " ", c.name, " = ", mExpressionRenderer.render(c.value), ";");
 		}
-		if (declaration.innerDefinitions.size() > 0) {
+		if (constants.size() > 0) {
 			writer.writeln();
 		}
+		List<ExceptDcl> exceptions = filterDeclarations(declaration, ExceptDcl.class);
+		for (final ExceptDcl e : exceptions) {
+			Symbol innerSymbol = new Symbol(ScopedName.nameInScope(symbol.name, e.name), e).asInner();
+			mExceptionRenderer.renderStatic(writer, innerSymbol);
+			writer.writeln();
+		}
+	}
+
+	private <T extends Definition> List<T> filterDeclarations(final Declaration declaration, Class<T> cls) {
+		return declaration.innerDefinitions.stream()
+					.filter(cls::isInstance)
+					.map(def -> (T) def)
+					.collect(Collectors.toList());
 	}
 
 	private void writeCtor(final LineWriter writer, final ScopedName name, final Declaration declaration) throws IOException {

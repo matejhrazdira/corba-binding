@@ -117,8 +117,14 @@ public abstract class AbsCorbaRenderer {
 
 	private void writeJniCacheMembersInitialization(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.jniCacheImpl;
+		final String className;
+		if (projection.symbol.innerSymbol) {
+			className = mClassNameRenderer.renderNested(projection.name);
+		} else {
+			className = mClassNameRenderer.render(projection.name);
+		}
 		writer.writeln(
-				"jclass ", JniConfig.JNI_CACHE_CLASS, " = ", jniCall("FindClass", quoted(mClassNameRenderer.render(projection.name))), ";"
+				"jclass ", JniConfig.JNI_CACHE_CLASS, " = ", jniCall("FindClass", quoted(className)), ";"
 		);
 		writer.writeln(
 				mJniCacheRenderer.renderQualifiedMember(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)), " = ",

@@ -57,13 +57,13 @@ public class ExpressionRenderer {
 		PrimitiveElement primitive = element;
 		switch (primitive.type) {
 			case OR:
-				result.append(" || ");
+				result.append(" | ");
 				break;
 			case XOR:
 				result.append(" ^ ");
 				break;
 			case AND:
-				result.append(" && ");
+				result.append(" & ");
 				break;
 			case SHIFT_RIGHT:
 				result.append(" >> ");
@@ -93,7 +93,7 @@ public class ExpressionRenderer {
 				result.append(" -");
 				break;
 			case UNARY_NEGATE:
-				result.append(" !");
+				result.append(" ~");
 				break;
 			case OPENING_BRACKET:
 				result.append("(");

@@ -38,6 +38,7 @@ struct JniCache {
 						jmethodID _ctor_;
 						jfieldID typedefedArray;
 						jfieldID directArray;
+						jfieldID typedefTypedefedArray;
 					} StructWithArrays;
 					struct {
 						jclass _cls_;
@@ -79,6 +80,10 @@ struct JniCache {
 						jclass _cls_;
 						jmethodID _ctor_;
 						jfieldID _native_address_;
+						struct {
+							jclass _cls_;
+							jmethodID _ctor_;
+						} NestedException;
 					} SimpleIdlInterface;
 				} SimpleIdl;
 			} pojos;

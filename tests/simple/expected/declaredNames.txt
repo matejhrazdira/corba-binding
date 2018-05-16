@@ -4,13 +4,18 @@
 ::SimpleIdl::IDL_VERSION
 ::SimpleIdl::COMPOSED_CONST
 ::SimpleIdl::STRING_CONSTANT
+::SimpleIdl::HEX_A
+::SimpleIdl::HEX_B
+::SimpleIdl::HEX_C
 ::SimpleIdl::time
+::SimpleIdl::TimeSequence
 ::SimpleIdl::someReally
 ::SimpleIdl::someReallyWeird
 ::SimpleIdl::someReallyWeirdTypedef
 ::SimpleIdl::SimpleStruct
 ::SimpleIdl::structs
 ::SimpleIdl::typedefedStruct
+::SimpleIdl::typedefedStructArray
 ::SimpleIdl::StructWithArrays
 ::SimpleIdl::SimpleEnum
 ::SimpleIdl::SimpleEnum::EN_VAL_A
@@ -22,4 +27,5 @@
 ::SimpleIdl::ExceptionWithMembers
 ::SimpleIdl::SimpleIdlInterface
 ::SimpleIdl::SimpleIdlInterface::NESTED_CONST
+::SimpleIdl::SimpleIdlInterface::NestedException
 ::SimpleIdl::InheritedInterface

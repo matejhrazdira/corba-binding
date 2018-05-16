@@ -55,6 +55,7 @@ TypeCache::TypeCache() {
 	mAnyTable["com.matejhrazdira.pojos.SimpleIdl.NoMemberException"] = convertAny<::SimpleIdl::NoMemberException>;
 	mAnyTable["com.matejhrazdira.pojos.SimpleIdl.ExceptionWithMembers"] = convertAny<::SimpleIdl::ExceptionWithMembers>;
 	mInterfaceTable["com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface"] = convertObject<::SimpleIdl::SimpleIdlInterface>;
+	mAnyTable["com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException"] = convertAny<::SimpleIdl::SimpleIdlInterface::NestedException>;
 }
 
 TypeCache::~TypeCache() {
