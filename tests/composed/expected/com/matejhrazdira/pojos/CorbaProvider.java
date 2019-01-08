@@ -6,20 +6,20 @@ public class CorbaProvider implements Disposable {
 
 	private long mNativeWrapper = NULL_PTR;
 
-	public CorbaProvider(String[] orbArgs, String eventServiceName) throws CorbaException {
-		mNativeWrapper = init(orbArgs, eventServiceName);
+	public CorbaProvider(String[] orbArgs, String eventServiceStr) throws CorbaException {
+		mNativeWrapper = init(orbArgs, eventServiceStr);
 	}
 
-	private native long init(final String[] orbArgs, final String eventServiceName) throws CorbaException;
+	private native long init(final String[] orbArgs, final String eventServiceStr) throws CorbaException;
 
-	public <T extends Disposable> T resolve(Class<T> cls, String name) throws CorbaException {
+	public <T extends Disposable> T resolve(Class<T> cls, String corbaStr) throws CorbaException {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new AlreadyDisposedException();
 		}
-		return resolveImpl(mNativeWrapper, cls.getName(), name);
+		return resolveImpl(mNativeWrapper, cls.getName(), corbaStr);
 	}
 
-	private native <T extends Disposable> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws CorbaException;
+	private native <T extends Disposable> T resolveImpl(final long nativeWrapper, final String className, final String corbaStr) throws CorbaException;
 
 	public void _dispose_() throws CorbaException {
 		if (mNativeWrapper != NULL_PTR) {

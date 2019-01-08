@@ -187,9 +187,9 @@ static char * getStringChars(JNIEnv * env, jstring jstr) {
 	return result;
 }
 
-JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs, jstring jeventServiceName) {
+JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs, jstring jeventServiceStr) {
 
-	char * eventServiceName = getStringChars(env, jeventServiceName);
+	char * eventServiceStr = getStringChars(env, jeventServiceStr);
 
 	jsize jorbArgCount = env->GetArrayLength(jorbArgs);
 	int orbArgCount = jorbArgCount + 2;
@@ -208,13 +208,13 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	NativeWrapper * result = nullptr;
 	JvmCleanup * cleanup = new JvmCleanup(env);
 	try {
-		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceName, cleanup);
+		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceStr, cleanup);
 	} catch (const CORBA::Exception & e) {
 		pendingException = convert(env, e);
 		delete cleanup;
 	}
 
-	CORBA::string_free(eventServiceName);
+	CORBA::string_free(eventServiceStr);
 	for (int i = 0; i < orbArgCount; i++) {
 		CORBA::string_free(orbArgs[i]);
 	}
@@ -226,12 +226,12 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	return (jlong) result;
 }
 
-JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaName) {
+JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {
 	try {
 		CORBA::String_var className = getStringChars(env, jclassName);
-		CORBA::String_var corbaName = getStringChars(env, jcorbaName);
+		CORBA::String_var corbaStr = getStringChars(env, jcorbaStr);
 		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-		CORBA::Object_var obj = nativeWrapper->resolveName(corbaName);
+		CORBA::Object_var obj = nativeWrapper->resolve(corbaStr);
 		return sTypeCache->convert(env, className, obj);
 	} catch (const CORBA::Exception & e) {
 		env->Throw(convert(env, e));

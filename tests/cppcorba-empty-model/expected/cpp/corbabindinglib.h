@@ -6,6 +6,7 @@
 #include <orbsvcs/Event_Utilities.h>
 #include <orbsvcs/RtecEventChannelAdminC.h>
 #include <orbsvcs/RtecEventCommS.h>
+#include <tao/IORTable/IORTable.h>
 #include <tao/PortableServer/PortableServer.h>
 #include <ace/Thread_Manager.h>
 
@@ -21,7 +22,7 @@ public:
 
 class NativeWrapper {
 public:
-	NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName, ThreadCleanup * cleanup);
+	NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceStr, ThreadCleanup * cleanup);
 
 	virtual ~NativeWrapper();
 
@@ -38,21 +39,30 @@ public:
 	}
 
 	template<typename T> void bindName(const char * name, T object) {
-		CosNaming::Name n(1);
-		n.length(1);
-		n[0].id = CORBA::string_dup(name);
-		mNameService->bind(n, object);
+		if (!CORBA::is_nil(mNameService)) {
+			CosNaming::Name n(1);
+			n.length(1);
+			n[0].id = CORBA::string_dup(name);
+			mNameService->bind(n, object);
+		}
+		if (!CORBA::is_nil(mIorTable)) {
+			CORBA::String_var objectStr = mOrb->object_to_string(object);
+			mIorTable->bind(name, objectStr);
+		} else {
+			throw CORBA::UNKNOWN(0, CORBA::CompletionStatus::COMPLETED_NO);
+		}
 	}
 
 	void unbind(const char * name);
 
-	CORBA::Object_ptr resolveName(const char * name);
+	CORBA::Object_ptr resolve(const char * corbaStr);
 
 private:
 	CORBA::ORB_var mOrb;
 	PortableServer::POA_var mPoa;
 	PortableServer::POAManager_var mPoaManager;
 	CosNaming::NamingContext_var mNameService;
+	IORTable::Table_var mIorTable;
 	RtecEventChannelAdmin::EventChannel_var mEventService;
 	ACE_Thread_Manager mThreadManager;
 	ThreadCleanup * mThreadCleanup;

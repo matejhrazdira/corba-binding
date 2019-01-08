@@ -16,6 +16,10 @@
 
 package com.matejhrazdira.cbsample;
 
+import java.io.File;
+
+import org.junit.Test;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matejhrazdira.cbsample.generated.CorbaException;
@@ -24,9 +28,7 @@ import com.matejhrazdira.cbsample.generated.EventConsumer;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer.NestedException;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleUnion;
-import org.junit.Test;
 
-import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -46,7 +48,7 @@ public class CorbaProviderTest {
 				new String[] {
 						"-ORBinvalidArgument"
 				},
-				"EventService"
+				getServerStr("EventService")
 		);
 		try {
 			Thread.sleep(1000);
@@ -64,7 +66,7 @@ public class CorbaProviderTest {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
 				},
-				"EventService"
+				getServerStr("EventService")
 		);
 		try {
 			Thread.sleep(1000);
@@ -82,11 +84,11 @@ public class CorbaProviderTest {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
 				},
-				"EventService"
+				getServerStr("EventService")
 		);
 
 		try {
-			SimpleServer simpleServer = provider.resolve(SimpleServer.class, "SimpleServer");
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
 			assertNotNull(simpleServer);
 			String string = simpleServer.getString();
 			System.out.println("Resolved server says: " + string);
@@ -110,11 +112,11 @@ public class CorbaProviderTest {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
 				},
-				"EventService"
+				getServerStr("EventService")
 		);
 
 		try {
-			SimpleServer simpleServer = provider.resolve(SimpleServer.class, "SimpleServer");
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
 			assertNotNull(simpleServer);
 			NestedException exception = null;
 			try {
@@ -144,14 +146,14 @@ public class CorbaProviderTest {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
 				},
-				"EventService"
+				getServerStr("EventService")
 		);
 
 		try {
 			EventConsumer<SimpleUnion> consumer1 = getEventConsumer(provider, 1);
 			EventConsumer<SimpleUnion> consumer2 = getEventConsumer(provider, 1);
 			EventConsumer<SimpleUnion> consumer3 = getEventConsumer(provider, 1);
-			SimpleServer simpleServer = provider.resolve(SimpleServer.class, "SimpleServer");
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
 			simpleServer.getString();
 			EventConsumer<SimpleUnion> consumer4 = getEventConsumer(provider, 1);
 			EventConsumer<SimpleUnion> consumer5 = getEventConsumer(provider, 1);
@@ -184,5 +186,11 @@ public class CorbaProviderTest {
 				System.out.println("got event: " + GSON.toJson(event));
 			}
 		};
+	}
+
+	private String getServerStr(String name) {
+		String address = "";
+		String port = "2809";
+		return "corbaname::" + address + ":" + port + "#" + name;
 	}
 }

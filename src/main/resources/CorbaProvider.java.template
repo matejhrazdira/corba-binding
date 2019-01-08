@@ -23,20 +23,20 @@ public class $$$CLS_NAME$$$ implements $$$DISPOSABLE$$$ {
 
 	private long mNativeWrapper = NULL_PTR;
 
-	public $$$CLS_NAME$$$(String[] orbArgs, String eventServiceName) throws $$$CORBA_SYS_EXCEPTION$$$ {
-		mNativeWrapper = init(orbArgs, eventServiceName);
+	public $$$CLS_NAME$$$(String[] orbArgs, String eventServiceStr) throws $$$CORBA_SYS_EXCEPTION$$$ {
+		mNativeWrapper = init(orbArgs, eventServiceStr);
 	}
 
-	private native long init(final String[] orbArgs, final String eventServiceName) throws $$$CORBA_SYS_EXCEPTION$$$;
+	private native long init(final String[] orbArgs, final String eventServiceStr) throws $$$CORBA_SYS_EXCEPTION$$$;
 
-	public <T extends $$$DISPOSABLE$$$> T resolve(Class<T> cls, String name) throws $$$CORBA_SYS_EXCEPTION$$$ {
+	public <T extends $$$DISPOSABLE$$$> T resolve(Class<T> cls, String corbaStr) throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
 		}
-		return resolveImpl(mNativeWrapper, cls.getName(), name);
+		return resolveImpl(mNativeWrapper, cls.getName(), corbaStr);
 	}
 
-	private native <T extends $$$DISPOSABLE$$$> T resolveImpl(final long nativeWrapper, final String className, final String corbaName) throws $$$CORBA_SYS_EXCEPTION$$$;
+	private native <T extends $$$DISPOSABLE$$$> T resolveImpl(final long nativeWrapper, final String className, final String corbaStr) throws $$$CORBA_SYS_EXCEPTION$$$;
 
 	public void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper != NULL_PTR) {

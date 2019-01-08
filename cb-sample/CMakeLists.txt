@@ -30,7 +30,7 @@ set_source_files_properties(${IDL_COMPILED_FILES} PROPERTIES GENERATED TRUE)
 add_library(tao-idl-generated SHARED ${IDL_COMPILED_FILES})
 
 # dependencies
-set(CORBA_LIBS TAO_CosNaming TAO_RTEvent_Serv TAO_RTEvent_Skel TAO_RTEvent TAO_Svc_Utils TAO_Messaging TAO_PI TAO_CodecFactory TAO_Valuetype TAO_PortableServer TAO_AnyTypeCode TAO ACE)
+set(CORBA_LIBS TAO_CosNaming TAO_RTEvent_Serv TAO_RTEvent_Skel TAO_RTEvent TAO_Svc_Utils TAO_Messaging TAO_PI TAO_CodecFactory TAO_Valuetype TAO_PortableServer TAO_IORTable TAO_AnyTypeCode TAO ACE)
 set(ALL_LIBS tao-idl-generated ${CORBA_LIBS})
 
 # server

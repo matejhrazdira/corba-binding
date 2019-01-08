@@ -2,7 +2,7 @@
 
 namespace corbabinding {
 
-NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceName, ThreadCleanup * cleanup) {
+NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceStr, ThreadCleanup * cleanup) {
 	mOrb = CORBA::ORB_init(argc, argv);
 
 	CORBA::Object_var poaObject = mOrb->resolve_initial_references("RootPOA");
@@ -10,14 +10,18 @@ NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventSer
 	mPoaManager = mPoa->the_POAManager();
 	mPoaManager->activate();
 
-	CORBA::Object_var naming_context_object = mOrb->resolve_initial_references("NameService");
-	mNameService = CosNaming::NamingContext::_narrow(naming_context_object.in());
+	try {
+		CORBA::Object_var namingServiceObject = mOrb->resolve_initial_references("NameService");
+		mNameService = CosNaming::NamingContext::_narrow(namingServiceObject.in());
+	} catch (CORBA::ORB::InvalidName & e) {
+		// ignore... just not using NameService
+	}
 
-	CosNaming::Name name(1);
-	name.length(1);
-	name[0].id = CORBA::string_dup(eventServiceName);
-	CORBA::Object_var ec_object = mNameService->resolve(name);
-	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(ec_object.in());
+	CORBA::Object_var iorTableObject = mOrb->resolve_initial_references("IORTable");
+	mIorTable = IORTable::Table::_narrow(iorTableObject.in());
+
+	CORBA::Object_var eventServiceObject = mOrb->string_to_object(eventServiceStr);
+	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(eventServiceObject.in());
 
 	mThreadCleanup = cleanup;
 
@@ -33,17 +37,16 @@ NativeWrapper::~NativeWrapper() {
 }
 
 void NativeWrapper::unbind(const char * name) {
-	CosNaming::Name n(1);
-	n.length(1);
-	n[0].id = CORBA::string_dup(name);
-	mNameService->unbind(n);
+	if (!CORBA::is_nil(mNameService)) {
+		CosNaming::Name n(1);
+		n.length(1);
+		n[0].id = CORBA::string_dup(name);
+		mNameService->unbind(n);
+	}
 }
 
-CORBA::Object_ptr NativeWrapper::resolveName(const char * name) {
-	CosNaming::Name n(1);
-	n.length(1);
-	n[0].id = CORBA::string_dup(name);
-	return mNameService->resolve(n);
+CORBA::Object_ptr NativeWrapper::resolve(const char *corbaStr) {
+	return mOrb->string_to_object(corbaStr);
 }
 
 void * NativeWrapper::runOrb(void * arg) {
