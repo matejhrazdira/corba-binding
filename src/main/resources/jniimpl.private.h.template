@@ -24,7 +24,11 @@ $$$ BGN $$$
 extern "C" {
 #endif
 
-JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv *, jobject, jobjectArray, jstring);
+JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv *, jobject, jobjectArray);
+
+JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr);
+
+JNIEXPORT jboolean JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_eventServiceAliveImpl(JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
 

@@ -31,11 +31,13 @@ public abstract class $$$CLS_NAME$$$<T> implements $$$DISPOSABLE$$$ {
 
 	public abstract void $$$ON_EVENT_CALLBACK$$$(T event);
 
-	public void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
+	@Override
+	public Void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeConsumer != NULL_PTR) {
 			disposeImpl(mNativeConsumer);
 			mNativeConsumer = NULL_PTR;
 		}
+		return null;
 	}
 
 	private native void disposeImpl(final long nativeWrapper) throws $$$CORBA_SYS_EXCEPTION$$$;

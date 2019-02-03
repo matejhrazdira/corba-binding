@@ -30,7 +30,7 @@ public class SimpleIdlInterface implements com.matejhrazdira.pojos.Disposable {
 		this._native_address_ = _native_address_;
 	}
 
-	public native void _dispose_() throws com.matejhrazdira.pojos.CorbaException;
+	public native Void _dispose_() throws com.matejhrazdira.pojos.CorbaException;
 
 	public native String someStringMethod() throws com.matejhrazdira.pojos.CorbaException;
 
@@ -42,6 +42,6 @@ public class SimpleIdlInterface implements com.matejhrazdira.pojos.Disposable {
 
 	public native java.util.List<Long> getTimeSequence() throws com.matejhrazdira.pojos.CorbaException;
 
-	public native void throwsNestedException() throws com.matejhrazdira.pojos.CorbaException, com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException;
+	public native Void throwsNestedException() throws com.matejhrazdira.pojos.CorbaException, com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface.NestedException;
 
 }

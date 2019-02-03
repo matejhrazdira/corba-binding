@@ -22,7 +22,7 @@ public:
 
 class NativeWrapper {
 public:
-	NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceStr, ThreadCleanup * cleanup);
+	NativeWrapper(int argc, ACE_TCHAR * argv[], ThreadCleanup * cleanup);
 
 	virtual ~NativeWrapper();
 
@@ -57,6 +57,10 @@ public:
 
 	CORBA::Object_ptr resolve(const char * corbaStr);
 
+	bool eventServiceAlive();
+
+	void connectEventService(const char * eventServiceStr);
+
 private:
 	CORBA::ORB_var mOrb;
 	PortableServer::POA_var mPoa;
@@ -81,7 +85,11 @@ public:
 		ACE_ConsumerQOS_Factory qos;
 		qos.start_disjunction_group();
 		qos.insert_type(mType, 0);
-		RtecEventChannelAdmin::ConsumerAdmin_var consumerAdmin = nativeWraper->getEventService()->for_consumers();
+		RtecEventChannelAdmin::EventChannel_ptr eventService = nativeWraper->getEventService();
+		if (CORBA::is_nil(eventService)) {
+			throw CORBA::UNKNOWN(0, CORBA::CompletionStatus::COMPLETED_NO);
+		}
+		RtecEventChannelAdmin::ConsumerAdmin_var consumerAdmin = eventService->for_consumers();
 		mSupplierProxy = consumerAdmin->obtain_push_supplier();
 		mMyself = _this();
 		mSupplierProxy->connect_push_consumer(mMyself.in(), qos.get_ConsumerQOS());

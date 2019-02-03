@@ -2,7 +2,7 @@
 
 namespace corbabinding {
 
-NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventServiceStr, ThreadCleanup * cleanup) {
+NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], ThreadCleanup * cleanup) {
 	mOrb = CORBA::ORB_init(argc, argv);
 
 	CORBA::Object_var poaObject = mOrb->resolve_initial_references("RootPOA");
@@ -19,9 +19,6 @@ NativeWrapper::NativeWrapper(int argc, ACE_TCHAR * argv[], const char * eventSer
 
 	CORBA::Object_var iorTableObject = mOrb->resolve_initial_references("IORTable");
 	mIorTable = IORTable::Table::_narrow(iorTableObject.in());
-
-	CORBA::Object_var eventServiceObject = mOrb->string_to_object(eventServiceStr);
-	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(eventServiceObject.in());
 
 	mThreadCleanup = cleanup;
 
@@ -47,6 +44,19 @@ void NativeWrapper::unbind(const char * name) {
 
 CORBA::Object_ptr NativeWrapper::resolve(const char *corbaStr) {
 	return mOrb->string_to_object(corbaStr);
+}
+
+bool NativeWrapper::eventServiceAlive() {
+	if (!CORBA::is_nil(mEventService)) {
+		return !mEventService->_non_existent();
+	} else {
+		return false;
+	}
+}
+
+void NativeWrapper::connectEventService(const char *eventServiceStr) {
+	CORBA::Object_var eventServiceObject = mOrb->string_to_object(eventServiceStr);
+	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(eventServiceObject.in());
 }
 
 void * NativeWrapper::runOrb(void * arg) {

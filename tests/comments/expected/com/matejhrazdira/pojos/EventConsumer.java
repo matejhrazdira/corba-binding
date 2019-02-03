@@ -14,11 +14,13 @@ public abstract class EventConsumer<T> implements Disposable {
 
 	public abstract void onEvent(T event);
 
-	public void _dispose_() throws CorbaException {
+	@Override
+	public Void _dispose_() throws CorbaException {
 		if (mNativeConsumer != NULL_PTR) {
 			disposeImpl(mNativeConsumer);
 			mNativeConsumer = NULL_PTR;
 		}
+		return null;
 	}
 
 	private native void disposeImpl(final long nativeWrapper) throws CorbaException;

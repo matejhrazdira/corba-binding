@@ -205,9 +205,7 @@ static char * getStringChars(JNIEnv * env, jstring jstr) {
 	return result;
 }
 
-JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs, jstring jeventServiceStr) {
-
-	char * eventServiceStr = getStringChars(env, jeventServiceStr);
+JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs) {
 
 	jsize jorbArgCount = env->GetArrayLength(jorbArgs);
 	int orbArgCount = jorbArgCount + 2;
@@ -226,13 +224,12 @@ JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject 
 	NativeWrapper * result = nullptr;
 	JvmCleanup * cleanup = new JvmCleanup(env);
 	try {
-		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceStr, cleanup);
+		result = new NativeWrapper(orbArgCount, orbArgs, cleanup);
 	} catch (const CORBA::Exception & e) {
 		pendingException = convert(env, e);
 		delete cleanup;
 	}
 
-	CORBA::string_free(eventServiceStr);
 	for (int i = 0; i < orbArgCount; i++) {
 		CORBA::string_free(orbArgs[i]);
 	}
@@ -242,6 +239,27 @@ JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject 
 	}
 
 	return (jlong) result;
+}
+
+JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr) {
+	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+	char * eventServiceStr = getStringChars(env, jeventServiceStr);
+	try {
+		return nativeWrapper->connectEventService(eventServiceStr);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+	CORBA::string_free(eventServiceStr);
+}
+
+JNIEXPORT jboolean JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_eventServiceAliveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper) {
+	try {
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		return nativeWrapper->eventServiceAlive();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return false;
+	}
 }
 
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {

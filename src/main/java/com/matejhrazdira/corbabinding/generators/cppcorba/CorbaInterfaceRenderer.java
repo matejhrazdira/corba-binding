@@ -185,6 +185,7 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 				),
 				";"
 		);
+		writer.writeln("return (jobject) 0x0;");
 	}
 
 	private void writerRemoteOperationBody(final LineWriter writer, final JavaInterfaceProjection projection, final Operation operation) throws IOException {
@@ -371,9 +372,7 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 
 	private void writeEmptyReturnStatement(final LineWriter writer, final Operation operation) throws IOException {
 		writer.write("return");
-		if (!(operation.returnType instanceof VoidType)) {
-			writer.write(" (", mJniJavaTypeRenderer.render(operation.returnType), ") 0x0");
-		}
+		writer.write(" (", mJniJavaTypeRenderer.render(operation.returnType), ") 0x0");
 		writer.write(";").endl();
 	}
 

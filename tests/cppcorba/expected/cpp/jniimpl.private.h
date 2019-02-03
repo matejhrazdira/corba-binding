@@ -7,7 +7,11 @@
 extern "C" {
 #endif
 
-JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv *, jobject, jobjectArray, jstring);
+JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv *, jobject, jobjectArray);
+
+JNIEXPORT void JNICALL Java_CorbaProvider_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr);
+
+JNIEXPORT jboolean JNICALL Java_CorbaProvider_eventServiceAliveImpl(JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
 

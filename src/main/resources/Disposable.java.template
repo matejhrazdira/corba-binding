@@ -19,5 +19,5 @@ package $$$PACKAGE$$$;
 
 public interface $$$CLS_NAME$$$ {
 
-	public void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$;
+	public Void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$;
 }

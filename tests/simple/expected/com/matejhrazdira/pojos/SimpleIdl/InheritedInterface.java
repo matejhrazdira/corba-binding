@@ -9,7 +9,7 @@ public class InheritedInterface extends com.matejhrazdira.pojos.SimpleIdl.Simple
 		this._native_address_ = _native_address_;
 	}
 
-	public native void _dispose_() throws com.matejhrazdira.pojos.CorbaException;
+	public native Void _dispose_() throws com.matejhrazdira.pojos.CorbaException;
 
 	public native String someAdditionalMethod() throws com.matejhrazdira.pojos.CorbaException;
 

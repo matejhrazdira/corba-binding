@@ -6,11 +6,29 @@ public class CorbaProvider implements Disposable {
 
 	private long mNativeWrapper = NULL_PTR;
 
-	public CorbaProvider(String[] orbArgs, String eventServiceStr) throws CorbaException {
-		mNativeWrapper = init(orbArgs, eventServiceStr);
+	public CorbaProvider(final String[] orbArgs) throws CorbaException {
+		mNativeWrapper = init(orbArgs);
 	}
 
-	private native long init(final String[] orbArgs, final String eventServiceStr) throws CorbaException;
+	private native long init(final String[] orbArgs) throws CorbaException;
+
+	public void connectEventService(final String eventServiceStr) throws CorbaException {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new AlreadyDisposedException();
+		}
+		connectEventServiceImpl(mNativeWrapper, eventServiceStr);
+	}
+
+	private native void connectEventServiceImpl(final long nativeWrapper, final String eventServiceStr) throws CorbaException;
+
+	public boolean eventServiceAlive() throws CorbaException {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new AlreadyDisposedException();
+		}
+		return eventServiceAliveImpl(mNativeWrapper);
+	}
+
+	private native boolean eventServiceAliveImpl(final long nativeWrapper) throws CorbaException;
 
 	public <T extends Disposable> T resolve(Class<T> cls, String corbaStr) throws CorbaException {
 		if (mNativeWrapper == NULL_PTR) {
@@ -21,11 +39,13 @@ public class CorbaProvider implements Disposable {
 
 	private native <T extends Disposable> T resolveImpl(final long nativeWrapper, final String className, final String corbaStr) throws CorbaException;
 
-	public void _dispose_() throws CorbaException {
+	@Override
+	public Void _dispose_() throws CorbaException {
 		if (mNativeWrapper != NULL_PTR) {
 			disposeImpl(mNativeWrapper);
 			mNativeWrapper = NULL_PTR;
 		}
+		return null;
 	}
 
 	private native void disposeImpl(final long nativeWrapper) throws CorbaException;

@@ -187,9 +187,7 @@ static char * getStringChars(JNIEnv * env, jstring jstr) {
 	return result;
 }
 
-JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs, jstring jeventServiceStr) {
-
-	char * eventServiceStr = getStringChars(env, jeventServiceStr);
+JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobjectArray jorbArgs) {
 
 	jsize jorbArgCount = env->GetArrayLength(jorbArgs);
 	int orbArgCount = jorbArgCount + 2;
@@ -208,13 +206,12 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	NativeWrapper * result = nullptr;
 	JvmCleanup * cleanup = new JvmCleanup(env);
 	try {
-		result = new NativeWrapper(orbArgCount, orbArgs, eventServiceStr, cleanup);
+		result = new NativeWrapper(orbArgCount, orbArgs, cleanup);
 	} catch (const CORBA::Exception & e) {
 		pendingException = convert(env, e);
 		delete cleanup;
 	}
 
-	CORBA::string_free(eventServiceStr);
 	for (int i = 0; i < orbArgCount; i++) {
 		CORBA::string_free(orbArgs[i]);
 	}
@@ -224,6 +221,27 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	}
 
 	return (jlong) result;
+}
+
+JNIEXPORT void JNICALL Java_CorbaProvider_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr) {
+	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+	char * eventServiceStr = getStringChars(env, jeventServiceStr);
+	try {
+		return nativeWrapper->connectEventService(eventServiceStr);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+	CORBA::string_free(eventServiceStr);
+}
+
+JNIEXPORT jboolean JNICALL Java_CorbaProvider_eventServiceAliveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper) {
+	try {
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		return nativeWrapper->eventServiceAlive();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return false;
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {

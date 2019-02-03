@@ -47,9 +47,9 @@ public class CorbaProviderTest {
 		CorbaProvider provider = new CorbaProvider(
 				new String[] {
 						"-ORBinvalidArgument"
-				},
-				getServerStr("EventService")
+				}
 		);
+		getServerStr("EventService");
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -65,9 +65,9 @@ public class CorbaProviderTest {
 				new String[] {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
-				},
-				getServerStr("EventService")
+				}
 		);
+		getServerStr("EventService");
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -83,9 +83,9 @@ public class CorbaProviderTest {
 				new String[] {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
-				},
-				getServerStr("EventService")
+				}
 		);
+		getServerStr("EventService");
 
 		try {
 			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
@@ -111,9 +111,9 @@ public class CorbaProviderTest {
 				new String[] {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
-				},
-				getServerStr("EventService")
+				}
 		);
+		getServerStr("EventService");
 
 		try {
 			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
@@ -145,9 +145,9 @@ public class CorbaProviderTest {
 				new String[] {
 						"-ORBDottedDecimalAddresses", "1",
 						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
-				},
-				getServerStr("EventService")
+				}
 		);
+		provider.connectEventService(getServerStr("EventService"));
 
 		try {
 			EventConsumer<SimpleUnion> consumer1 = getEventConsumer(provider, 1);

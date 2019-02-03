@@ -124,7 +124,7 @@ public class JavaTypeRenderer extends TypeRenderer {
 
 	@Override
 	protected String render(final VoidType voidType) {
-		return "void";
+		return "Void";
 	}
 
 	public String getEmptyValue(final Type type) {

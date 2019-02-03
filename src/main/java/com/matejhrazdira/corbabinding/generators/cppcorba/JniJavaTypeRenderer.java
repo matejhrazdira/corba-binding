@@ -101,6 +101,6 @@ public class JniJavaTypeRenderer extends TypeRenderer {
 
 	@Override
 	protected String render(final VoidType voidType) {
-		return "void";
+		return "jobject";
 	}
 }
