@@ -43,11 +43,11 @@ public:
 			CosNaming::Name n(1);
 			n.length(1);
 			n[0].id = CORBA::string_dup(name);
-			mNameService->bind(n, object);
+			mNameService->rebind(n, object);
 		}
 		if (!CORBA::is_nil(mIorTable)) {
 			CORBA::String_var objectStr = mOrb->object_to_string(object);
-			mIorTable->bind(name, objectStr);
+			mIorTable->rebind(name, objectStr);
 		} else {
 			throw CORBA::UNKNOWN(0, CORBA::CompletionStatus::COMPLETED_NO);
 		}
