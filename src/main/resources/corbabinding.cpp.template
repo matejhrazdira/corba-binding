@@ -223,7 +223,7 @@ template<> char * $$$CONVERT$$$<char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_AR
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Boolean>(JNIEnv * $$$ENV$$$, const ::CORBA::Boolean & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Boolean.$$$CLS$$$, $$$JNI$$$->java.lang.Boolean._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Boolean.$$$CLS$$$, $$$JNI$$$->java.lang.Boolean._ctor_, (jboolean) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Boolean>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Boolean & $$$OUT_ARG$$$) {
@@ -231,7 +231,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Boolean>(JNIEnv * $$$ENV$$$, cons
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Octet>(JNIEnv * $$$ENV$$$, const ::CORBA::Octet & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Byte.$$$CLS$$$, $$$JNI$$$->java.lang.Byte._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Byte.$$$CLS$$$, $$$JNI$$$->java.lang.Byte._ctor_, (jbyte) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Octet>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Octet& $$$OUT_ARG$$$) {
@@ -239,7 +239,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Octet>(JNIEnv * $$$ENV$$$, const 
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Short>(JNIEnv * $$$ENV$$$, const ::CORBA::Short & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, (jint) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Short>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Short & $$$OUT_ARG$$$) {
@@ -247,7 +247,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Short>(JNIEnv * $$$ENV$$$, const 
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::UShort>(JNIEnv * $$$ENV$$$, const ::CORBA::UShort & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, (jint) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::UShort>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::UShort & $$$OUT_ARG$$$) {
@@ -255,7 +255,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::UShort>(JNIEnv * $$$ENV$$$, const
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<CORBA::Long>(JNIEnv * $$$ENV$$$, const CORBA::Long & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Integer.$$$CLS$$$, $$$JNI$$$->java.lang.Integer._ctor_, (jint) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<CORBA::Long>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, CORBA::Long & $$$OUT_ARG$$$) {
@@ -263,7 +263,7 @@ template<> void $$$CONVERT_ELEMENT$$$<CORBA::Long>(JNIEnv * $$$ENV$$$, const job
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::ULong>(JNIEnv * $$$ENV$$$, const ::CORBA::ULong & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, (jlong) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::ULong & $$$OUT_ARG$$$) {
@@ -271,7 +271,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULong>(JNIEnv * $$$ENV$$$, const 
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::LongLong>(JNIEnv * $$$ENV$$$, const ::CORBA::LongLong & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, (jlong) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::LongLong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::LongLong & $$$OUT_ARG$$$) {
@@ -279,7 +279,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::LongLong>(JNIEnv * $$$ENV$$$, con
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::ULongLong>(JNIEnv * $$$ENV$$$, const ::CORBA::ULongLong & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Long.$$$CLS$$$, $$$JNI$$$->java.lang.Long._ctor_, (jlong) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULongLong>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::ULongLong & $$$OUT_ARG$$$) {
@@ -287,7 +287,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::ULongLong>(JNIEnv * $$$ENV$$$, co
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Float>(JNIEnv * $$$ENV$$$, const ::CORBA::Float & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Float.$$$CLS$$$, $$$JNI$$$->java.lang.Float._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Float.$$$CLS$$$, $$$JNI$$$->java.lang.Float._ctor_, (jfloat) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Float>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Float & $$$OUT_ARG$$$) {
@@ -295,7 +295,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Float>(JNIEnv * $$$ENV$$$, const 
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Double>(JNIEnv * $$$ENV$$$, const ::CORBA::Double & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Double.$$$CLS$$$, $$$JNI$$$->java.lang.Double._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Double.$$$CLS$$$, $$$JNI$$$->java.lang.Double._ctor_, (jdouble) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Double>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Double & $$$OUT_ARG$$$) {
@@ -303,7 +303,7 @@ template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Double>(JNIEnv * $$$ENV$$$, const
 }
 
 template<> jobject $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, const ::CORBA::Char & $$$IN_ARG$$$) {
-	return $$$ENV$$$->NewObject($$$JNI$$$->java.lang.Character.$$$CLS$$$, $$$JNI$$$->java.lang.Character._ctor_, $$$IN_ARG$$$);
+	return $$$ENV$$$->CallStaticObjectMethod($$$JNI$$$->java.lang.Character.$$$CLS$$$, $$$JNI$$$->java.lang.Character._ctor_, (jchar) $$$IN_ARG$$$);
 }
 
 template<> void $$$CONVERT_ELEMENT$$$<::CORBA::Char>(JNIEnv * $$$ENV$$$, const jobject $$$IN_ARG$$$, ::CORBA::Char & $$$OUT_ARG$$$) {

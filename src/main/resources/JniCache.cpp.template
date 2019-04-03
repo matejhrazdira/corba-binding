@@ -25,49 +25,49 @@ JniCache::JniCache(JNIEnv * $$$ENV$$$) {
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Boolean");
 		java.lang.Boolean.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Boolean.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(Z)V");
+		java.lang.Boolean.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(Z)Ljava/lang/Boolean;");
 		java.lang.Boolean.booleanValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "booleanValue", "()Z");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Byte");
 		java.lang.Byte.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Byte.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(B)V");
+		java.lang.Byte.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(B)Ljava/lang/Byte;");
 		java.lang.Byte.byteValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "byteValue", "()B");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Integer");
 		java.lang.Integer.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Integer.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(I)V");
+		java.lang.Integer.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(I)Ljava/lang/Integer;");
 		java.lang.Integer.intValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "intValue", "()I");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Long");
 		java.lang.Long.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Long.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(J)V");
+		java.lang.Long.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(J)Ljava/lang/Long;");
 		java.lang.Long.longValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "longValue", "()J");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Float");
 		java.lang.Float.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Float.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(F)V");
+		java.lang.Float.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(F)Ljava/lang/Float;");
 		java.lang.Float.floatValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "floatValue", "()F");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Double");
 		java.lang.Double.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Double.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(D)V");
+		java.lang.Double.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(D)Ljava/lang/Double;");
 		java.lang.Double.doubleValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "doubleValue", "()D");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Character");
 		java.lang.Character.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
-		java.lang.Character.$$$CTOR$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "<init>", "(C)V");
+		java.lang.Character.$$$CTOR$$$ = $$$ENV$$$->GetStaticMethodID($$$CLS$$$, "valueOf", "(C)Ljava/lang/Character;");
 		java.lang.Character.charValue = $$$ENV$$$->GetMethodID($$$CLS$$$, "charValue", "()C");
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
