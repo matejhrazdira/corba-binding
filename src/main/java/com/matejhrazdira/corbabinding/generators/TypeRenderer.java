@@ -35,6 +35,8 @@ public abstract class TypeRenderer {
 
 	protected abstract String render(SequenceType sequence);
 
+	protected abstract String render(ArrayType array);
+
 	protected abstract String render(StringType string);
 
 	protected abstract String render(VoidType voidType);
@@ -66,6 +68,11 @@ public abstract class TypeRenderer {
 		@Override
 		public void visit(final SequenceType sequence) {
 			mResult = render(sequence);
+		}
+
+		@Override
+		public void visit(ArrayType array) {
+			mResult = render(array);
 		}
 
 		@Override

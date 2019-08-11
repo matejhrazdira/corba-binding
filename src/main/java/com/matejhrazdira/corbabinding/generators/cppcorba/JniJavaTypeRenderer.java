@@ -19,7 +19,12 @@ package com.matejhrazdira.corbabinding.generators.cppcorba;
 import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.TypeRenderer;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
-import com.matejhrazdira.corbabinding.idl.types.*;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
+import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
+import com.matejhrazdira.corbabinding.idl.types.SequenceType;
+import com.matejhrazdira.corbabinding.idl.types.StringType;
+import com.matejhrazdira.corbabinding.idl.types.Type;
+import com.matejhrazdira.corbabinding.idl.types.VoidType;
 
 public class JniJavaTypeRenderer extends TypeRenderer {
 
@@ -66,6 +71,16 @@ public class JniJavaTypeRenderer extends TypeRenderer {
 	@Override
 	protected String render(final SequenceType sequence) {
 		return "jobject";
+	}
+
+	@Override
+	protected String render(ArrayType array) {
+		if (array.elementType instanceof PrimitiveType) {
+			PrimitiveType primitive = (PrimitiveType) array.elementType;
+			return render(primitive) + "Array";
+		} else {
+			return "jobjectArray";
+		}
 	}
 
 	@Override

@@ -37,14 +37,17 @@ jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleStruct & _in_) {
 	jlong uintMember = convert(_env_, _in_.uintMember);
 	jlong longMember = convert(_env_, _in_.longMember);
 	jlong ulongMember = convert(_env_, _in_.ulongMember);
+	jintArray longArr;
+	convertArray(_env_, _in_.longArr, longArr);
 	jobject includedMember = convert(_env_, _in_.includedMember);
 	jobject fullyScopedIncludedMember = convert(_env_, _in_.fullyScopedIncludedMember);
 	jobject duplicate1 = convert(_env_, _in_.duplicate1);
 	jobject duplicate2 = convert(_env_, _in_.duplicate2);
 
-	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._ctor_, stringMember, intMember, typedefedMember, uintMember, longMember, ulongMember, includedMember, fullyScopedIncludedMember, duplicate1, duplicate2);
+	jobject _result_ = _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._ctor_, stringMember, intMember, typedefedMember, uintMember, longMember, ulongMember, longArr, includedMember, fullyScopedIncludedMember, duplicate1, duplicate2);
 
 	_env_->DeleteLocalRef(stringMember);
+	_env_->DeleteLocalRef(longArr);
 	_env_->DeleteLocalRef(includedMember);
 	_env_->DeleteLocalRef(fullyScopedIncludedMember);
 	_env_->DeleteLocalRef(duplicate1);
@@ -72,6 +75,10 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::SimpleStruct & _ou
 
 	jlong ulongMember = _env_->GetLongField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.ulongMember);
 	convert(_env_, ulongMember, _out_.ulongMember);
+
+	jintArray longArr = (jintArray) _env_->GetObjectField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.longArr);
+	convertArray(_env_, longArr, _out_.longArr);
+	_env_->DeleteLocalRef(longArr);
 
 	jobject includedMember = _env_->GetObjectField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.includedMember);
 	convert(_env_, includedMember, _out_.includedMember);

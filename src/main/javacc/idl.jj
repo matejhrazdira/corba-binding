@@ -561,10 +561,13 @@ Definition type_dcl() :
 }
 {
   (
-    "typedef" 
+    "typedef"
     result = type_declarator()
   |
+    LOOKAHEAD(3)
     result = struct_type()
+  |
+    result = struct_type_fwddcl()
   |
     result = union_type()
   |
@@ -887,6 +890,16 @@ StructType struct_type() :
   members = member_list() 
   "}"
   { return new StructType(name, members); }
+}
+
+StructType struct_type_fwddcl() :
+{
+  String name;
+}
+{
+  "struct"
+  name = identifier()
+  { return new ForwardStructDcl(name); }
 }
 
 /* Production 51 */

@@ -18,7 +18,7 @@ JniCache::JniCache(JNIEnv * _env_) {
 		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/SimpleStruct");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
 
-		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/lang/String;IJJJJLcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;Lcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;Ljava/lang/String;Ljava/lang/String;)V");
+		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(Ljava/lang/String;IJJJJ[ILcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;Lcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;Ljava/lang/String;Ljava/lang/String;)V");
 
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.stringMember = _env_->GetFieldID(_cls_, "stringMember", "Ljava/lang/String;");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.intMember = _env_->GetFieldID(_cls_, "intMember", "I");
@@ -26,6 +26,7 @@ JniCache::JniCache(JNIEnv * _env_) {
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.uintMember = _env_->GetFieldID(_cls_, "uintMember", "J");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.longMember = _env_->GetFieldID(_cls_, "longMember", "J");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.ulongMember = _env_->GetFieldID(_cls_, "ulongMember", "J");
+		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.longArr = _env_->GetFieldID(_cls_, "longArr", "[I");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.includedMember = _env_->GetFieldID(_cls_, "includedMember", "Lcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.fullyScopedIncludedMember = _env_->GetFieldID(_cls_, "fullyScopedIncludedMember", "Lcom/matejhrazdira/pojos/IncludedIdl/IncludedStruct;");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleStruct.duplicate1 = _env_->GetFieldID(_cls_, "duplicate1", "Ljava/lang/String;");

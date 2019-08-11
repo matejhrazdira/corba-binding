@@ -55,12 +55,20 @@ module SimpleIdl
     SimpleStruct structMember;
   };
 
+  struct StructWithRealArrays
+  {
+    string stringMember;
+    long longArr[5];
+    SimpleStruct structArr[3];
+  };
+
   interface SimpleServer
   {
     exception NestedException {
       string cause;
     };
     string getString();
+    StructWithRealArrays getStructWithArray(in StructWithRealArrays inArg);
     void throwException() raises(SimpleException);
     void exit();
     void throwNestedException() raises(NestedException);

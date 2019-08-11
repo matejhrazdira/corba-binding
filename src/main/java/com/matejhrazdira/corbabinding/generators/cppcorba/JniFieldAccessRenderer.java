@@ -88,6 +88,11 @@ public class JniFieldAccessRenderer {
 		}
 
 		@Override
+		protected String render(ArrayType array) {
+			return mAccessMethod + "ObjectField";
+		}
+
+		@Override
 		protected String render(final StringType string) {
 			return mAccessMethod + "ObjectField";
 		}

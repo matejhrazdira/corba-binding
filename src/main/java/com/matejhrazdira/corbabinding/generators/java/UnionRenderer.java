@@ -92,7 +92,7 @@ public class UnionRenderer extends JavaClassRenderer implements JavaUnionProject
 				throw new CorbabindingException(
 						"Can't generate field " + field.declarator.name +
 								" in " + symbol.name.getQualifiedName() +
-								" : Array declarators are not supported");
+								" : Array declarators are not supported inside unions");
 			}
 			Type javaType = getJavaType(field.type);
 			Member member = new Member(field.declarator, javaType);

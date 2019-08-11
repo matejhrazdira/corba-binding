@@ -271,6 +271,11 @@
         },
         {
           "name": "SimpleStruct",
+          "members": [],
+          "CLASS": "ForwardStructDcl"
+        },
+        {
+          "name": "SimpleStruct",
           "members": [
             {
               "declarator": {
@@ -808,6 +813,81 @@
           "CLASS": "UnionType"
         },
         {
+          "name": "DefaultUnionFromEnum",
+          "type": {
+            "name": [
+              "SimpleIdl",
+              "SimpleEnum"
+            ],
+            "fullyQualified": true,
+            "CLASS": "ScopedName"
+          },
+          "fields": [
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "foo",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "SimpleIdl",
+                          "SimpleEnum",
+                          "EN_VAL_A"
+                        ],
+                        "fullyQualified": true,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                },
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "SimpleIdl",
+                          "SimpleEnum",
+                          "EN_VAL_B"
+                        ],
+                        "fullyQualified": true,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            },
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "bar",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "CLASS": "DefaultLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            }
+          ],
+          "CLASS": "UnionType"
+        },
+        {
           "name": "NoMemberException",
           "members": [],
           "CLASS": "ExceptDcl"
@@ -861,6 +941,48 @@
                 "CLASS": "StringType"
               },
               "params": [],
+              "exceptions": [],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "methodWithTypedefedValues",
+              "oneway": false,
+              "returnType": {
+                "name": [
+                  "SimpleIdl",
+                  "time"
+                ],
+                "fullyQualified": true,
+                "CLASS": "ScopedName"
+              },
+              "params": [
+                {
+                  "name": "timeArg",
+                  "direction": "IN",
+                  "type": {
+                    "name": [
+                      "SimpleIdl",
+                      "time"
+                    ],
+                    "fullyQualified": true,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "structArg",
+                  "direction": "OUT",
+                  "type": {
+                    "name": [
+                      "SimpleIdl",
+                      "typedefedStruct"
+                    ],
+                    "fullyQualified": true,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                }
+              ],
               "exceptions": [],
               "CLASS": "Operation"
             },

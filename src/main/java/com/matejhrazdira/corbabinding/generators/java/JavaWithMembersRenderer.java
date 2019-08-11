@@ -16,17 +16,17 @@
 
 package com.matejhrazdira.corbabinding.generators.java;
 
+import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.ExpressionRenderer;
 import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
-import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
+import com.matejhrazdira.corbabinding.idl.definitions.members.ArrayDeclarator;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.util.OutputListener;
-
-import java.util.List;
 
 public abstract class JavaWithMembersRenderer extends AbsJavaRenderer {
 
@@ -37,6 +37,20 @@ public abstract class JavaWithMembersRenderer extends AbsJavaRenderer {
 		super(scopedRenderer, outputListener);
 		mResolver = resolver;
 		mExpressionRenderer = new JavaExpressionRenderer(scopedRenderer, resolver);
+	}
+
+	protected Type getJavaType(Member member) {
+		if (member.declarator instanceof ArrayDeclarator) {
+			ArrayDeclarator arrayDeclarator = (ArrayDeclarator) member.declarator;
+			if (arrayDeclarator.dimensions.size() != 1) {
+				throw new CorbabindingException(
+						"Can't generate field " + member.declarator.name + " which has " + arrayDeclarator.dimensions.size() + " dimensions" +
+						" : only 1 dimensional Array declarators are supported");
+			}
+			return new ArrayType(getJavaType(member.type), arrayDeclarator.dimensions.get(0));
+		} else {
+			return getJavaType(member.type);
+		}
 	}
 
 	protected Type getJavaType(Type type) {

@@ -19,6 +19,7 @@ package com.matejhrazdira.corbabinding.generators.cppcorba;
 import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.TypeRenderer;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
@@ -79,6 +80,11 @@ public class CorbaTypeRenderer extends TypeRenderer {
 	@Override
 	protected String render(final SequenceType sequence) {
 		throw new CorbabindingException("SequenceType is not supported, should be handled by template resolution.");
+	}
+
+	@Override
+	protected String render(ArrayType array) {
+		throw new CorbabindingException("TODO.");
 	}
 
 	@Override

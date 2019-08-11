@@ -118,6 +118,11 @@ public class JavaTypeRenderer extends TypeRenderer {
 	}
 
 	@Override
+	protected String render(ArrayType array) {
+		return render(array.elementType) + "[]";
+	}
+
+	@Override
 	protected String render(StringType string) {
 		return "String";
 	}

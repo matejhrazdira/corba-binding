@@ -21,6 +21,20 @@ public:
 		return CORBA::string_dup("Hello from server!!!");
 	}
 
+    virtual ::SimpleIdl::StructWithRealArrays * getStructWithArray (const ::SimpleIdl::StructWithRealArrays & inArg) {
+
+    	log.v() << "received: " << inArg.longArr[1] << "; " << inArg.stringMember.in()  << "; " << inArg.structArr[1].stringMember << done;
+
+    	SimpleIdl::StructWithRealArrays * result = new SimpleIdl::StructWithRealArrays();
+    	result->stringMember = "Foo Bar Baz";
+    	int count = sizeof(result->longArr) / sizeof(result->longArr[0]);
+    	for (int i = 0; i < count; i++) {
+    		result->longArr[i] = i * 2;
+    	}
+    	result->structArr[1].stringMember = "Hello from array!";
+    	return result;
+    }
+
 	virtual void throwException(void) {
 		SimpleIdl::SimpleException e;
 		e.intMember = 123;

@@ -6,6 +6,8 @@ module MainIdl
   const long IDL_VERSION = 1;
   const long COMPOSED_CONST = 2 + MainIdl::IDL_VERSION + IncludedIdl::IDL_VERSION;
 
+  struct SimpleStruct;
+
   struct SimpleStruct
   {
     string stringMember;

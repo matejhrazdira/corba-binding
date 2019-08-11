@@ -163,6 +163,154 @@ template<typename T> void $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const jobject $$$IN_
 	}
 }
 
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, T(& $$$IN_ARG$$$)[SIZE], jobjectArray & $$$OUT_ARG$$$) {
+	if (SIZE > 0) {
+		jobject $$$ELEMENT$$$ = $$$CONVERT$$$($$$ENV$$$, $$$IN_ARG$$$[0]);
+
+		jclass $$$CLS$$$ = $$$ENV$$$->GetObjectClass($$$ELEMENT$$$);
+		$$$OUT_ARG$$$ = $$$ENV$$$->NewObjectArray(SIZE, $$$CLS$$$, nullptr);
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+
+		$$$ENV$$$->SetObjectArrayElement($$$OUT_ARG$$$, 0, $$$ELEMENT$$$);
+
+		for (size_t i = 1; i < SIZE; i++) {
+			$$$ELEMENT$$$ = $$$CONVERT$$$($$$ENV$$$, $$$IN_ARG$$$[i]);
+			$$$ENV$$$->SetObjectArrayElement($$$OUT_ARG$$$, i, $$$ELEMENT$$$);
+			$$$ENV$$$->DeleteLocalRef($$$ELEMENT$$$);
+		}
+	} else {
+		T dummy{};
+		jobject jdummy = $$$CONVERT$$$($$$ENV$$$, dummy);
+		jclass $$$CLS$$$ = $$$ENV$$$->GetObjectClass(jdummy);
+		$$$ENV$$$->NewObjectArray(SIZE, $$$CLS$$$, nullptr);
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
+		$$$ENV$$$->DeleteLocalRef(jdummy);
+	}
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jobjectArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	for (size_t i = 0; i < SIZE; i++) {
+		jobject $$$ELEMENT$$$ = $$$ENV$$$->GetObjectArrayElement($$$IN_ARG$$$, i);
+		if ($$$ELEMENT$$$) {
+			$$$CONVERT$$$($$$ENV$$$, $$$ELEMENT$$$, $$$OUT_ARG$$$[i]);
+		} else {
+			$$$OUT_ARG$$$[i] = {};
+		}
+		$$$ENV$$$->DeleteLocalRef($$$ELEMENT$$$);
+	}
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jbooleanArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewBooleanArray(SIZE);
+	jboolean * $$$ELEMENT$$$s = $$$ENV$$$->GetBooleanArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jboolean) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseBooleanArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jbooleanArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jboolean * $$$ELEMENT$$$s = $$$ENV$$$->GetBooleanArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseBooleanArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jbyteArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewByteArray(SIZE);
+	jbyte * $$$ELEMENT$$$s = $$$ENV$$$->GetByteArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jbyte) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseByteArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jbyteArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jbyte * $$$ELEMENT$$$s = $$$ENV$$$->GetByteArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseByteArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jcharArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewCharArray(SIZE);
+	jchar * $$$ELEMENT$$$s = $$$ENV$$$->GetCharArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jchar) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseCharArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jcharArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jchar * $$$ELEMENT$$$s = $$$ENV$$$->GetCharArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseCharArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jintArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewIntArray(SIZE);
+	jint * $$$ELEMENT$$$s = $$$ENV$$$->GetIntArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jint) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseIntArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jintArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jint * $$$ELEMENT$$$s = $$$ENV$$$->GetIntArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseIntArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jlongArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewLongArray(SIZE);
+	jlong * $$$ELEMENT$$$s = $$$ENV$$$->GetLongArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jlong) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseLongArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jlongArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jlong * $$$ELEMENT$$$s = $$$ENV$$$->GetLongArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseLongArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jfloatArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewFloatArray(SIZE);
+	jfloat * $$$ELEMENT$$$s = $$$ENV$$$->GetFloatArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jfloat) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseFloatArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jfloatArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jfloat * $$$ELEMENT$$$s = $$$ENV$$$->GetFloatArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseFloatArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const T(& $$$IN_ARG$$$)[SIZE], jdoubleArray & $$$OUT_ARG$$$) {
+	$$$OUT_ARG$$$ = $$$ENV$$$->NewDoubleArray(SIZE);
+	jdouble * $$$ELEMENT$$$s = $$$ENV$$$->GetDoubleArrayElements($$$OUT_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$ELEMENT$$$s[i] = (jdouble) $$$IN_ARG$$$[i];
+	}
+	$$$ENV$$$->ReleaseDoubleArrayElements($$$OUT_ARG$$$, $$$ELEMENT$$$s, 0);
+}
+template<typename T, std::size_t SIZE> void $$$CONVERT_ARRAY$$$(JNIEnv * $$$ENV$$$, const jdoubleArray $$$IN_ARG$$$, T(& $$$OUT_ARG$$$)[SIZE]) {
+	jdouble * $$$ELEMENT$$$s = $$$ENV$$$->GetDoubleArrayElements($$$IN_ARG$$$, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		$$$OUT_ARG$$$[i] = (T) $$$ELEMENT$$$s[i];
+	}
+	$$$ENV$$$->ReleaseDoubleArrayElements($$$IN_ARG$$$, $$$ELEMENT$$$s, JNI_ABORT);
+}
+
 jobject getVarObject(JNIEnv * $$$ENV$$$, const jobject _var_);
 void setVarObject(JNIEnv * $$$ENV$$$, jobject _var_, jobject _value_);
 
@@ -185,12 +333,12 @@ template<typename T> T getVarValue(JNIEnv * $$$ENV$$$, const jobject _var_) {
 
 template<typename T> void $$$CONVERT$$$Var(JNIEnv * $$$ENV$$$, const jobject _var_, T & $$$OUT_ARG$$$) {
 	jobject _value_ = getVarObject($$$ENV$$$, _var_);
-	convertElement($$$ENV$$$, _value_, $$$OUT_ARG$$$);
+	$$$CONVERT_ELEMENT$$$($$$ENV$$$, _value_, $$$OUT_ARG$$$);
 	$$$ENV$$$->DeleteLocalRef(_value_);
 }
 
 template<typename T> void setVar(JNIEnv * $$$ENV$$$, jobject _var_, const T & $$$IN_ARG$$$) {
-	jobject _tmp_ = convertElement($$$ENV$$$, $$$IN_ARG$$$);
+	jobject _tmp_ = $$$CONVERT_ELEMENT$$$($$$ENV$$$, $$$IN_ARG$$$);
 	setVarObject($$$ENV$$$, _var_, _tmp_);
 	$$$ENV$$$->DeleteLocalRef(_tmp_);
 }

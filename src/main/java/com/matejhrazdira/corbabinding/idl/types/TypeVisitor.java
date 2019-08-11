@@ -28,6 +28,7 @@ public interface TypeVisitor {
 	void visit(AnyType any);
 	void visit(PrimitiveType primitive);
 	void visit(SequenceType sequence);
+	void visit(ArrayType array);
 	void visit(StringType string);
 	void visit(UnsupportedType unsupportedType);
 	void visit(VoidType voidType);

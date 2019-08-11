@@ -23,6 +23,7 @@ import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.EnumType;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
@@ -129,6 +130,22 @@ public abstract class JavaClassRenderer extends JavaWithMembersRenderer {
 		writer.write("this.", f.name, " = ");
 		if (f.member.type instanceof SequenceType) {
 			sequenceAssignment.write(writer, "", f.type);
+		} else if (f.member.type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) f.member.type;
+			writer.write(
+					"new ", mTypeRenderer.render(arrayType.elementType),
+					"[", mExpressionRenderer.render(arrayType.size), "]"
+			);
+			if (arrayType.elementType instanceof ScopedName) {
+				writer.write(";").endl();
+				writer.write("java.util.Arrays.fill(", f.name, ", ");
+				if (isEnum((ScopedName) arrayType.elementType)) {
+					writer.write(mTypeRenderer.render(arrayType.elementType), ".values()[0]");
+				} else {
+					writer.write("new ", mTypeRenderer.render(arrayType.elementType), "()");
+				}
+				writer.write(")");
+			}
 		} else if (f.member.type instanceof PrimitiveType) {
 			PrimitiveType primitiveType = (PrimitiveType) f.member.type;
 			switch (primitiveType.type) {
@@ -192,6 +209,22 @@ public abstract class JavaClassRenderer extends JavaWithMembersRenderer {
 	}
 
 	private void writeFieldAssignment(final LineWriter writer, final Field f, SequenceAssignment sequenceAssignment) throws IOException {
+		if (f.member.type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) f.member.type;
+			writer.writeln(
+					"if (", f.name, " == null || ", f.name, ".length != (", mExpressionRenderer.render(arrayType.size), ")) {"
+			);
+			writer.increaseLevel();
+			writer.writeln(
+					"throw new IllegalArgumentException(",
+					f.name, " + \" must not be null and must have length \" + (", mExpressionRenderer.render(arrayType.size), ") + \". ",
+					"Received \" + (", f.name, " != null ? ",
+					"\"", mTypeRenderer.render(arrayType.elementType), "[\" + ", f.name, ".length + \"]\"",
+					" : \"null\")", " + \".\"",
+					");");
+			writer.decreaseLevel();
+			writer.writeln("}");
+		}
 		writer.write("this.", f.name, " = ");
 		if (f.member.type instanceof SequenceType) {
 			sequenceAssignment.write(writer, f.name, f.type);

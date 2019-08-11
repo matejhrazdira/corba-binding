@@ -1,6 +1,5 @@
 .gradle
+.idea
 build
-.idea/workspace.xml
-.idea/libraries
-scripts
 out
+scripts

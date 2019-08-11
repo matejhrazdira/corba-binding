@@ -178,6 +178,154 @@ template<typename T> void convert(JNIEnv * _env_, const jobject _in_, T & _out_)
 	}
 }
 
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, T(& _in_)[SIZE], jobjectArray & _out_) {
+	if (SIZE > 0) {
+		jobject _element_ = convert(_env_, _in_[0]);
+
+		jclass _cls_ = _env_->GetObjectClass(_element_);
+		_out_ = _env_->NewObjectArray(SIZE, _cls_, nullptr);
+		_env_->DeleteLocalRef(_cls_);
+
+		_env_->SetObjectArrayElement(_out_, 0, _element_);
+
+		for (size_t i = 1; i < SIZE; i++) {
+			_element_ = convert(_env_, _in_[i]);
+			_env_->SetObjectArrayElement(_out_, i, _element_);
+			_env_->DeleteLocalRef(_element_);
+		}
+	} else {
+		T dummy{};
+		jobject jdummy = convert(_env_, dummy);
+		jclass _cls_ = _env_->GetObjectClass(jdummy);
+		_env_->NewObjectArray(SIZE, _cls_, nullptr);
+		_env_->DeleteLocalRef(_cls_);
+		_env_->DeleteLocalRef(jdummy);
+	}
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jobjectArray _in_, T(& _out_)[SIZE]) {
+	for (size_t i = 0; i < SIZE; i++) {
+		jobject _element_ = _env_->GetObjectArrayElement(_in_, i);
+		if (_element_) {
+			convert(_env_, _element_, _out_[i]);
+		} else {
+			_out_[i] = {};
+		}
+		_env_->DeleteLocalRef(_element_);
+	}
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jbooleanArray & _out_) {
+	_out_ = _env_->NewBooleanArray(SIZE);
+	jboolean * _element_s = _env_->GetBooleanArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jboolean) _in_[i];
+	}
+	_env_->ReleaseBooleanArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jbooleanArray _in_, T(& _out_)[SIZE]) {
+	jboolean * _element_s = _env_->GetBooleanArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseBooleanArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jbyteArray & _out_) {
+	_out_ = _env_->NewByteArray(SIZE);
+	jbyte * _element_s = _env_->GetByteArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jbyte) _in_[i];
+	}
+	_env_->ReleaseByteArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jbyteArray _in_, T(& _out_)[SIZE]) {
+	jbyte * _element_s = _env_->GetByteArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseByteArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jcharArray & _out_) {
+	_out_ = _env_->NewCharArray(SIZE);
+	jchar * _element_s = _env_->GetCharArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jchar) _in_[i];
+	}
+	_env_->ReleaseCharArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jcharArray _in_, T(& _out_)[SIZE]) {
+	jchar * _element_s = _env_->GetCharArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseCharArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jintArray & _out_) {
+	_out_ = _env_->NewIntArray(SIZE);
+	jint * _element_s = _env_->GetIntArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jint) _in_[i];
+	}
+	_env_->ReleaseIntArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jintArray _in_, T(& _out_)[SIZE]) {
+	jint * _element_s = _env_->GetIntArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseIntArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jlongArray & _out_) {
+	_out_ = _env_->NewLongArray(SIZE);
+	jlong * _element_s = _env_->GetLongArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jlong) _in_[i];
+	}
+	_env_->ReleaseLongArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jlongArray _in_, T(& _out_)[SIZE]) {
+	jlong * _element_s = _env_->GetLongArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseLongArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jfloatArray & _out_) {
+	_out_ = _env_->NewFloatArray(SIZE);
+	jfloat * _element_s = _env_->GetFloatArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jfloat) _in_[i];
+	}
+	_env_->ReleaseFloatArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jfloatArray _in_, T(& _out_)[SIZE]) {
+	jfloat * _element_s = _env_->GetFloatArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseFloatArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const T(& _in_)[SIZE], jdoubleArray & _out_) {
+	_out_ = _env_->NewDoubleArray(SIZE);
+	jdouble * _element_s = _env_->GetDoubleArrayElements(_out_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_element_s[i] = (jdouble) _in_[i];
+	}
+	_env_->ReleaseDoubleArrayElements(_out_, _element_s, 0);
+}
+template<typename T, std::size_t SIZE> void convertArray(JNIEnv * _env_, const jdoubleArray _in_, T(& _out_)[SIZE]) {
+	jdouble * _element_s = _env_->GetDoubleArrayElements(_in_, nullptr);
+	for (size_t i = 0; i < SIZE; i++) {
+		_out_[i] = (T) _element_s[i];
+	}
+	_env_->ReleaseDoubleArrayElements(_in_, _element_s, JNI_ABORT);
+}
+
 jobject getVarObject(JNIEnv * _env_, const jobject _var_);
 void setVarObject(JNIEnv * _env_, jobject _var_, jobject _value_);
 

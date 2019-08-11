@@ -19,6 +19,7 @@ package com.matejhrazdira.corbabinding.generators.cppcorba;
 import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.TypeRenderer;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
@@ -82,6 +83,11 @@ public class JniSignatureTypeRenderer extends TypeRenderer {
 	@Override
 	protected String render(final SequenceType sequence) {
 		return "Ljava/util/List;";
+	}
+
+	@Override
+	protected String render(ArrayType array) {
+		return "[" + render(array.elementType);
 	}
 
 	@Override

@@ -27,6 +27,7 @@ public class JniConfig {
 	public static final String INDENTATION = "\t";
 
 	public static final String CONVERSION_FUNCTION = "convert";
+	public static final String ARRAY_CONVERSION_FUNCTION = "convertArray";
 
 	public static final String CONVERSION_IN_ARG = "_in_";
 	public static final String CONVERSION_OUT_ARG = "_out_";
@@ -71,6 +72,7 @@ public class JniConfig {
 		res.put("$$$JNI$$$", JNI_CACHE_VAR);
 		res.put("$$$CLS$$$", JNI_CACHE_CLASS);
 		res.put("$$$CONVERT$$$", CONVERSION_FUNCTION);
+		res.put("$$$CONVERT_ARRAY$$$", ARRAY_CONVERSION_FUNCTION);
 		res.put("$$$IN_ARG$$$", CONVERSION_IN_ARG);
 		res.put("$$$OUT_ARG$$$", CONVERSION_OUT_ARG);
 		res.put("$$$CTOR$$$", JNI_CACHE_CTOR);

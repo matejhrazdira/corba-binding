@@ -311,6 +311,11 @@
         },
         {
           "name": "SimpleStruct",
+          "members": [],
+          "CLASS": "ForwardStructDcl"
+        },
+        {
+          "name": "SimpleStruct",
           "members": [
             {
               "declarator": {
@@ -833,6 +838,76 @@
           "CLASS": "UnionType"
         },
         {
+          "name": "DefaultUnionFromEnum",
+          "type": {
+            "name": [
+              "SimpleEnum"
+            ],
+            "fullyQualified": false,
+            "CLASS": "ScopedName"
+          },
+          "fields": [
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "foo",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "EN_VAL_A"
+                        ],
+                        "fullyQualified": false,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                },
+                {
+                  "expression": {
+                    "elements": [
+                      {
+                        "name": [
+                          "EN_VAL_B"
+                        ],
+                        "fullyQualified": false,
+                        "CLASS": "ScopedName"
+                      }
+                    ],
+                    "CLASS": "ConstExp"
+                  },
+                  "CLASS": "ExpressionLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            },
+            {
+              "type": {
+                "CLASS": "StringType"
+              },
+              "declarator": {
+                "name": "bar",
+                "CLASS": "Declarator"
+              },
+              "labels": [
+                {
+                  "CLASS": "DefaultLabel"
+                }
+              ],
+              "CLASS": "UnionField"
+            }
+          ],
+          "CLASS": "UnionType"
+        },
+        {
           "name": "NoMemberException",
           "members": [],
           "CLASS": "ExceptDcl"
@@ -886,6 +961,45 @@
                 "CLASS": "StringType"
               },
               "params": [],
+              "exceptions": [],
+              "CLASS": "Operation"
+            },
+            {
+              "name": "methodWithTypedefedValues",
+              "oneway": false,
+              "returnType": {
+                "name": [
+                  "time"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "params": [
+                {
+                  "name": "timeArg",
+                  "direction": "IN",
+                  "type": {
+                    "name": [
+                      "time"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                },
+                {
+                  "name": "structArg",
+                  "direction": "OUT",
+                  "type": {
+                    "name": [
+                      "typedefedStruct"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  },
+                  "CLASS": "Param"
+                }
+              ],
               "exceptions": [],
               "CLASS": "Operation"
             },
@@ -2112,6 +2226,87 @@
     "name": {
       "name": [
         "SimpleIdl",
+        "DefaultUnionFromEnum"
+      ],
+      "fullyQualified": true,
+      "CLASS": "ScopedName"
+    },
+    "element": {
+      "name": "DefaultUnionFromEnum",
+      "type": {
+        "name": [
+          "SimpleEnum"
+        ],
+        "fullyQualified": false,
+        "CLASS": "ScopedName"
+      },
+      "fields": [
+        {
+          "type": {
+            "CLASS": "StringType"
+          },
+          "declarator": {
+            "name": "foo",
+            "CLASS": "Declarator"
+          },
+          "labels": [
+            {
+              "expression": {
+                "elements": [
+                  {
+                    "name": [
+                      "EN_VAL_A"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  }
+                ],
+                "CLASS": "ConstExp"
+              },
+              "CLASS": "ExpressionLabel"
+            },
+            {
+              "expression": {
+                "elements": [
+                  {
+                    "name": [
+                      "EN_VAL_B"
+                    ],
+                    "fullyQualified": false,
+                    "CLASS": "ScopedName"
+                  }
+                ],
+                "CLASS": "ConstExp"
+              },
+              "CLASS": "ExpressionLabel"
+            }
+          ],
+          "CLASS": "UnionField"
+        },
+        {
+          "type": {
+            "CLASS": "StringType"
+          },
+          "declarator": {
+            "name": "bar",
+            "CLASS": "Declarator"
+          },
+          "labels": [
+            {
+              "CLASS": "DefaultLabel"
+            }
+          ],
+          "CLASS": "UnionField"
+        }
+      ],
+      "CLASS": "UnionType"
+    },
+    "innerSymbol": false
+  },
+  {
+    "name": {
+      "name": [
+        "SimpleIdl",
         "NoMemberException"
       ],
       "fullyQualified": true,
@@ -2193,6 +2388,45 @@
             "CLASS": "StringType"
           },
           "params": [],
+          "exceptions": [],
+          "CLASS": "Operation"
+        },
+        {
+          "name": "methodWithTypedefedValues",
+          "oneway": false,
+          "returnType": {
+            "name": [
+              "time"
+            ],
+            "fullyQualified": false,
+            "CLASS": "ScopedName"
+          },
+          "params": [
+            {
+              "name": "timeArg",
+              "direction": "IN",
+              "type": {
+                "name": [
+                  "time"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Param"
+            },
+            {
+              "name": "structArg",
+              "direction": "OUT",
+              "type": {
+                "name": [
+                  "typedefedStruct"
+                ],
+                "fullyQualified": false,
+                "CLASS": "ScopedName"
+              },
+              "CLASS": "Param"
+            }
+          ],
           "exceptions": [],
           "CLASS": "Operation"
         },

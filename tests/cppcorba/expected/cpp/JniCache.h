@@ -28,6 +28,7 @@ struct JniCache {
 						jfieldID uintMember;
 						jfieldID longMember;
 						jfieldID ulongMember;
+						jfieldID longArr;
 						jfieldID includedMember;
 						jfieldID fullyScopedIncludedMember;
 						jfieldID duplicate1;

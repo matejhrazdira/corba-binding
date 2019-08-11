@@ -23,6 +23,7 @@
 ::SimpleIdl::SimpleEnum::EN_VAL_C
 ::SimpleIdl::SimpleUnion
 ::SimpleIdl::WeirdUnion
+::SimpleIdl::DefaultUnionFromEnum
 ::SimpleIdl::NoMemberException
 ::SimpleIdl::ExceptionWithMembers
 ::SimpleIdl::SimpleIdlInterface

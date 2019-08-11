@@ -16,10 +16,6 @@
 
 package com.matejhrazdira.cbsample;
 
-import java.io.File;
-
-import org.junit.Test;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matejhrazdira.cbsample.generated.CorbaException;
@@ -27,9 +23,16 @@ import com.matejhrazdira.cbsample.generated.CorbaProvider;
 import com.matejhrazdira.cbsample.generated.EventConsumer;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleServer.NestedException;
+import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleStruct;
 import com.matejhrazdira.cbsample.generated.SimpleIdl.SimpleUnion;
+import com.matejhrazdira.cbsample.generated.SimpleIdl.StructWithRealArrays;
 
+import org.junit.Test;
 
+import java.io.File;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CorbaProviderTest {
@@ -101,8 +104,40 @@ public class CorbaProviderTest {
 			}
 			provider._dispose_();
 		}
-
 	}
+
+	@Test
+	public void getSomeArrays() throws CorbaException {
+
+		CorbaProvider provider = new CorbaProvider(
+				new String[] {
+						"-ORBDottedDecimalAddresses", "1",
+						"-ORBInitRef", "NameService=corbaloc:iiop::2809/NameService",
+				}
+		);
+		getServerStr("EventService");
+
+		try {
+			SimpleServer simpleServer = provider.resolve(SimpleServer.class, getServerStr("SimpleServer"));
+			assertNotNull(simpleServer);
+			StructWithRealArrays arg = new StructWithRealArrays().builder().withStringMember("foo").build();
+			arg.longArr[1] = 123;
+			arg.structArr[1] = new SimpleStruct("foo bar baz", 567);
+			StructWithRealArrays structWithArray = simpleServer.getStructWithArray(arg);
+			System.out.println("received: " + GSON.toJson(structWithArray));
+			assertArrayEquals(new int[] {0, 2, 4, 6, 8}, structWithArray.longArr);
+			assertEquals("Hello from array!", structWithArray.structArr[1].stringMember);
+			simpleServer._dispose_();
+		} finally {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// ignore
+			}
+			provider._dispose_();
+		}
+	}
+
 
 	@Test
 	public void catchNestedException() throws CorbaException {

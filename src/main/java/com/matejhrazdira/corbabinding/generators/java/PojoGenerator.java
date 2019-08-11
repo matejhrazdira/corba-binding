@@ -16,11 +16,22 @@
 
 package com.matejhrazdira.corbabinding.generators.java;
 
-import com.matejhrazdira.corbabinding.generators.java.projection.*;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjectionProvider;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaTemplateProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjectionProvider;
 import com.matejhrazdira.corbabinding.idl.IdlElement;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
-import com.matejhrazdira.corbabinding.idl.definitions.*;
+import com.matejhrazdira.corbabinding.idl.definitions.ConstDcl;
+import com.matejhrazdira.corbabinding.idl.definitions.EnumType;
+import com.matejhrazdira.corbabinding.idl.definitions.ExceptDcl;
+import com.matejhrazdira.corbabinding.idl.definitions.ForwardStructDcl;
+import com.matejhrazdira.corbabinding.idl.definitions.Module;
+import com.matejhrazdira.corbabinding.idl.definitions.StructType;
+import com.matejhrazdira.corbabinding.idl.definitions.TypeDeclarator;
+import com.matejhrazdira.corbabinding.idl.definitions.UnionType;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.interfaces.Declaration;
 import com.matejhrazdira.corbabinding.idl.interfaces.ForwardDeclaration;
@@ -99,6 +110,8 @@ public class PojoGenerator {
 		File file = getFileForName(s.name);
 		if (element instanceof ExceptDcl) {
 			mOutputListener.onInfo("Creating class for exception '" + s.name.getQualifiedName() + "'.");
+		} else if (element instanceof ForwardStructDcl) {
+			mOutputListener.onInfo("Ignoring forward declaration '" + s.name.getQualifiedName() + "'.");
 		} else if (element instanceof StructType) {
 			mOutputListener.onInfo("Creating class for struct '" + s.name.getQualifiedName() + "' in '" + file.getAbsolutePath() + "'.");
 		} else if (element instanceof UnionType) {
@@ -111,7 +124,7 @@ public class PojoGenerator {
 			// ignore, it is part of the enum
 		} else if (element instanceof TypeDeclarator) {
 			mOutputListener.onInfo("Ignoring typedef '" + s.name.getQualifiedName() + "'.");
-		} else if (element instanceof Module){
+		} else if (element instanceof Module) {
 			mOutputListener.onInfo("Entering module '" + s.name.getQualifiedName() + "'.");
 		} else if (element instanceof ForwardDeclaration) {
 			mOutputListener.onInfo("Ignoring forward declaration '" + s.name.getQualifiedName() + "'.");

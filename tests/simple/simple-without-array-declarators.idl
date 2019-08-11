@@ -5,6 +5,18 @@ module IncludedIdl {
   };
 };
 
+#ifdef DEFINE_1
+// ...
+#endif
+
+#ifdef DEFINE_2
+// ...
+#endif /* DEFINE_2 */
+
+#ifdef DEFINE_3
+// ...
+#endif // DEFINE_3
+
 module SimpleIdl
 {
 
@@ -20,6 +32,8 @@ module SimpleIdl
 
   typedef long long someReally, someReallyWeird, someReallyWeirdTypedef;
 
+  struct SimpleStruct;
+
   struct SimpleStruct
   {
     string stringMember;
@@ -28,6 +42,8 @@ module SimpleIdl
     unsigned long uintMember;
     long long longMember;
     unsigned long long ulongMember;
+    long longArr[5];
+    IncludedIdl::IncludedStruct includedStructArr[3];
     IncludedIdl::IncludedStruct includedMember;
     ::IncludedIdl::IncludedStruct fullyScopedIncludedMember;
     string duplicate1, duplicate2;

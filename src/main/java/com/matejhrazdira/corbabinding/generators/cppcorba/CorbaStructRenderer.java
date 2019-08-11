@@ -22,6 +22,7 @@ import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProje
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
+import com.matejhrazdira.corbabinding.idl.types.ArrayType;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
 import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.util.OutputListener;
@@ -45,11 +46,20 @@ public class CorbaStructRenderer extends AbsCorbaStructRenderer {
 			if (!(type instanceof PrimitiveType)) {
 				localRefs.add(name);
 			}
-			writer.writeln(
-					mJniJavaTypeRenderer.render(type), " ", name, " = ", JniConfig.CONVERSION_FUNCTION,  "(",
-					JniConfig.ARG_JNI_ENV, ", ", JniConfig.CONVERSION_IN_ARG, ".", name ,
-					");"
-			);
+			if (type instanceof ArrayType) {
+				writer.writeln(mJniJavaTypeRenderer.render(type), " ", name, ";");
+				writer.writeln(
+						JniConfig.ARRAY_CONVERSION_FUNCTION,  "(",
+						JniConfig.ARG_JNI_ENV, ", ", JniConfig.CONVERSION_IN_ARG, ".", name , ", ", name,
+						");"
+				);
+			} else {
+				writer.writeln(
+						mJniJavaTypeRenderer.render(type), " ", name, " = ", JniConfig.CONVERSION_FUNCTION,  "(",
+						JniConfig.ARG_JNI_ENV, ", ", JniConfig.CONVERSION_IN_ARG, ".", name ,
+						");"
+				);
+			}
 		}
 		return localRefs;
 	}
@@ -63,9 +73,15 @@ public class CorbaStructRenderer extends AbsCorbaStructRenderer {
 			final Member member = members.get(i);
 			Type type = member.type;
 			String name = member.declarator.name;
+			String typeCast;
+			if (type instanceof ArrayType) {
+				typeCast = "(" + mJniJavaTypeRenderer.render(type) + ") ";
+			} else {
+				typeCast = "";
+			}
 			writer.writeln(
 					mJniJavaTypeRenderer.render(type), " ", name,
-					" = ",
+					" = ", typeCast,
 					jniCall(
 							mJniFieldAccessRenderer.getMethod(type),
 							JniConfig.CONVERSION_IN_ARG,
@@ -73,8 +89,15 @@ public class CorbaStructRenderer extends AbsCorbaStructRenderer {
 					),
 					";"
 			);
+
+			String conversionFunction;
+			if (type instanceof ArrayType) {
+				conversionFunction = JniConfig.ARRAY_CONVERSION_FUNCTION;
+			} else {
+				conversionFunction = JniConfig.CONVERSION_FUNCTION;
+			}
 			writer.writeln(
-					JniConfig.CONVERSION_FUNCTION, "(",
+					conversionFunction, "(",
 					JniConfig.ARG_JNI_ENV, ", ",
 					name, ", ",
 					JniConfig.CONVERSION_OUT_ARG, ".", name,

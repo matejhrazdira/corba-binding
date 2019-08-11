@@ -16,7 +16,6 @@
 
 package com.matejhrazdira.corbabinding.generators.java;
 
-import com.matejhrazdira.corbabinding.CorbabindingException;
 import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjection;
@@ -49,14 +48,12 @@ public class StructRenderer extends JavaClassRenderer implements JavaStructProje
 	private List<Member> getMembers(final Symbol symbol) {
 		StructType struct = (StructType) symbol.element;
 		ArrayList<Member> result = new ArrayList<>(struct.members.size());
-		for (final Member member : struct.members) {
+		for (Member member : struct.members) {
 			if (member.declarator instanceof ArrayDeclarator) {
-				throw new CorbabindingException(
-						"Can't generate field " + member.declarator.name +
-								" in " + symbol.name.getQualifiedName() +
-								" : Array declarators are not supported");
+				ArrayDeclarator arrayDeclarator = (ArrayDeclarator) member.declarator;
+				logw("Array declarator in " + symbol.name.getQualifiedName() + " : " + arrayDeclarator.name + " with " + arrayDeclarator.dimensions.size() + " dimensions");
 			}
-			result.add(new Member(member.declarator, getJavaType(member.type)));
+			result.add(new Member(member.declarator, getJavaType(member)));
 		}
 		return result;
 	}
