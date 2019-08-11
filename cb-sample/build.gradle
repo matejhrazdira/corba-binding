@@ -41,7 +41,7 @@ task corbaBinding(type: Exec) {
     def cbCpp = fileTree(dir: 'src/main/cpp-cb', include: '**/*.*')
     outputs.files cbJava + cbCpp
     workingDir 'src/main'
-    commandLine "java", "-jar", "../../../build/libs/corbabinding-0.04.000.jar", "idl/Config.json"
+    commandLine "java", "-jar", "../../../build/libs/corbabinding-0.04.001.jar", "idl/Config.json"
 }
 
 task corbaBindingClean(type: Delete) {
