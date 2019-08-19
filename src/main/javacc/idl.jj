@@ -29,6 +29,7 @@
 options
 {
   STATIC = false ;
+  UNICODE_INPUT = true ;
 }
 PARSER_BEGIN(IdlParser)
 package com.matejhrazdira.corbabinding.gen;
