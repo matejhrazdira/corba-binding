@@ -104,6 +104,11 @@ public class ScopedName extends IdlElement implements Type, ExpressionElement {
 	}
 
 	@Override
+	public String toString() {
+		return "ScopedName(" + getQualifiedName() + ")";
+	}
+
+	@Override
 	public ScopedName resolved(IdlElement scope, final SymbolResolver resolver) {
 		return resolver.resolve(this, scope);
 	}

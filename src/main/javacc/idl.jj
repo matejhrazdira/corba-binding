@@ -569,7 +569,10 @@ Definition type_dcl() :
   |
     result = struct_type_fwddcl()
   |
+    LOOKAHEAD(3)
     result = union_type()
+  |
+    result = union_type_fwddcl()
   |
     result = enum_type()
   )
@@ -898,6 +901,16 @@ StructType struct_type_fwddcl() :
 }
 {
   "struct"
+  name = identifier()
+  { return new ForwardStructDcl(name); }
+}
+
+StructType union_type_fwddcl() :
+{
+  String name;
+}
+{
+  "union"
   name = identifier()
   { return new ForwardStructDcl(name); }
 }

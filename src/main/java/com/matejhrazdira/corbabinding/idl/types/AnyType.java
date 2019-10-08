@@ -21,4 +21,9 @@ public class AnyType implements Type {
 	public void accept(TypeVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "AnyType";
+	}
 }

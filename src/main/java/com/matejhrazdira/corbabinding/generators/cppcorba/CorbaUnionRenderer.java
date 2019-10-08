@@ -21,12 +21,16 @@ import com.matejhrazdira.corbabinding.generators.ExpressionRenderer;
 import com.matejhrazdira.corbabinding.generators.SwitchData;
 import com.matejhrazdira.corbabinding.generators.SwitchData.SwitchDataBuilder;
 import com.matejhrazdira.corbabinding.generators.SwitchRenderingUtility;
-import com.matejhrazdira.corbabinding.generators.java.projection.*;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaUnionProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.definitions.unionmembers.UnionField;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
+import com.matejhrazdira.corbabinding.idl.types.SequenceType;
 import com.matejhrazdira.corbabinding.idl.types.StringType;
 import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.util.Data;
@@ -109,7 +113,7 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 		String typeMembername = typeMember.declarator.name;
 		String jtypeMemberName = jvalueName(typeMembername);
 		writeJavaFieldAccess(writer, javaProjection, typeMember.type, typeMembername, jtypeMemberName);
-		writeConversionOfMemberFromJava(writer, typeMember.type, typeMembername, jtypeMemberName);
+		writeConversionOfMemberFromJava(writer, projection, typeMember.type, typeMembername, jtypeMemberName);
 		if (!(typeMember.type instanceof PrimitiveType)) {
 			writeDeleteLocalRef(writer, jtypeMemberName);
 		}
@@ -135,7 +139,7 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 
 	private void renderConversionFromJavaCaseBody(final SwitchData<Member> data, final Data<UnionField, Member> field) throws IOException {
 		LineWriter writer = data.writer;
-		JavaProjection projection = (JavaProjection) data.extra;
+		JavaUnionProjection projection = (JavaUnionProjection) data.extra;
 		String name = field.extra.declarator.name;
 		String jname = jvalueName(name);
 		Type type = field.extra.type;
@@ -143,7 +147,7 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 		if (type instanceof StringType) { // Needs special handling because of string being allocated dynamically. Since char * is not const, target should take ownership.
 			writer.writeln("char * ", name, " = ", JniConfig.CONVERSION_FUNCTION, "<char>", "(", JniConfig.ARG_JNI_ENV, ", ", jname, ")", ";");
 		} else {
-			writeConversionOfMemberFromJava(writer, field.data.type, name, jname); // use raw type -> takes care of typedefed sequences
+			writeConversionOfMemberFromJava(writer, projection, field.data.type, name, jname); // use raw type -> takes care of typedefed sequences
 		}
 		if (!(type instanceof PrimitiveType)) {
 			writeDeleteLocalRef(writer, jname);
@@ -164,8 +168,14 @@ public class CorbaUnionRenderer extends AbsCorbaStructRenderer {
 				";");
 	}
 
-	private void writeConversionOfMemberFromJava(final LineWriter writer, final Type type, final String name, final String jname) throws IOException {
-		writer.writeln(mCorbaTypeRenderer.render(type), " ", name, ";");
+	private void writeConversionOfMemberFromJava(final LineWriter writer, JavaUnionProjection projection, final Type type, final String name, final String jname) throws IOException {
+		if (type instanceof SequenceType) { // Needs special handling for anonymous types.
+			final ScopedName anonymousType = ScopedName.nameInScope(projection.symbol.name,"_" + name + "_seq");
+			writer.writeln(mCorbaScopedRenderer.render(anonymousType), " ", name, ";");
+			logw("Handled anonymous sequence type " + type + ".");
+		} else {
+			writer.writeln(mCorbaTypeRenderer.render(type), " ", name, ";");
+		}
 		writer.writeln(
 				JniConfig.CONVERSION_FUNCTION, "(", JniConfig.ARG_JNI_ENV, ", ", jname, ", ", name, ")", ";"
 		);

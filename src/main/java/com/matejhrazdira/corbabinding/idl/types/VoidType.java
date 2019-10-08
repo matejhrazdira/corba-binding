@@ -22,4 +22,9 @@ public class VoidType implements Type {
 	public void accept(final TypeVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "VoidType";
+	}
 }

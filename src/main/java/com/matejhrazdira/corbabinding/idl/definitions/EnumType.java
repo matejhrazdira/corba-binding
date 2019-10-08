@@ -70,4 +70,9 @@ public class EnumType extends IdlElement implements Definition, Type {
 	public void accept(TypeVisitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "EnumType(" + name + ")";
+	}
 }

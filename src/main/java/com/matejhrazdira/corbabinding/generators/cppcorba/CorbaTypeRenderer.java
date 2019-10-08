@@ -79,7 +79,7 @@ public class CorbaTypeRenderer extends TypeRenderer {
 
 	@Override
 	protected String render(final SequenceType sequence) {
-		throw new CorbabindingException("SequenceType is not supported, should be handled by template resolution.");
+		throw new CorbabindingException("SequenceType is not supported, should be handled by template resolution. (Element type: '" + sequence.elementType + ")");
 	}
 
 	@Override

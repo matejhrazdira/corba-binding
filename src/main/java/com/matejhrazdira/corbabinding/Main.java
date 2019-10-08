@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import com.matejhrazdira.corbabinding.Params.ParamsBuilder;
 import com.matejhrazdira.corbabinding.gen.IdlParser;
 import com.matejhrazdira.corbabinding.gen.IdlParser.OutputListener;
 import com.matejhrazdira.corbabinding.gen.ParseException;
@@ -29,9 +28,12 @@ import com.matejhrazdira.corbabinding.generators.cppcorba.CppCorbaGeneratorBuild
 import com.matejhrazdira.corbabinding.generators.java.PojoGenerator;
 import com.matejhrazdira.corbabinding.idl.Specification;
 import com.matejhrazdira.corbabinding.model.Model;
-import com.matejhrazdira.corbabinding.util.NoOpOutputListener;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,7 +99,7 @@ public class Main {
 					.withUnionProjectionProvider(pojoGenerator.getUnionProjection())
 					.withJavaTemplateProjection(pojoGenerator.getTemplateProjection())
 					.withInterfaceProjectionProvider(pojoGenerator.getInterfaceProjection())
-					.withOutputListener(new NoOpOutputListener())
+					.withOutputListener(outputListener)
 					.createCppCorbaGenerator();
 			cppCorbaGenerator.generate(model);
 

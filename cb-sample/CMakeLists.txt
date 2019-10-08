@@ -2,6 +2,16 @@ cmake_minimum_required(VERSION 3.1)
 
 project(cb-sample)
 
+if (DEFINED ENV{ACE_TAO_HOME})
+	set(ACE_TAO_HOME $ENV{ACE_TAO_HOME})
+	set(TAO_IDL "${ACE_TAO_HOME}/bin/tao_idl")
+	set(CMAKE_CXX_FLAGS -I${ACE_TAO_HOME}/include ${CMAKE_CXX_FLAGS})
+	set(CMAKE_SHARED_LINKER_FLAGS -L${ACE_TAO_HOME}/lib ${CMAKE_SHARED_LINKER_FLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS -L${ACE_TAO_HOME}/lib ${CMAKE_EXE_LINKER_FLAGS})
+else()
+	set(TAO_IDL "tao_idl")
+endif()
+
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(JNI)
@@ -22,7 +32,7 @@ foreach(GENERATE_IDL ${IDLS})
 	list(APPEND IDL_COMPILED_FILES ${OUT_NAME}C.h ${OUT_NAME}C.cpp ${OUT_NAME}S.h ${OUT_NAME}S.cpp)
 	add_custom_command(
 		OUTPUT ${OUT_NAME}C.h ${OUT_NAME}C.cpp ${OUT_NAME}S.h ${OUT_NAME}S.cpp
-		COMMAND tao_idl -aw -Cw -GI -o ./src/main/cpp-tao/ -Isrc/main/idl ${GENERATE_IDL}
+		COMMAND ${TAO_IDL} -aw -Cw -GI -o ./src/main/cpp-tao/ -Isrc/main/idl ${GENERATE_IDL}
 		COMMENT "Processing ${GENERATE_IDL}"
 	)
 endforeach(GENERATE_IDL)
