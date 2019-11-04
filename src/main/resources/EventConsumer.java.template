@@ -19,12 +19,12 @@ package $$$PACKAGE$$$;
 
 public abstract class $$$CLS_NAME$$$<T> implements $$$DISPOSABLE$$$ {
 
-	private static final int NULL_PTR = 0x0;
+	private static final long NULL_PTR = 0x0;
 
 	private long mNativeConsumer = NULL_PTR;
 
-	public $$$CLS_NAME$$$(final $$$CORBA_PROVIDER$$$ corbaProvider, int subscription, Class<T> eventClass) throws $$$CORBA_SYS_EXCEPTION$$$ {
-		mNativeConsumer = connectConsumer(corbaProvider.getNativeWrapper(), subscription, eventClass.getName());
+	public $$$CLS_NAME$$$(final $$$EVENT_SERVICE$$$ eventService, int subscription, Class<T> eventClass) throws $$$CORBA_SYS_EXCEPTION$$$ {
+		mNativeConsumer = connectConsumer(eventService.getNativeWrapper(), subscription, eventClass.getName());
 	}
 
 	private native long connectConsumer(final long nativeWrapper, final int subscription, final String name) throws $$$CORBA_SYS_EXCEPTION$$$;

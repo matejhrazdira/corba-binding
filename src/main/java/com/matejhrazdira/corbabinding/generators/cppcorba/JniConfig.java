@@ -44,6 +44,8 @@ public class JniConfig {
 	public static final String JNI_CACHE_VAR_SET = "_set_";
 	public static final String JNI_CACHE_ITEM_CORBA_EXCEPTION = "_corba_exception_";
 	public static final String JNI_CACHE_ITEM_ALREADY_DISPOSED_EXCEPTION = "_already_disposed_exception_";
+	public static final String JNI_CACHE_ITEM_EVENT_CONSUMER = "_event_consumer_";
+	public static final String JNI_CACHE_EVENT_CONSUMER_CALLBACK = "_callback_";
 
 	public static final String IDL_SUFFIX = ".idl";
 	public static final String JNI_CACHE_H = "JniCache.h";
@@ -59,8 +61,10 @@ public class JniConfig {
 
 	public static final String TYPE_CACHE_INTERFACE_TABLE = "mInterfaceTable";
 	public static final String TYPE_CACHE_ANY_TABLE = "mAnyTable";
+	public static final String TYPE_CACHE_TO_ANY_TABLE = "mToAnyTable";
 	public static final String TYPE_CACHE_CONVERT_OBJ = "convertObject";
 	public static final String TYPE_CACHE_CONVERT_ANY = "convertAny";
+	public static final String TYPE_CACHE_CONVERT_TO_ANY = "convertToAny";
 
 	public static final String UTF_8_DEFINE = "CB_CORBA_USES_UTF_8";
 
@@ -88,10 +92,14 @@ public class JniConfig {
 		res.put("$$$CACHE_ALREADY_DISPOSED_EXCEPTION$$$", JNI_CACHE_ITEM_ALREADY_DISPOSED_EXCEPTION);
 		res.put("$$$CORBA_EXCEPTION_TYPE_SIG$$$", jniScopedRenderer.render(projection.corbaExceptionClass));
 		res.put("$$$ALREADY_DISPOSED_EXCEPTION_TYPE_SIG$$$", jniScopedRenderer.render(projection.alreadyDisposedExceptionClass));
+		res.put("$$$CACHE_EVENT_CONSUMER$$$", JNI_CACHE_ITEM_EVENT_CONSUMER);
+		res.put("$$$EVENT_CONSUMER_CALLBACK$$$", JNI_CACHE_EVENT_CONSUMER_CALLBACK);
 		res.put("$$$EVENT_CONSUMER_TYPE_SIG$$$", jniScopedRenderer.render(projection.eventConsumerClass));
 		res.put("$$$EVENT_CONSUMER_CALLBACK_NAME$$$", TemplateRenderer.EVENT_CONSUMER_CALLBACK);
 		res.put("$$$CORBA_PROVIDER_JNI_SIG$$$", jniImplMethodNameRenderer.render(projection.corbaProviderClass));
+		res.put("$$$EVENT_SERVICE_JNI_SIG$$$", jniImplMethodNameRenderer.render(projection.eventServiceClass));
 		res.put("$$$EVENT_CONSUMER_JNI_SIG$$$", jniImplMethodNameRenderer.render(projection.eventConsumerClass));
+		res.put("$$$EVENT_PRODUCER_JNI_SIG$$$", jniImplMethodNameRenderer.render(projection.eventProducerClass));
 		res.put("$$$CONVERT_ELEMENT$$$", CONVERSION_FUNCTION + "Element");
 		res.put("$$$ELEMENT$$$", "_element_");
 		res.put("$$$JSTRING_CHARS_VAR$$$", "_j_string_chars_");
@@ -100,6 +108,8 @@ public class JniConfig {
 		res.put("$$$TYPE_CACHE_CONVERT_OBJ$$$", TYPE_CACHE_CONVERT_OBJ);
 		res.put("$$$TYPE_CACHE_ANY_TABLE$$$", TYPE_CACHE_ANY_TABLE);
 		res.put("$$$TYPE_CACHE_CONVERT_ANY$$$", TYPE_CACHE_CONVERT_ANY);
+		res.put("$$$TYPE_CACHE_TO_ANY_TABLE$$$", TYPE_CACHE_TO_ANY_TABLE);
+		res.put("$$$TYPE_CACHE_CONVERT_TO_ANY$$$", TYPE_CACHE_CONVERT_TO_ANY);
 		res.put("$$$CORBA_ENCODING$$$", corbaEncoding);
 		res.put("$$$UTF_8_DEFINE$$$", UTF_8_DEFINE);
 		return res;

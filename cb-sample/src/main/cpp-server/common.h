@@ -6,14 +6,18 @@
 #include <ace/String_Base.h>
 #include <tao/Exception.h>
 
+#include <algorithm>
 #include <iostream>
 
 using namespace testutil;
 
 inline Log getLog(const std::string & tag) { return Log(tag, std::cout, std::cout, std::cerr); }
+inline Log getLog(const StringBuilder & tag) { return Log(tag.c_str(), std::cout, std::cout, std::cerr); }
 
 inline StringBuilder & operator<<(StringBuilder & sb, const CORBA::Exception & e) {
-	return sb << "CORBA::Exception: " << e._name() << " /// " << e._info().c_str() << " /// " << e._rep_id();
+	std::string info = e._info().c_str();
+	std::replace(info.begin(), info.end(), '\n', ' ');
+	return sb << "CORBA::Exception: " << e._name() << "; " << info;
 }
 
 #endif /* SRC_COMMON_H_ */

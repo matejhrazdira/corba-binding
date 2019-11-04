@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-public class LineWriter {
+public class LineWriter implements AutoCloseable {
 
 	private final String mIndentation;
 	private final Writer mWriter;
@@ -120,6 +120,7 @@ public class LineWriter {
 		}
 	}
 
+	@Override
 	public void close() {
 		try {
 			mWriter.close();

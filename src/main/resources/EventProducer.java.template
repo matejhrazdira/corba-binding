@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2016 Matej Hrazdira.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+$$$ BGN $$$
+package $$$PACKAGE$$$;
+
+public class $$$CLS_NAME$$$<T> implements $$$DISPOSABLE$$$ {
+
+	private static final int NULL_PTR = 0x0;
+
+	private long mNativeProducer = NULL_PTR;
+
+	public $$$CLS_NAME$$$(final $$$EVENT_SERVICE$$$ eventService, int source, int subscription, Class<T> eventClass) throws $$$CORBA_SYS_EXCEPTION$$$ {
+		mNativeProducer = connectProducer(eventService.getNativeWrapper(), source, subscription, eventClass.getName());
+	}
+
+	private native long connectProducer(final long nativeWrapper, final int source, final int subscription, final String name) throws $$$CORBA_SYS_EXCEPTION$$$;
+
+	public void pushEvent(final T eventData) throws CorbaException {
+		if (mNativeProducer == NULL_PTR) {
+			throw new AlreadyDisposedException();
+		}
+		pushEventImpl(mNativeProducer, eventData);
+	}
+
+	private native void pushEventImpl(final long nativeWrapper, final T eventData) throws CorbaException;
+
+	@Override
+	public Void $$$DISPOSE$$$() throws $$$CORBA_SYS_EXCEPTION$$$ {
+		if (mNativeProducer != NULL_PTR) {
+			disposeImpl(mNativeProducer);
+			mNativeProducer = NULL_PTR;
+		}
+		return null;
+	}
+
+	private native void disposeImpl(final long nativeWrapper) throws $$$CORBA_SYS_EXCEPTION$$$;
+}

@@ -21,7 +21,7 @@ namespace corbabinding {
 
 JniCache::JniCache(JNIEnv * $$$ENV$$$) {
 
-	$$$ JNI CACHE IMPL $$$
+$$$ JNI CACHE IMPL $$$
 	{
 		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("java/lang/Boolean");
 		java.lang.Boolean.$$$CLS$$$ = (jclass) $$$ENV$$$->NewGlobalRef($$$CLS$$$);
@@ -105,9 +105,9 @@ JniCache::JniCache(JNIEnv * $$$ENV$$$) {
 		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 	{
-		jclass _cls_ = _env_->FindClass("$$$EVENT_CONSUMER_TYPE_SIG$$$");
-		_impl_._event_consumer_._callback_ = _env_->GetMethodID(_cls_, "$$$EVENT_CONSUMER_CALLBACK_NAME$$$", "(Ljava/lang/Object;)V");
-		_env_->DeleteLocalRef(_cls_);
+		jclass $$$CLS$$$ = $$$ENV$$$->FindClass("$$$EVENT_CONSUMER_TYPE_SIG$$$");
+		$$$CACHE_IMPL$$$.$$$CACHE_EVENT_CONSUMER$$$.$$$EVENT_CONSUMER_CALLBACK$$$ = $$$ENV$$$->GetMethodID($$$CLS$$$, "$$$EVENT_CONSUMER_CALLBACK_NAME$$$", "(Ljava/lang/Object;)V");
+		$$$ENV$$$->DeleteLocalRef($$$CLS$$$);
 	}
 }
 

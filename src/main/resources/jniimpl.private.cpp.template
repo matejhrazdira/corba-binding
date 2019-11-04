@@ -29,13 +29,18 @@ namespace corbabinding {
 class TypeCache {
 public:
 	typedef jobject (* convertAnyImpl)(JNIEnv * env, const CORBA::Any & in);
+	typedef void (* convertToAnyImpl)(JNIEnv * env, const jobject in, CORBA::Any & out);
 	TypeCache();
 	virtual ~TypeCache();
 	jobject convert(JNIEnv * env, const char * name, CORBA::Object_ptr in);
 	convertAnyImpl getAnyConversion(const char * name);
+	convertToAnyImpl getToAnyConversion(const char * name);
 
 	static jobject convertAnyNoOp(JNIEnv * env, const CORBA::Any & any) {
 		return nullptr;
+	}
+
+	static void convertToAnyNoOp(JNIEnv * env, const jobject in, CORBA::Any & out) {
 	}
 
 private:
@@ -59,6 +64,14 @@ private:
 		} else {
 			return nullptr;
 		}
+	}
+
+	std::map<std::string, convertToAnyImpl> $$$TYPE_CACHE_TO_ANY_TABLE$$$;
+
+	template<typename T> static void $$$TYPE_CACHE_CONVERT_TO_ANY$$$(JNIEnv * env, const jobject in, CORBA::Any & out) {
+		T value;
+		::corbabinding::convert(env, in, value);
+		out <<= value;
 	}
 };
 
@@ -88,6 +101,15 @@ TypeCache::convertAnyImpl TypeCache::getAnyConversion(const char * name) {
 	}
 }
 
+TypeCache::convertToAnyImpl TypeCache::getToAnyConversion(const char * name) {
+	auto item = $$$TYPE_CACHE_TO_ANY_TABLE$$$.find(name);
+	if (item != $$$TYPE_CACHE_TO_ANY_TABLE$$$.end()) {
+		return item->second;
+	} else {
+		return convertToAnyNoOp;
+	}
+}
+
 class EventConsumer : public AnyEventConsumer {
 public:
 	EventConsumer(
@@ -109,7 +131,7 @@ public:
 			return;
 		}
 		jobject callbackData = mConversionImpl(env, any);
-		env->CallVoidMethod(mConsumer, $$$JNI$$$->$$$CACHE_IMPL$$$._event_consumer_._callback_, callbackData);
+		env->CallVoidMethod(mConsumer, $$$JNI$$$->$$$CACHE_IMPL$$$.$$$CACHE_EVENT_CONSUMER$$$.$$$EVENT_CONSUMER_CALLBACK$$$, callbackData);
 		env->DeleteLocalRef(callbackData);
 	}
 
@@ -139,6 +161,50 @@ private:
 #else /* ANDROID */
 			jint res = mJvm->AttachCurrentThread(&env, &threadParams);
 #endif /* ANDROID */
+			return env;
+		}
+	}
+};
+
+class EventProducer : public AbsEventProducer<jobject> {
+public:
+	EventProducer(
+			JNIEnv * env,
+			TypeCache * typeCache,
+			RtecEventComm::EventSourceID sourceId,
+			RtecEventComm::EventType type,
+			const char * typeName)
+		: AbsEventProducer(sourceId, type) {
+		mConversionImpl = typeCache->getToAnyConversion(typeName);
+		env->GetJavaVM(&mJvm);
+		mJniVersion = env->GetVersion();
+	}
+
+	virtual bool putData(CORBA::Any & event, const jobject & data) {
+		JNIEnv * env = attach();
+		if (!env) {
+			return false;
+		}
+		mConversionImpl(env, data, event);
+		return true;
+	}
+
+private:
+	JavaVM * mJvm;
+	jint mJniVersion;
+	TypeCache::convertToAnyImpl mConversionImpl;
+
+	JNIEnv * attach() {
+		JNIEnv * env = nullptr;
+		mJvm->GetEnv(reinterpret_cast<void**>(&env), mJniVersion);
+		if (env) {
+			return env;
+		} else {
+			JavaVMAttachArgs threadParams;
+			threadParams.version = mJniVersion;
+			threadParams.name = (char *) "EvnetProducer thread (native)";
+			threadParams.group = 0x0;
+			jint res = mJvm->AttachCurrentThread((void **) &env, &threadParams);
 			return env;
 		}
 	}
@@ -241,27 +307,6 @@ JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv * env, jobject 
 	return (jlong) result;
 }
 
-JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr) {
-	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-	char * eventServiceStr = getStringChars(env, jeventServiceStr);
-	try {
-		return nativeWrapper->connectEventService(eventServiceStr);
-	} catch (const CORBA::Exception & e) {
-		env->Throw(convert(env, e));
-	}
-	CORBA::string_free(eventServiceStr);
-}
-
-JNIEXPORT jboolean JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_eventServiceAliveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper) {
-	try {
-		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-		return nativeWrapper->eventServiceAlive();
-	} catch (const CORBA::Exception & e) {
-		env->Throw(convert(env, e));
-		return false;
-	}
-}
-
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {
 	try {
 		CORBA::String_var className = getStringChars(env, jclassName);
@@ -279,12 +324,41 @@ JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_disposeImpl(JNIEnv * env, jo
 	delete (NativeWrapper *) nativeWrapper;
 }
 
-JNIEXPORT jlong JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_connectConsumer(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jint subscription, jstring eventClass) {
-	NativeWrapper * nativeWrapper = ((NativeWrapper *) jnativeWrapper);
+JNIEXPORT jlong JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_init(JNIEnv * env, jobject thiz, jlong jNativeWrapper, jstring jeventServiceStr) {
+	NativeWrapper * nativeWrapper = (NativeWrapper *) jNativeWrapper;
+	CORBA::String_var eventServiceStr = getStringChars(env, jeventServiceStr);
+	return (jlong) new EventServiceWrapper(nativeWrapper, eventServiceStr);
+}
+
+JNIEXPORT void JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_connectImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	try {
+		EventServiceWrapper *wrapper = (EventServiceWrapper *) jwrapper;
+		wrapper->connect();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+}
+
+JNIEXPORT jboolean JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_isAliveImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	try {
+		EventServiceWrapper *wrapper = (EventServiceWrapper *) jwrapper;
+		return wrapper->isAlive();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return false;
+	}
+}
+
+JNIEXPORT void JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_disposeImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	delete (EventServiceWrapper *) jwrapper;
+}
+
+JNIEXPORT jlong JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_connectConsumer(JNIEnv * env, jobject thiz, jlong jwrapper, jint subscription, jstring eventClass) {
+	EventServiceWrapper * wrapper = ((EventServiceWrapper *) jwrapper);
 	CORBA::String_var className = getStringChars(env, eventClass);
 	EventConsumer * eventConsumer = new EventConsumer(env, thiz, sTypeCache, subscription, className.in());
 	try {
-		eventConsumer->connect(nativeWrapper);
+		eventConsumer->connect(wrapper);
 	} catch (const CORBA::Exception & e) {
 		env->Throw(convert(env, e));
 		delete eventConsumer;
@@ -293,12 +367,43 @@ JNIEXPORT jlong JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_connectConsumer(JNIEnv * en
 	return (jlong) eventConsumer;
 }
 
-JNIEXPORT void JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_disposeImpl(JNIEnv * env, jobject thiz, jlong nativeWrapper) {
-	EventConsumer * consumer = (EventConsumer *) nativeWrapper;
+JNIEXPORT void JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_disposeImpl(JNIEnv * env, jobject thiz, jlong jconsumer) {
+	EventConsumer * consumer = (EventConsumer *) jconsumer;
 	try {
 		consumer->disconnect();
 	} catch (const CORBA::Exception & e) {
 		// ignore
 	}
-	delete consumer;
+}
+
+JNIEXPORT jlong JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_connectProducer(JNIEnv * env, jobject thiz, jlong jwrapper, jint source, jint subscription, jstring eventClass) {
+	EventServiceWrapper * eventServiceWrapper = ((EventServiceWrapper *) jwrapper);
+	CORBA::String_var className = getStringChars(env, eventClass);
+	EventProducer * eventProducer = new EventProducer(env, sTypeCache, source, subscription, className.in());
+	try {
+		eventProducer->connect(eventServiceWrapper);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		delete eventProducer;
+		eventProducer = 0x0;
+	}
+	return (jlong) eventProducer;
+}
+
+JNIEXPORT void JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_pushEventImpl(JNIEnv * env, jobject thiz, jlong jproducer, jobject eventData) {
+	EventProducer * producer = (EventProducer *) jproducer;
+	try {
+		producer->push(eventData);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+}
+
+JNIEXPORT void JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_disposeImpl(JNIEnv * env, jobject thiz, jlong jproducer) {
+	EventProducer * producer = (EventProducer *) jproducer;
+	try {
+		producer->disconnect();
+	} catch (const CORBA::Exception & e) {
+		// ignore
+	}
 }

@@ -18,7 +18,6 @@ package com.matejhrazdira.corbabinding.generators.java;
 
 import com.matejhrazdira.corbabinding.generators.ScopedRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
-import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
@@ -28,7 +27,7 @@ import com.matejhrazdira.corbabinding.util.OutputListener;
 import java.io.IOException;
 import java.io.Writer;
 
-public abstract class AbsJavaRenderer implements JavaProjectionProvider {
+public abstract class AbsJavaRenderer implements JavaRenderer {
 
 	protected final String INDENTATION = "\t";
 
@@ -47,6 +46,7 @@ public abstract class AbsJavaRenderer implements JavaProjectionProvider {
 		mOutputListener = outputListener != null ? outputListener : new NoOpOutputListener();
 	}
 
+	@Override
 	public void render(Writer output, Symbol symbol) throws IOException {
 		LineWriter writer = new LineWriter(INDENTATION, output);
 		ScopedName name = getJavaSymbolName(symbol);

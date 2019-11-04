@@ -4,6 +4,7 @@ namespace corbabinding {
 
 JniCache::JniCache(JNIEnv * _env_) {
 
+
 	{
 		jclass _cls_ = _env_->FindClass("java/lang/Boolean");
 		java.lang.Boolean._cls_ = (jclass) _env_->NewGlobalRef(_cls_);

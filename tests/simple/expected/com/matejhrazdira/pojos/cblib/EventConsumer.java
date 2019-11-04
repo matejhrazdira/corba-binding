@@ -1,13 +1,13 @@
-package com.matejhrazdira.pojos;
+package com.matejhrazdira.pojos.cblib;
 
 public abstract class EventConsumer<T> implements Disposable {
 
-	private static final int NULL_PTR = 0x0;
+	private static final long NULL_PTR = 0x0;
 
 	private long mNativeConsumer = NULL_PTR;
 
-	public EventConsumer(final CorbaProvider corbaProvider, int subscription, Class<T> eventClass) throws CorbaException {
-		mNativeConsumer = connectConsumer(corbaProvider.getNativeWrapper(), subscription, eventClass.getName());
+	public EventConsumer(final EventService eventService, int subscription, Class<T> eventClass) throws CorbaException {
+		mNativeConsumer = connectConsumer(eventService.getNativeWrapper(), subscription, eventClass.getName());
 	}
 
 	private native long connectConsumer(final long nativeWrapper, final int subscription, final String name) throws CorbaException;

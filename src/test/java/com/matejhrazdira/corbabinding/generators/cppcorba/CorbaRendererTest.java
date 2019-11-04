@@ -44,7 +44,7 @@ public class CorbaRendererTest {
 				.withJniCacheImpl(new LineWriter(INDENTATION, mJniCacheImpl))
 				.withConversionHeader(new LineWriter(INDENTATION, mConversionHeader))
 				.withConversionImpl(new LineWriter(INDENTATION, mConversionImpl))
-				.withJniImplPrivateImpl(new LineWriter(INDENTATION, mJniImplPrivate))
+				.withTypeCacheEntries(new LineWriter(INDENTATION, mJniImplPrivate))
 				.createCorbaOutput();
 	}
 }

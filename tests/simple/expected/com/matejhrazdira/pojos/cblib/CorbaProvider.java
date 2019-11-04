@@ -1,8 +1,8 @@
-package com.matejhrazdira.pojos;
+package com.matejhrazdira.pojos.cblib;
 
 public class CorbaProvider implements Disposable {
 
-	private static final int NULL_PTR = 0x0;
+	private static final long NULL_PTR = 0x0;
 
 	private long mNativeWrapper = NULL_PTR;
 
@@ -11,24 +11,6 @@ public class CorbaProvider implements Disposable {
 	}
 
 	private native long init(final String[] orbArgs) throws CorbaException;
-
-	public void connectEventService(final String eventServiceStr) throws CorbaException {
-		if (mNativeWrapper == NULL_PTR) {
-			throw new AlreadyDisposedException();
-		}
-		connectEventServiceImpl(mNativeWrapper, eventServiceStr);
-	}
-
-	private native void connectEventServiceImpl(final long nativeWrapper, final String eventServiceStr) throws CorbaException;
-
-	public boolean eventServiceAlive() throws CorbaException {
-		if (mNativeWrapper == NULL_PTR) {
-			throw new AlreadyDisposedException();
-		}
-		return eventServiceAliveImpl(mNativeWrapper);
-	}
-
-	private native boolean eventServiceAliveImpl(final long nativeWrapper) throws CorbaException;
 
 	public <T extends Disposable> T resolve(Class<T> cls, String corbaStr) throws CorbaException {
 		if (mNativeWrapper == NULL_PTR) {

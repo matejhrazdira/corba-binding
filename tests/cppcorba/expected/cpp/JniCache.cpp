@@ -119,9 +119,16 @@ JniCache::JniCache(JNIEnv * _env_) {
 		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/SimpleIdl/SimpleIdlInterface");
 		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
 
-		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(J)V");
 
-		com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_ = _env_->GetFieldID(_cls_, "_native_address_", "J");
+		_env_->DeleteLocalRef(_cls_);
+	}
+	{
+		jclass _cls_ = _env_->FindClass("com/matejhrazdira/pojos/cblib/client/SimpleIdl/SimpleIdlInterface");
+		_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._cls_ = (jclass) _env_->NewGlobalRef(_cls_);
+
+		_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._ctor_ = _env_->GetMethodID(_cls_, "<init>", "(J)V");
+
+		_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._native_address_ = _env_->GetFieldID(_cls_, "_native_address_", "J");
 
 		_env_->DeleteLocalRef(_cls_);
 	}

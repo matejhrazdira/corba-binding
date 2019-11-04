@@ -1,5 +1,5 @@
 group 'com.matejhrazdira.corbabinding'
-version '0.04.004'
+version '0.05.000'
 
 apply plugin: 'java'
 
@@ -62,4 +62,12 @@ task javacc(type: Exec) {
 
 compileJava {
     dependsOn javacc
+}
+
+assemble {
+    dependsOn jar
+}
+
+test {
+    dependsOn jar
 }

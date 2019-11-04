@@ -21,7 +21,6 @@ $$$ BGN $$$
 #include <orbsvcs/CosNamingC.h>
 #include <orbsvcs/RtecEventChannelAdminC.h>
 #include <orbsvcs/Event_Utilities.h>
-#include <orbsvcs/RtecEventChannelAdminC.h>
 #include <orbsvcs/RtecEventCommS.h>
 #include <tao/IORTable/IORTable.h>
 #include <tao/PortableServer/PortableServer.h>
@@ -39,16 +38,12 @@ public:
 
 class NativeWrapper {
 public:
-	NativeWrapper(int argc, ACE_TCHAR * argv[], ThreadCleanup * cleanup);
+	NativeWrapper(int argc, ACE_TCHAR * argv[], ThreadCleanup * cleanup = nullptr);
 
 	virtual ~NativeWrapper();
 
 	CosNaming::NamingContext_ptr getNameService() {
 		return mNameService.ptr();
-	}
-
-	RtecEventChannelAdmin::EventChannel_ptr getEventService() {
-		return mEventService.ptr();
 	}
 
 	PortableServer::POA_ptr getPoa() {
@@ -74,42 +69,61 @@ public:
 
 	CORBA::Object_ptr resolve(const char * corbaStr);
 
-	bool eventServiceAlive();
-
-	void connectEventService(const char * eventServiceStr);
-
 private:
 	CORBA::ORB_var mOrb;
 	PortableServer::POA_var mPoa;
 	PortableServer::POAManager_var mPoaManager;
 	CosNaming::NamingContext_var mNameService;
 	IORTable::Table_var mIorTable;
-	RtecEventChannelAdmin::EventChannel_var mEventService;
 	ACE_Thread_Manager mThreadManager;
 	ThreadCleanup * mThreadCleanup;
 
 	static void * runOrb(void * arg);
 };
 
+class EventServiceWrapper {
+public:
+	EventServiceWrapper(NativeWrapper * nativeWrapper, const char * eventServiceStr) : mNativeWrapper(nativeWrapper), mEventServiceStr(eventServiceStr) {}
+
+	RtecEventChannelAdmin::EventChannel_ptr getEventService() {
+		return mEventService.ptr();
+	}
+
+	PortableServer::POA_ptr getPoa() {
+		return mNativeWrapper->getPoa();
+	}
+
+	virtual ~EventServiceWrapper();
+
+	void connect();
+
+	bool isAlive();
+
+private:
+	NativeWrapper * mNativeWrapper;
+	CORBA::String_var mEventServiceStr;
+	RtecEventChannelAdmin::EventChannel_var mEventService;
+};
+
 class AnyEventConsumer: public POA_RtecEventComm::PushConsumer {
 public:
-	AnyEventConsumer(CORBA::ULong type) : mType(type) {}
+	AnyEventConsumer(CORBA::ULong type) : mType(type), mWrapper(nullptr) {}
 
 	virtual ~AnyEventConsumer() {}
 
-	void connect(NativeWrapper * nativeWraper) {
-		mNativeWrapper = nativeWraper;
+	void connect(EventServiceWrapper * wraper) {
+		mWrapper = wraper;
 		ACE_ConsumerQOS_Factory qos;
 		qos.start_disjunction_group();
 		qos.insert_type(mType, 0);
-		RtecEventChannelAdmin::EventChannel_ptr eventService = nativeWraper->getEventService();
+		RtecEventChannelAdmin::EventChannel_ptr eventService = wraper->getEventService();
 		if (CORBA::is_nil(eventService)) {
 			throw CORBA::UNKNOWN(0, CORBA::CompletionStatus::COMPLETED_NO);
 		}
 		RtecEventChannelAdmin::ConsumerAdmin_var consumerAdmin = eventService->for_consumers();
 		mSupplierProxy = consumerAdmin->obtain_push_supplier();
-		mMyself = _this();
-		mSupplierProxy->connect_push_consumer(mMyself.in(), qos.get_ConsumerQOS());
+		RtecEventComm::PushConsumer_var self = _this();
+		mSupplierProxy->connect_push_consumer(self.in(), qos.get_ConsumerQOS());
 	}
 
 	void push(const RtecEventComm::EventSet& data) {
@@ -123,10 +137,10 @@ public:
 
 	void disconnect() {
 		mSupplierProxy->disconnect_push_supplier();
-		PortableServer::POA_ptr poa = mNativeWrapper->getPoa();
-		PortableServer::ObjectId_var id = poa->reference_to_id(mMyself.ptr());
+		PortableServer::POA_ptr poa = mWrapper->getPoa();
+		PortableServer::ObjectId_var id = poa->servant_to_id(this);
 		poa->deactivate_object(id);
-		mMyself = RtecEventComm::PushConsumer::_nil();
+		_remove_ref();
 	}
 
 	void disconnect_push_consumer() {
@@ -136,7 +150,104 @@ public:
 private:
 	CORBA::ULong mType;
 	RtecEventChannelAdmin::ProxyPushSupplier_var mSupplierProxy;
-	RtecEventComm::PushConsumer_var mMyself;
+	EventServiceWrapper * mWrapper;
+};
+
+template<typename T>
+class AbsEventConsumer : public AnyEventConsumer {
+public:
+	AbsEventConsumer(CORBA::ULong type, const char * name = "EventConsumer") : AnyEventConsumer(type) {}
+
+	void onAnyEvent(const CORBA::Any & e) {
+		T * event;
+		if (e >>= event) {
+			onEvent(event);
+		}
+	}
+
+	virtual void onEvent(T * event) = 0;
+
+};
+
+template<typename T>
+class AbsEventProducer: public POA_RtecEventComm::PushSupplier {
+public:
+	AbsEventProducer(RtecEventComm::EventSourceID sourceId, RtecEventComm::EventType type) :
+		mSourceId(sourceId), mType(type), mWrapper(nullptr) {}
+
+	virtual ~AbsEventProducer() {}
+
+	void connect(EventServiceWrapper * wraper) {
+		mWrapper = wraper;
+		ACE_SupplierQOS_Factory qos;
+		qos.insert(mSourceId, mType, 0, 1);
+		RtecEventChannelAdmin::SupplierAdmin_var supplierAdmin = wraper->getEventService()->for_suppliers();
+		mConsumerProxy = supplierAdmin->obtain_push_consumer();
+		RtecEventComm::PushSupplier_var self = _this();
+		mConsumerProxy->connect_push_supplier(self.in(), qos.get_SupplierQOS());
+	}
+
+	void disconnect() {
+		mConsumerProxy->disconnect_push_consumer();
+		PortableServer::POA_ptr poa = mWrapper->getPoa();
+		PortableServer::ObjectId_var id = poa->servant_to_id(this);
+		poa->deactivate_object(id);
+		_remove_ref();
+	}
+
+	void disconnect_push_supplier(void) {
+		mConsumerProxy = RtecEventChannelAdmin::ProxyPushConsumer::_nil();
+	}
+
+	void push(const T & data) {
+		if (CORBA::is_nil(mConsumerProxy.in())) {
+			return;
+		}
+		RtecEventComm::EventSet eventSet(1);
+		eventSet.length(1);
+		RtecEventComm::Event &e = eventSet[0];
+		e.header.source = mSourceId;
+		e.header.type = mType;
+		if (!putData(e.data.any_value, data)) {
+			return;
+		}
+		mConsumerProxy->push(eventSet);
+		return;
+	}
+
+	virtual bool putData(CORBA::Any & event, const T & data) = 0;
+
+private:
+	RtecEventComm::EventSourceID mSourceId;
+	RtecEventComm::EventType mType;
+	RtecEventChannelAdmin::ProxyPushConsumer_var mConsumerProxy;
+	EventServiceWrapper * mWrapper;
+};
+
+template <typename T>
+class ServerWrapper {
+public:
+	ServerWrapper(T * servant) : mServant(servant), mNativeWrapper(nullptr) {}
+
+	~ServerWrapper() {
+		mServant->_remove_ref();
+	}
+
+	typename T::_stub_ptr_type activate(NativeWrapper * nativeWrapper) {
+		mNativeWrapper = nativeWrapper;
+		typename T::_stub_ptr_type servantSelf = mServant->_this();
+		return servantSelf;
+	}
+
+	void deactivate() {
+		PortableServer::POA_ptr poa = mNativeWrapper->getPoa();
+		PortableServer::ObjectId_var id = poa->servant_to_id(mServant);
+		poa->deactivate_object(id);
+		delete this;
+	}
+
+private:
+	T * mServant;
 	NativeWrapper * mNativeWrapper;
 };
 

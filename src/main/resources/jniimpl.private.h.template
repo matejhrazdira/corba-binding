@@ -26,17 +26,27 @@ extern "C" {
 
 JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv *, jobject, jobjectArray);
 
-JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr);
-
-JNIEXPORT jboolean JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_eventServiceAliveImpl(JNIEnv *, jobject, jlong);
-
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
 
 JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
 
+JNIEXPORT jlong JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_init(JNIEnv *, jobject, jlong, jstring);
+
+JNIEXPORT void JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_connectImpl(JNIEnv *, jobject, jlong);
+
+JNIEXPORT jboolean JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_isAliveImpl(JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL $$$EVENT_SERVICE_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
+
 JNIEXPORT jlong JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_connectConsumer(JNIEnv *, jobject, jlong, jint, jstring);
 
 JNIEXPORT void JNICALL $$$EVENT_CONSUMER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_connectProducer(JNIEnv *, jobject, jlong, jint, jint, jstring);
+
+JNIEXPORT void JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_pushEventImpl(JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT void JNICALL $$$EVENT_PRODUCER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

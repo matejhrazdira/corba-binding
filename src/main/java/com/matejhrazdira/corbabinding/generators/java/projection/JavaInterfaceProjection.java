@@ -27,10 +27,12 @@ public class JavaInterfaceProjection extends JavaStructProjection {
 
 	public final List<Operation> interfaceOperations;
 	public final Operation destructor;
+	public final ScopedName clientName;
 
-	public JavaInterfaceProjection(final Symbol symbol, final ScopedName name, final List<Member> members, final List<Operation> interfaceOperations, final Operation destructor) {
+	public JavaInterfaceProjection(final Symbol symbol, final ScopedName name, final List<Member> members, final List<Operation> interfaceOperations, final Operation destructor, final ScopedName clientName) {
 		super(symbol, name, members);
 		this.interfaceOperations = interfaceOperations;
 		this.destructor = destructor;
+		this.clientName = clientName;
 	}
 }

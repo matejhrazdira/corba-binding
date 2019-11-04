@@ -82,4 +82,12 @@ public class JniCacheHeaderWriter {
 			mCurrentScope.remove(lastIndex);
 		}
 	}
+
+	public void increaseLevel() {
+		mWriter.increaseLevel();
+	}
+
+	public void decreaseLevel() {
+		mWriter.decreaseLevel();
+	}
 }

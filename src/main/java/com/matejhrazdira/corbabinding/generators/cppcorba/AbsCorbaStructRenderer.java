@@ -20,9 +20,7 @@ import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjection;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
-import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
-import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.util.OutputListener;
 
 import java.io.IOException;
@@ -38,12 +36,19 @@ public abstract class AbsCorbaStructRenderer extends AbsCorbaWithMembersRenderer
 
 	@Override
 	protected void renderTypeCacheEntries(final JavaProjection projection) throws IOException {
-		LineWriter writer = mOutput.jniImplPrivateImpl;
+		LineWriter writer = mOutput.typeCacheEntries;
 		writer.writeln(
 				JniConfig.TYPE_CACHE_ANY_TABLE,
 				"[\"", mJavaScopedRenderer.render(projection.name) , "\"]",
 				" = ",
 				JniConfig.TYPE_CACHE_CONVERT_ANY, "<", mCorbaScopedRenderer.render(projection.symbol.name), ">",
+				";"
+		);
+		writer.writeln(
+				JniConfig.TYPE_CACHE_TO_ANY_TABLE,
+				"[\"", mJavaScopedRenderer.render(projection.name) , "\"]",
+				" = ",
+				JniConfig.TYPE_CACHE_CONVERT_TO_ANY, "<", mCorbaScopedRenderer.render(projection.symbol.name), ">",
 				";"
 		);
 	}

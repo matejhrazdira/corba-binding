@@ -25,7 +25,7 @@ namespace corbabinding {
 
 struct JniCache {
 	
-	$$$ JNI CACHE HEADER $$$
+$$$ JNI CACHE HEADER INTERFACE $$$
 	struct {
 		struct {
 			struct {
@@ -92,9 +92,12 @@ struct JniCache {
 			jmethodID $$$CTOR$$$;
 		} $$$CACHE_ALREADY_DISPOSED_EXCEPTION$$$;
 		struct {
-			jmethodID _callback_;
-		} _event_consumer_;
+			jmethodID $$$EVENT_CONSUMER_CALLBACK$$$;
+		} $$$CACHE_EVENT_CONSUMER$$$;
 	} $$$CACHE_IMPL$$$;
+	struct {
+$$$ JNI CACHE HEADER CLIENT $$$
+	} _client_;
 
 	JniCache(JNIEnv * $$$ENV$$$);
 	virtual ~JniCache();

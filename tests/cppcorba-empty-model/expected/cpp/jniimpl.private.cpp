@@ -12,13 +12,18 @@ namespace corbabinding {
 class TypeCache {
 public:
 	typedef jobject (* convertAnyImpl)(JNIEnv * env, const CORBA::Any & in);
+	typedef void (* convertToAnyImpl)(JNIEnv * env, const jobject in, CORBA::Any & out);
 	TypeCache();
 	virtual ~TypeCache();
 	jobject convert(JNIEnv * env, const char * name, CORBA::Object_ptr in);
 	convertAnyImpl getAnyConversion(const char * name);
+	convertToAnyImpl getToAnyConversion(const char * name);
 
 	static jobject convertAnyNoOp(JNIEnv * env, const CORBA::Any & any) {
 		return nullptr;
+	}
+
+	static void convertToAnyNoOp(JNIEnv * env, const jobject in, CORBA::Any & out) {
 	}
 
 private:
@@ -43,9 +48,18 @@ private:
 			return nullptr;
 		}
 	}
+
+	std::map<std::string, convertToAnyImpl> mToAnyTable;
+
+	template<typename T> static void convertToAny(JNIEnv * env, const jobject in, CORBA::Any & out) {
+		T value;
+		::corbabinding::convert(env, in, value);
+		out <<= value;
+	}
 };
 
 TypeCache::TypeCache() {
+
 }
 
 TypeCache::~TypeCache() {
@@ -67,6 +81,15 @@ TypeCache::convertAnyImpl TypeCache::getAnyConversion(const char * name) {
 		return item->second;
 	} else {
 		return convertAnyNoOp;
+	}
+}
+
+TypeCache::convertToAnyImpl TypeCache::getToAnyConversion(const char * name) {
+	auto item = mToAnyTable.find(name);
+	if (item != mToAnyTable.end()) {
+		return item->second;
+	} else {
+		return convertToAnyNoOp;
 	}
 }
 
@@ -121,6 +144,50 @@ private:
 #else /* ANDROID */
 			jint res = mJvm->AttachCurrentThread(&env, &threadParams);
 #endif /* ANDROID */
+			return env;
+		}
+	}
+};
+
+class EventProducer : public AbsEventProducer<jobject> {
+public:
+	EventProducer(
+			JNIEnv * env,
+			TypeCache * typeCache,
+			RtecEventComm::EventSourceID sourceId,
+			RtecEventComm::EventType type,
+			const char * typeName)
+		: AbsEventProducer(sourceId, type) {
+		mConversionImpl = typeCache->getToAnyConversion(typeName);
+		env->GetJavaVM(&mJvm);
+		mJniVersion = env->GetVersion();
+	}
+
+	virtual bool putData(CORBA::Any & event, const jobject & data) {
+		JNIEnv * env = attach();
+		if (!env) {
+			return false;
+		}
+		mConversionImpl(env, data, event);
+		return true;
+	}
+
+private:
+	JavaVM * mJvm;
+	jint mJniVersion;
+	TypeCache::convertToAnyImpl mConversionImpl;
+
+	JNIEnv * attach() {
+		JNIEnv * env = nullptr;
+		mJvm->GetEnv(reinterpret_cast<void**>(&env), mJniVersion);
+		if (env) {
+			return env;
+		} else {
+			JavaVMAttachArgs threadParams;
+			threadParams.version = mJniVersion;
+			threadParams.name = (char *) "EvnetProducer thread (native)";
+			threadParams.group = 0x0;
+			jint res = mJvm->AttachCurrentThread((void **) &env, &threadParams);
 			return env;
 		}
 	}
@@ -223,27 +290,6 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	return (jlong) result;
 }
 
-JNIEXPORT void JNICALL Java_CorbaProvider_connectEventServiceImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jeventServiceStr) {
-	NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-	char * eventServiceStr = getStringChars(env, jeventServiceStr);
-	try {
-		return nativeWrapper->connectEventService(eventServiceStr);
-	} catch (const CORBA::Exception & e) {
-		env->Throw(convert(env, e));
-	}
-	CORBA::string_free(eventServiceStr);
-}
-
-JNIEXPORT jboolean JNICALL Java_CorbaProvider_eventServiceAliveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper) {
-	try {
-		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
-		return nativeWrapper->eventServiceAlive();
-	} catch (const CORBA::Exception & e) {
-		env->Throw(convert(env, e));
-		return false;
-	}
-}
-
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {
 	try {
 		CORBA::String_var className = getStringChars(env, jclassName);
@@ -261,12 +307,41 @@ JNIEXPORT void JNICALL Java_CorbaProvider_disposeImpl(JNIEnv * env, jobject thiz
 	delete (NativeWrapper *) nativeWrapper;
 }
 
-JNIEXPORT jlong JNICALL Java_EventConsumer_connectConsumer(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jint subscription, jstring eventClass) {
-	NativeWrapper * nativeWrapper = ((NativeWrapper *) jnativeWrapper);
+JNIEXPORT jlong JNICALL Java_EventService_init(JNIEnv * env, jobject thiz, jlong jNativeWrapper, jstring jeventServiceStr) {
+	NativeWrapper * nativeWrapper = (NativeWrapper *) jNativeWrapper;
+	CORBA::String_var eventServiceStr = getStringChars(env, jeventServiceStr);
+	return (jlong) new EventServiceWrapper(nativeWrapper, eventServiceStr);
+}
+
+JNIEXPORT void JNICALL Java_EventService_connectImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	try {
+		EventServiceWrapper *wrapper = (EventServiceWrapper *) jwrapper;
+		wrapper->connect();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_EventService_isAliveImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	try {
+		EventServiceWrapper *wrapper = (EventServiceWrapper *) jwrapper;
+		return wrapper->isAlive();
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return false;
+	}
+}
+
+JNIEXPORT void JNICALL Java_EventService_disposeImpl(JNIEnv * env, jobject thiz, jlong jwrapper) {
+	delete (EventServiceWrapper *) jwrapper;
+}
+
+JNIEXPORT jlong JNICALL Java_EventConsumer_connectConsumer(JNIEnv * env, jobject thiz, jlong jwrapper, jint subscription, jstring eventClass) {
+	EventServiceWrapper * wrapper = ((EventServiceWrapper *) jwrapper);
 	CORBA::String_var className = getStringChars(env, eventClass);
 	EventConsumer * eventConsumer = new EventConsumer(env, thiz, sTypeCache, subscription, className.in());
 	try {
-		eventConsumer->connect(nativeWrapper);
+		eventConsumer->connect(wrapper);
 	} catch (const CORBA::Exception & e) {
 		env->Throw(convert(env, e));
 		delete eventConsumer;
@@ -275,12 +350,43 @@ JNIEXPORT jlong JNICALL Java_EventConsumer_connectConsumer(JNIEnv * env, jobject
 	return (jlong) eventConsumer;
 }
 
-JNIEXPORT void JNICALL Java_EventConsumer_disposeImpl(JNIEnv * env, jobject thiz, jlong nativeWrapper) {
-	EventConsumer * consumer = (EventConsumer *) nativeWrapper;
+JNIEXPORT void JNICALL Java_EventConsumer_disposeImpl(JNIEnv * env, jobject thiz, jlong jconsumer) {
+	EventConsumer * consumer = (EventConsumer *) jconsumer;
 	try {
 		consumer->disconnect();
 	} catch (const CORBA::Exception & e) {
 		// ignore
 	}
-	delete consumer;
+}
+
+JNIEXPORT jlong JNICALL Java_EventProducer_connectProducer(JNIEnv * env, jobject thiz, jlong jwrapper, jint source, jint subscription, jstring eventClass) {
+	EventServiceWrapper * eventServiceWrapper = ((EventServiceWrapper *) jwrapper);
+	CORBA::String_var className = getStringChars(env, eventClass);
+	EventProducer * eventProducer = new EventProducer(env, sTypeCache, source, subscription, className.in());
+	try {
+		eventProducer->connect(eventServiceWrapper);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		delete eventProducer;
+		eventProducer = 0x0;
+	}
+	return (jlong) eventProducer;
+}
+
+JNIEXPORT void JNICALL Java_EventProducer_pushEventImpl(JNIEnv * env, jobject thiz, jlong jproducer, jobject eventData) {
+	EventProducer * producer = (EventProducer *) jproducer;
+	try {
+		producer->push(eventData);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+}
+
+JNIEXPORT void JNICALL Java_EventProducer_disposeImpl(JNIEnv * env, jobject thiz, jlong jproducer) {
+	EventProducer * producer = (EventProducer *) jproducer;
+	try {
+		producer->disconnect();
+	} catch (const CORBA::Exception & e) {
+		// ignore
+	}
 }

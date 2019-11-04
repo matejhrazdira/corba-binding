@@ -8,6 +8,7 @@ namespace corbabinding {
 
 struct JniCache {
 	
+
 	struct {
 		struct {
 			struct {
@@ -77,6 +78,9 @@ struct JniCache {
 			jmethodID _callback_;
 		} _event_consumer_;
 	} _impl_;
+	struct {
+
+	} _client_;
 
 	JniCache(JNIEnv * _env_);
 	virtual ~JniCache();

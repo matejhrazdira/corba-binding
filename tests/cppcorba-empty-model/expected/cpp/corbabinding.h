@@ -2,6 +2,7 @@
 #define CORBABINDING_H_
 
 
+
 #include "JniCache.h"
 
 namespace corbabinding {
@@ -12,6 +13,7 @@ void init(JNIEnv * _env_);
 
 template<typename T> jobject convert(JNIEnv * _env_, T * _in_);
 template<typename T> T * convert(JNIEnv * _env_, const jobject _in_);
+
 
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_);
 void convert(JNIEnv * _env_, const jboolean _in_, ::CORBA::Boolean & _out_);

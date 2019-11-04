@@ -24,13 +24,17 @@ public class JavaTemplateProjection {
 	public final ScopedName corbaExceptionClass;
 	public final ScopedName alreadyDisposedExceptionClass;
 	public final ScopedName corbaProviderClass;
+	public final ScopedName eventServiceClass;
 	public final ScopedName eventConsumerClass;
+	public final ScopedName eventProducerClass;
 
-	public JavaTemplateProjection(final ScopedName varClass, final ScopedName corbaExceptionClass, final ScopedName alreadyDisposedExceptionClass, final ScopedName corbaProviderClass, final ScopedName eventConsumerClass) {
+	public JavaTemplateProjection(final ScopedName varClass, final ScopedName corbaExceptionClass, final ScopedName alreadyDisposedExceptionClass, final ScopedName corbaProviderClass, ScopedName eventServiceClass, final ScopedName eventConsumerClass, final ScopedName eventProducerClass) {
 		this.varClass = varClass;
 		this.corbaExceptionClass = corbaExceptionClass;
 		this.alreadyDisposedExceptionClass = alreadyDisposedExceptionClass;
 		this.corbaProviderClass = corbaProviderClass;
+		this.eventServiceClass = eventServiceClass;
 		this.eventConsumerClass = eventConsumerClass;
+		this.eventProducerClass = eventProducerClass;
 	}
 }

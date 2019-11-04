@@ -46,19 +46,6 @@ CORBA::Object_ptr NativeWrapper::resolve(const char *corbaStr) {
 	return mOrb->string_to_object(corbaStr);
 }
 
-bool NativeWrapper::eventServiceAlive() {
-	if (!CORBA::is_nil(mEventService)) {
-		return !mEventService->_non_existent();
-	} else {
-		return false;
-	}
-}
-
-void NativeWrapper::connectEventService(const char *eventServiceStr) {
-	CORBA::Object_var eventServiceObject = mOrb->string_to_object(eventServiceStr);
-	mEventService = RtecEventChannelAdmin::EventChannel::_narrow(eventServiceObject.in());
-}
-
 void * NativeWrapper::runOrb(void * arg) {
 	NativeWrapper * instance = (NativeWrapper *) arg;
 	instance->mOrb->run();
@@ -66,6 +53,23 @@ void * NativeWrapper::runOrb(void * arg) {
 		instance->mThreadCleanup->cleanup();
 	}
 	return 0x0;
+}
+
+EventServiceWrapper::~EventServiceWrapper() {}
+
+void EventServiceWrapper::connect() {
+	if (mNativeWrapper) {
+		CORBA::Object_var eventServiceObject = mNativeWrapper->resolve(mEventServiceStr);
+		mEventService = RtecEventChannelAdmin::EventChannel::_narrow(eventServiceObject.in());
+	}
+}
+
+bool EventServiceWrapper::isAlive() {
+	if (!CORBA::is_nil(mEventService)) {
+		return !mEventService->_non_existent();
+	} else {
+		return false;
+	}
 }
 
 } /* namespace corbabinding */

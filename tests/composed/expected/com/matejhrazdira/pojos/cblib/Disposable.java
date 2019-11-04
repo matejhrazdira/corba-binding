@@ -1,4 +1,4 @@
-package com.matejhrazdira.pojos;
+package com.matejhrazdira.pojos.cblib;
 
 public interface Disposable {
 

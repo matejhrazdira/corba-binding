@@ -7,9 +7,7 @@
 
 namespace testutil {
 
-template <typename T> class IterableWrapper;
-template <typename T, typename U> class ArrayWrapper;
-template <typename T, typename U> class HexWrapper;
+template <typename T> class Appendable;
 
 class StringBuilder {
 public:
@@ -20,17 +18,7 @@ public:
 		return *this;
 	}
 
-	template<typename T> inline StringBuilder & operator<<(const IterableWrapper<T> & value) {
-		value.append(*this);
-		return *this;
-	}
-
-	template<typename T, typename U> inline StringBuilder & operator<<(const ArrayWrapper<T, U> & value) {
-		value.append(*this);
-		return *this;
-	}
-
-	template<typename T, typename U> inline StringBuilder & operator<<(const HexWrapper<T, U> & value) {
+	template<typename T> inline StringBuilder & operator<<(const Appendable<T> & value) {
 		value.append(*this);
 		return *this;
 	}
@@ -61,6 +49,17 @@ inline const char * c_str(const StringBuilder & sb) {
 }
 
 template <typename T>
+class Appendable {
+public:
+	Appendable(const T & impl) : mImpl(impl) {}
+	void append(StringBuilder & builder) const {
+		mImpl.append(builder);
+	};
+private:
+	T mImpl;
+};
+
+template <typename T>
 class IterableWrapper {
 public:
 	IterableWrapper(const T & iterable, const std::string & separator) : mIterable(iterable), mSeparator(separator) {}
@@ -79,8 +78,8 @@ private:
 	const std::string & mSeparator;
 };
 
-template <typename T> inline IterableWrapper<T> byIterator(const T & iterable, const std::string & separator = ", ") {
-	return IterableWrapper<T>(iterable, separator);
+template <typename T> inline Appendable<IterableWrapper<T>> byIterator(const T & iterable, const std::string & separator = ", ") {
+	return Appendable<IterableWrapper<T>>(IterableWrapper<T>(iterable, separator));
 }
 
 template <typename T, typename U>
@@ -102,27 +101,36 @@ private:
 	const std::string & mSeparator;
 };
 
-template <typename T, typename U> inline ArrayWrapper<T, U> byIndex(const T & array, const U length, const std::string & separator = ", ") {
-	return ArrayWrapper<T, U>(array, length, separator);
+template <typename T, typename U> inline Appendable<ArrayWrapper<T, U>> byIndex(const T & array, const U length, const std::string & separator = ", ") {
+	return Appendable<ArrayWrapper<T, U>>(ArrayWrapper<T, U>(array, length, separator));
 }
 
-template <typename T, typename U>
-class HexWrapper {
+template <typename T>
+class ByteArrayWrapper {
 public:
-	HexWrapper(const T & array, const U length) : mArray(array), mLength(length) {}
-	void append(StringBuilder & output) const {
-		output << std::hex << std::setfill('0');
-		for (U i = 0; i < mLength; i++) {
-			output << std::setw(2) << (mArray[i] & 0xff);
+	ByteArrayWrapper(const void * & array, const T lenght) : mArray(array), mLength(lenght) {}
+	void append(StringBuilder & builder) const {
+		const unsigned char * in = (const unsigned char *) mArray;
+		if (mLength > 0) {
+			printSingleChar(builder, in[0]);
 		}
+		for (T i = 1; i < mLength; i++) {
+			builder << " ";
+			printSingleChar(builder, in[i]);
+		}
+		builder << std::setw(0) << std::setfill(' ') << std::dec;
 	}
 private:
-	const T & mArray;
-	const U mLength;
+	const void * mArray;
+	const T mLength;
+
+	inline void printSingleChar(StringBuilder & builder, const unsigned char & c) const {
+		builder << std::setw(2) << std::setfill('0') << std::hex << (unsigned) c;
+	}
 };
 
-template <typename T, typename U> inline HexWrapper<T, U> asHex(const T & array, const U length) {
-	return HexWrapper<T, U>(array, length);
+template <typename T> inline Appendable<ByteArrayWrapper<T>> rawBytes(const void * array, const T length) {
+	return Appendable<ByteArrayWrapper<T>>(ByteArrayWrapper<T>(array, length));
 }
 
 } /* namespace testutil */

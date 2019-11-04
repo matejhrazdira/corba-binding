@@ -14,6 +14,7 @@ void init(JNIEnv * _env_) {
 	}
 }
 
+
 jboolean convert(JNIEnv * _env_, const ::CORBA::Boolean & _in_) {
 	return (jboolean) _in_;
 }

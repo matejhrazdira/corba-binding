@@ -16,14 +16,16 @@
 
 package com.matejhrazdira.corbabinding.generators.cppcorba;
 
-import com.matejhrazdira.corbabinding.generators.java.InterfaceRenderer;
+import com.matejhrazdira.corbabinding.generators.java.InterfaceImplRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjection;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaInterfaceProjectionProvider;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaProjection;
+import com.matejhrazdira.corbabinding.generators.java.projection.JavaStructProjection;
 import com.matejhrazdira.corbabinding.generators.util.LineWriter;
 import com.matejhrazdira.corbabinding.idl.Symbol;
 import com.matejhrazdira.corbabinding.idl.SymbolResolver;
 import com.matejhrazdira.corbabinding.idl.definitions.EnumType;
+import com.matejhrazdira.corbabinding.idl.definitions.members.Member;
 import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.interfaces.Declaration;
 import com.matejhrazdira.corbabinding.idl.interfaces.Operation;
@@ -47,6 +49,10 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 	public static final String CORBA_PTR_SFX = "_ptr";
 	public static final String CORBA_PTR_CALL = ".ptr()";
 	public static final String CORBA_RETN_CALL = "._retn()";
+	public static final String CORBA_CLIENT_PREFIX = "_client_";
+
+	private static final ScopedName CLIENT_SCOPE = new ScopedName(Arrays.asList(CORBA_CLIENT_PREFIX), true);
+
 	private final JniImplSignatureRenderer mJniImplSignatureRenderer = new JniImplSignatureRenderer();
 	private final CorbaTypeRenderer mCorbaTypeRenderer = new CorbaTypeRenderer() {
 		@Override
@@ -62,6 +68,61 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 	}
 
 	@Override
+	protected void writeJniCacheMembersDeclarationImpl(final JavaProjection projection) throws IOException {
+		// no-op
+	}
+
+	@Override
+	protected void writeJniCacheMemersInitializationImpl(final JavaProjection projection) throws IOException {
+		// no-op
+	}
+
+	@Override
+	protected void renderJniCacheHeaderClientImpl(final JavaProjection projection) throws IOException {
+		// TODO: refactor this - "almost" duplicate with any other struct
+		JniCacheHeaderWriter writer = mOutput.jniCacheHeaderClient;
+		JavaInterfaceProjection interfaceProjection = (JavaInterfaceProjection) projection;
+		writer.enterScope(interfaceProjection.clientName);
+		writer.writeln("jclass ", JniConfig.JNI_CACHE_CLASS, ";");
+		JavaStructProjection structProjection = (JavaStructProjection) projection;
+		writer.writeln("jmethodID ", JniConfig.JNI_CACHE_CTOR, ";");
+		for (final Member member : structProjection.members) {
+			writer.writeln("jfieldID ", member.declarator.name, ";");
+		}
+	}
+
+	@Override
+	protected void renderJniCacheBody(final JavaProjection javaProjection) throws IOException {
+		super.renderJniCacheBody(javaProjection);
+
+		JavaInterfaceProjection projection = (JavaInterfaceProjection) javaProjection;
+
+		LineWriter writer = mOutput.jniCacheImpl;
+		writer.writeln("{");
+		writer.increaseLevel();
+
+		writer.writeln(
+				"jclass ", JniConfig.JNI_CACHE_CLASS, " = ", jniCall("FindClass", quoted(mClassNameRenderer.render(projection.clientName))), ";"
+		);
+		writer.writeln(
+				mJniCacheRenderer.renderQualifiedMember(
+						ScopedName.nameInScope(projection.clientName, JniConfig.JNI_CACHE_CLASS).moveToScope(CLIENT_SCOPE)),
+						" = ",
+						"(jclass) ", jniCall("NewGlobalRef", JniConfig.JNI_CACHE_CLASS), ";"
+		);
+		writer.writeln();
+
+		JavaStructProjection clientProjection = new JavaStructProjection(projection.symbol, projection.clientName.moveToScope(CLIENT_SCOPE), projection.members);
+		super.writeJniCacheMemersInitializationImpl(clientProjection);
+
+		writer.writeln();
+		writeDeleteLocalRef(writer, JniConfig.JNI_CACHE_CLASS);
+
+		writer.decreaseLevel();
+		writer.writeln("}");
+	}
+
+	@Override
 	protected void writeConversionToJavaDeclaration(final LineWriter writer, final JavaProjection projection) throws IOException {
 		String corbaType = mCorbaScopedRenderer.render(projection.symbol.name);
 		writer.write(
@@ -73,15 +134,17 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 
 	@Override
 	protected void renderConversionToJava(final JavaProjection projection) throws IOException {
+		JavaInterfaceProjection interfaceProjection = (JavaInterfaceProjection) projection;
+		ScopedName clientScope = interfaceProjection.clientName.moveToScope(CLIENT_SCOPE);
 		LineWriter writer = mOutput.conversionImpl;
 		writer.writeln(
 				"return ",
 				JniConfig.CONVERSION_IN_ARG, " ? ",
 				jniCall(
 						"NewObject",
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CLASS)),
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, JniConfig.JNI_CACHE_CTOR)),
-						"(" + mJniJavaTypeRenderer.render(InterfaceRenderer.NATIVE_ADDRESS_TYPE) + ") " + JniConfig.CONVERSION_IN_ARG
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(clientScope, JniConfig.JNI_CACHE_CLASS)),
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(clientScope, JniConfig.JNI_CACHE_CTOR)),
+						"(" + mJniJavaTypeRenderer.render(InterfaceImplRenderer.NATIVE_ADDRESS_TYPE) + ") " + JniConfig.CONVERSION_IN_ARG
 				),
 				" : nullptr",
 				";"
@@ -100,6 +163,8 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 
 	@Override
 	protected void renderConversionFromJava(final JavaProjection projection) throws IOException {
+		JavaInterfaceProjection interfaceProjection = (JavaInterfaceProjection) projection;
+		ScopedName clientScope = interfaceProjection.clientName.moveToScope(CLIENT_SCOPE);
 		LineWriter writer = mOutput.conversionImpl;
 		String corbaType = mCorbaScopedRenderer.render(projection.symbol.name);
 		writer.writeln(
@@ -107,9 +172,9 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 				JniConfig.CONVERSION_IN_ARG, " ? ",
 				"(", corbaType, " * ", ") ",
 				jniCall(
-						mJniFieldAccessRenderer.getMethod(InterfaceRenderer.NATIVE_ADDRESS_TYPE),
+						mJniFieldAccessRenderer.getMethod(InterfaceImplRenderer.NATIVE_ADDRESS_TYPE),
 						JniConfig.CONVERSION_IN_ARG,
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, InterfaceRenderer.NATIVE_ADDRESS))
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(clientScope, InterfaceImplRenderer.NATIVE_ADDRESS))
 				),
 				" : nullptr",
 				";"
@@ -118,7 +183,7 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 
 	@Override
 	protected void renderJniImplHeader(final JavaProjection javaProjection) throws IOException {
-		LineWriter writer = mOutput.jniImpHeader;
+		LineWriter writer = mOutput.jniImplHeader;
 		renderJniImpl(writer, (JavaInterfaceProjection) javaProjection, this::renderJniImplHeaderBody);
 		writer.writeln();
 	}
@@ -132,14 +197,14 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 		operations.add(projection.destructor);
 		operations.addAll(projection.interfaceOperations);
 		for (final Operation operation : operations) {
-			mJniImplSignatureRenderer.render(writer, projection.name, operation);
+			mJniImplSignatureRenderer.render(writer, projection.clientName, operation);
 			bodyRenderer.renderBody(writer, projection, operation);
 		}
 	}
 
 	@Override
 	protected void renderTypeCacheEntries(final JavaProjection projection) throws IOException {
-		LineWriter writer = mOutput.jniImplPrivateImpl;
+		LineWriter writer = mOutput.typeCacheEntries;
 		writer.writeln(
 				JniConfig.TYPE_CACHE_INTERFACE_TABLE,
 				"[\"", mJavaScopedRenderer.render(projection.name) , "\"]",
@@ -178,9 +243,9 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 		);
 		writer.writeln(
 				jniCall(
-						mJniFieldAccessRenderer.setMethod(InterfaceRenderer.NATIVE_ADDRESS_TYPE),
+						mJniFieldAccessRenderer.setMethod(InterfaceImplRenderer.NATIVE_ADDRESS_TYPE),
 						JniImplSignatureRenderer.JNI_IMPL_THIS_ARG,
-						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.name, InterfaceRenderer.NATIVE_ADDRESS)),
+						mJniCacheRenderer.renderGlobalAccess(ScopedName.nameInScope(projection.clientName.moveToScope(CLIENT_SCOPE), InterfaceImplRenderer.NATIVE_ADDRESS)),
 						"0x0"
 				),
 				";"

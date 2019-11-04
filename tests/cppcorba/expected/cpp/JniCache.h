@@ -79,8 +79,6 @@ struct JniCache {
 					} ExceptionWithMembers;
 					struct {
 						jclass _cls_;
-						jmethodID _ctor_;
-						jfieldID _native_address_;
 						struct {
 							jclass _cls_;
 							jmethodID _ctor_;
@@ -159,6 +157,25 @@ struct JniCache {
 			jmethodID _callback_;
 		} _event_consumer_;
 	} _impl_;
+	struct {
+		struct {
+			struct {
+				struct {
+					struct {
+						struct {
+							struct {
+								struct {
+									jclass _cls_;
+									jmethodID _ctor_;
+									jfieldID _native_address_;
+								} SimpleIdlInterface;
+							} SimpleIdl;
+						} client;
+					} cblib;
+				} pojos;
+			} matejhrazdira;
+		} com;
+	} _client_;
 
 	JniCache(JNIEnv * _env_);
 	virtual ~JniCache();

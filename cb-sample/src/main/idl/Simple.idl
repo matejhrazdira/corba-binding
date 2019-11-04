@@ -62,6 +62,12 @@ module SimpleIdl
     SimpleStruct structArr[3];
   };
 
+  interface SimpleObject
+  {
+    string getString();
+    void destroy();
+  };
+
   interface SimpleServer
   {
     exception NestedException {
@@ -72,6 +78,7 @@ module SimpleIdl
     void throwException() raises(SimpleException);
     void exit();
     void throwNestedException() raises(NestedException);
+    SimpleObject getSimpleObject(in string name);
   };
 
   interface SimpleIdlInterface

@@ -42,8 +42,12 @@ import com.matejhrazdira.corbabinding.util.OutputListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class PojoGenerator {
+
+	public static final ScopedName CB_LIB_PACKAGE = new ScopedName(Arrays.asList("cblib"), false);
+	public static final ScopedName CB_CLIENT_IMPL_PACKAGE = ScopedName.nameInScope(CB_LIB_PACKAGE, "client");
 
 	private final File mOutputDir;
 	private final OutputListener mOutputListener;
@@ -76,7 +80,7 @@ public class PojoGenerator {
 		mEnumRenderer = new EnumRenderer(mScopedRenderer, outputListener);
 		mExceptionRenderer = new ExceptionRenderer(mScopedRenderer, mResolver, outputListener);
 		mUnionRenderer = new UnionRenderer(mScopedRenderer, mResolver, outputListener);
-		mInterfaceRenderer = new InterfaceRenderer(mScopedRenderer, mResolver, outputListener, mExceptionRenderer, mTemplateRenderer.getVarType(), mTemplateRenderer.getCorbaExceptionType());
+		mInterfaceRenderer = new InterfaceRenderer(mScopedRenderer, mResolver, outputListener, mExceptionRenderer, mTemplateRenderer.getVarType(), mTemplateRenderer.getCorbaExceptionType(), mTemplateRenderer.getDisposableType());
 	}
 
 	private File getPackageDir(File root, String packagePrefix) {
@@ -92,11 +96,19 @@ public class PojoGenerator {
 		mTemplateRenderer.render(mOutputDir);
 		for (Symbol s : mModel.getSymbols()) {
 			logSymbol(s);
-			AbsJavaRenderer renderer = getRendererForSymbol(s);
+			JavaRenderer renderer = getRendererForSymbol(s);
 			if (renderer != null) {
 				File outputFile = prepareFileForName(s.name);
 				try (FileWriter writer = new FileWriter(outputFile)) {
 					renderer.render(writer, s);
+				}
+			}
+			if (renderer instanceof InterfaceRenderer) {
+				InterfaceRenderer ir = (InterfaceRenderer) renderer;
+				ScopedName clientImplName = s.name.moveToScope(CB_CLIENT_IMPL_PACKAGE);
+				File outputFile = prepareFileForName(clientImplName);
+				try (FileWriter writer = new FileWriter(outputFile)) {
+					ir.renderClientImpl(writer, s);
 				}
 			}
 		}
@@ -143,7 +155,7 @@ public class PojoGenerator {
 		return Util.getFileForName(mOutputDir, name);
 	}
 
-	private AbsJavaRenderer getRendererForSymbol(Symbol s) {
+	private JavaRenderer getRendererForSymbol(Symbol s) {
 		if (s.innerSymbol) {
 			return null;
 		}

@@ -35,7 +35,7 @@ public abstract class AbsCorbaRenderer {
 	protected final CorbaOutput mOutput;
 	protected final OutputListener mOutputListener;
 	protected final JniCacheRenderer mJniCacheRenderer = new JniCacheRenderer();
-	private final JniScopedRenderer mClassNameRenderer = new JniScopedRenderer();
+	protected final JniScopedRenderer mClassNameRenderer = new JniScopedRenderer();
 	protected final CorbaScopedRenderer mCorbaScopedRenderer = new CorbaScopedRenderer();
 
 	public AbsCorbaRenderer(final JavaProjectionProvider projectionProvider, final OutputListener outputListener, final CorbaOutput output) {
@@ -47,6 +47,7 @@ public abstract class AbsCorbaRenderer {
 	public void render(Symbol symbol) throws IOException {
 		JavaProjection projection = mJavaProjectionProvider.getProjection(symbol);
 		renderJniCacheHeader(projection);
+		renderJniCacheHeaderClientImpl(projection);
 		renderJniCacheBody(projection);
 		renderConversionHeader(projection);
 		renderConversionBody(projection);
@@ -106,7 +107,11 @@ public abstract class AbsCorbaRenderer {
 
 	protected abstract void writeJniCacheMembersDeclarationImpl(final JavaProjection projection) throws IOException;
 
-	private void renderJniCacheBody(final JavaProjection projection) throws IOException {
+	protected void renderJniCacheHeaderClientImpl(final JavaProjection projection) throws IOException {
+
+	}
+
+	protected void renderJniCacheBody(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.jniCacheImpl;
 		writer.writeln("{");
 		writer.increaseLevel();

@@ -334,11 +334,11 @@ void convert(JNIEnv * _env_, const jobject _in_, ::SimpleIdl::ExceptionWithMembe
 }
 
 template<> jobject convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, ::SimpleIdl::SimpleIdlInterface * _in_) {
-	return _in_ ? _env_->NewObject(_jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._cls_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._ctor_, (jlong) _in_) : nullptr;
+	return _in_ ? _env_->NewObject(_jni_->_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._cls_, _jni_->_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._ctor_, (jlong) _in_) : nullptr;
 }
 
 template<> ::SimpleIdl::SimpleIdlInterface * convert<::SimpleIdl::SimpleIdlInterface>(JNIEnv * _env_, const jobject _in_) {
-	return _in_ ? (::SimpleIdl::SimpleIdlInterface * ) _env_->GetLongField(_in_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_) : nullptr;
+	return _in_ ? (::SimpleIdl::SimpleIdlInterface * ) _env_->GetLongField(_in_, _jni_->_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._native_address_) : nullptr;
 }
 
 jobject convert(JNIEnv * _env_, const ::SimpleIdl::SimpleIdlInterface::NestedException & _in_) {

@@ -54,7 +54,9 @@ public class CppCorbaGeneratorTest2 {
 						new ScopedName(Arrays.asList("CorbaException"), true),
 						new ScopedName(Arrays.asList("AlreadyDisposedException"), true),
 						new ScopedName(Arrays.asList("CorbaProvider"), true),
-						new ScopedName(Arrays.asList("EventConsumer"), true)))
+						new ScopedName(Arrays.asList("EventService"), true),
+						new ScopedName(Arrays.asList("EventConsumer"), true),
+						new ScopedName(Arrays.asList("EventProducer"), true)))
 				.withOutputListener(new NoOpOutputListener())
 				.createCppCorbaGenerator();
 		cppCorbaGenerator.generate(model);

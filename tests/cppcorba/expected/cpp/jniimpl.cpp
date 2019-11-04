@@ -4,13 +4,13 @@
 
 using namespace corbabinding;
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface__1dispose_1(JNIEnv * _env_, jobject _this_) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface__1dispose_1(JNIEnv * _env_, jobject _this_) {
 	::SimpleIdl::SimpleIdlInterface_var tmp = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
-	_env_->SetLongField(_this_, _jni_->com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface._native_address_, 0x0);
+	_env_->SetLongField(_this_, _jni_->_client_.com.matejhrazdira.pojos.cblib.client.SimpleIdl.SimpleIdlInterface._native_address_, 0x0);
 	return (jobject) 0x0;
 }
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_someStringMethod(JNIEnv * _env_, jobject _this_) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_someStringMethod(JNIEnv * _env_, jobject _this_) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
@@ -28,7 +28,7 @@ JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterf
 	return (jobject) 0x0;
 }
 
-JNIEXPORT jlong JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_methodWithTypedefedValues(JNIEnv * _env_, jobject _this_, jlong timeArg, jobject structArg) {
+JNIEXPORT jlong JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_methodWithTypedefedValues(JNIEnv * _env_, jobject _this_, jlong timeArg, jobject structArg) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
@@ -53,7 +53,7 @@ JNIEXPORT jlong JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterfac
 	return (jlong) 0x0;
 }
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_someMethodWithArgs(JNIEnv * _env_, jobject _this_, jobject strArg, jlong ullArg, jobject structArg) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_someMethodWithArgs(JNIEnv * _env_, jobject _this_, jobject strArg, jlong ullArg, jobject structArg) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
@@ -81,7 +81,7 @@ JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterf
 	return (jobject) 0x0;
 }
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_someMethodWithArgsThatThrows(JNIEnv * _env_, jobject _this_, jobject strArg, jlong ullArg, jobject structArg) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_someMethodWithArgsThatThrows(JNIEnv * _env_, jobject _this_, jobject strArg, jlong ullArg, jobject structArg) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
@@ -112,7 +112,7 @@ JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterf
 	return (jobject) 0x0;
 }
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_getTimeSequence(JNIEnv * _env_, jobject _this_) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_getTimeSequence(JNIEnv * _env_, jobject _this_) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));
@@ -130,7 +130,7 @@ JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterf
 	return (jobject) 0x0;
 }
 
-JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_SimpleIdl_SimpleIdlInterface_throwsNestedException(JNIEnv * _env_, jobject _this_) {
+JNIEXPORT jobject JNICALL Java_com_matejhrazdira_pojos_cblib_client_SimpleIdl_SimpleIdlInterface_throwsNestedException(JNIEnv * _env_, jobject _this_) {
 	::SimpleIdl::SimpleIdlInterface_ptr _c_this_ = convert<::SimpleIdl::SimpleIdlInterface>(_env_, _this_);
 	if (!_c_this_) {
 		_env_->Throw((jthrowable) _env_->NewObject(_jni_->_impl_._already_disposed_exception_._cls_, _jni_->_impl_._already_disposed_exception_._ctor_));

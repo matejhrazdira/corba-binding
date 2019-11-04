@@ -19,7 +19,7 @@ package $$$PACKAGE$$$;
 
 public class $$$CLS_NAME$$$ implements $$$DISPOSABLE$$$ {
 
-	private static final int NULL_PTR = 0x0;
+	private static final long NULL_PTR = 0x0;
 
 	private long mNativeWrapper = NULL_PTR;
 
@@ -28,24 +28,6 @@ public class $$$CLS_NAME$$$ implements $$$DISPOSABLE$$$ {
 	}
 
 	private native long init(final String[] orbArgs) throws $$$CORBA_SYS_EXCEPTION$$$;
-
-	public void connectEventService(final String eventServiceStr) throws $$$CORBA_SYS_EXCEPTION$$$ {
-		if (mNativeWrapper == NULL_PTR) {
-			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
-		}
-		connectEventServiceImpl(mNativeWrapper, eventServiceStr);
-	}
-
-	private native void connectEventServiceImpl(final long nativeWrapper, final String eventServiceStr) throws $$$CORBA_SYS_EXCEPTION$$$;
-
-	public boolean eventServiceAlive() throws $$$CORBA_SYS_EXCEPTION$$$ {
-		if (mNativeWrapper == NULL_PTR) {
-			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
-		}
-		return eventServiceAliveImpl(mNativeWrapper);
-	}
-
-	private native boolean eventServiceAliveImpl(final long nativeWrapper) throws $$$CORBA_SYS_EXCEPTION$$$;
 
 	public <T extends $$$DISPOSABLE$$$> T resolve(Class<T> cls, String corbaStr) throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper == NULL_PTR) {
