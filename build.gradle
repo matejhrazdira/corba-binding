@@ -1,5 +1,5 @@
 group 'com.matejhrazdira.corbabinding'
-version '0.05.000'
+version '0.05.001'
 
 apply plugin: 'java'
 

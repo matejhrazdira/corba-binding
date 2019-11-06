@@ -204,7 +204,11 @@ private:
 			threadParams.version = mJniVersion;
 			threadParams.name = (char *) "EvnetProducer thread (native)";
 			threadParams.group = 0x0;
+#ifndef ANDROID
 			jint res = mJvm->AttachCurrentThread((void **) &env, &threadParams);
+#else /* ANDROID */
+			jint res = mJvm->AttachCurrentThread(&env, &threadParams);
+#endif /* ANDROID */
 			return env;
 		}
 	}
