@@ -111,6 +111,7 @@ public class Main {
 			System.out.println();
 			System.out.println("Execution failed because of: ");
 			e.printStackTrace(System.out);
+			System.exit(1);
 		}
 	}
 
