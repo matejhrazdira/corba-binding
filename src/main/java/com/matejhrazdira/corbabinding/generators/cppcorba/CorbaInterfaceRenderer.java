@@ -205,11 +205,19 @@ public class CorbaInterfaceRenderer extends AbsCorbaWithMembersRenderer {
 	@Override
 	protected void renderTypeCacheEntries(final JavaProjection projection) throws IOException {
 		LineWriter writer = mOutput.typeCacheEntries;
+		final String cacheKey = "[\"" + mJavaScopedRenderer.render(projection.name) + "\"]";
 		writer.writeln(
 				JniConfig.TYPE_CACHE_INTERFACE_TABLE,
-				"[\"", mJavaScopedRenderer.render(projection.name) , "\"]",
+				cacheKey,
 				" = ",
 				JniConfig.TYPE_CACHE_CONVERT_OBJ, "<", mCorbaScopedRenderer.render(projection.symbol.name), ">",
+				";"
+		);
+		writer.writeln(
+				JniConfig.TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT_TABLE,
+				cacheKey,
+				" = ",
+				JniConfig.TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT, "<", mCorbaScopedRenderer.render(projection.symbol.name), ">",
 				";"
 		);
 	}

@@ -9,6 +9,10 @@ extern "C" {
 
 JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv *, jobject, jobjectArray);
 
+JNIEXPORT void JNICALL Java_CorbaProvider_setOrbRelativeRtTimeoutImpl(JNIEnv *, jobject, jlong, jlong);
+
+JNIEXPORT jobject JNICALL Java_CorbaProvider_setObjectRelativeRtTimeoutImpl(JNIEnv *, jobject, jlong, jobject, jlong);
+
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
 
 JNIEXPORT void JNICALL Java_CorbaProvider_disposeImpl(JNIEnv *, jobject, jlong);

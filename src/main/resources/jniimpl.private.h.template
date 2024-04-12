@@ -26,6 +26,10 @@ extern "C" {
 
 JNIEXPORT jlong JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_init(JNIEnv *, jobject, jobjectArray);
 
+JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_setOrbRelativeRtTimeoutImpl(JNIEnv *, jobject, jlong, jlong);
+
+JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_setObjectRelativeRtTimeoutImpl(JNIEnv *, jobject, jlong, jobject, jlong);
+
 JNIEXPORT jobject JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_resolveImpl(JNIEnv *, jobject, jlong, jstring, jstring);
 
 JNIEXPORT void JNICALL $$$CORBA_PROVIDER_JNI_SIG$$$_disposeImpl(JNIEnv *, jobject, jlong);

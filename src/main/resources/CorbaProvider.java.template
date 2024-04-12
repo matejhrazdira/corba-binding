@@ -29,6 +29,24 @@ public class $$$CLS_NAME$$$ implements $$$DISPOSABLE$$$ {
 
 	private native long init(final String[] orbArgs) throws $$$CORBA_SYS_EXCEPTION$$$;
 
+	public void setOrbRelativeRtTimeout(final long timeoutMs) throws $$$CORBA_SYS_EXCEPTION$$$ {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
+		}
+		setOrbRelativeRtTimeoutImpl(mNativeWrapper, timeoutMs);
+	}
+
+	private native void setOrbRelativeRtTimeoutImpl(final long nativeWrapper, final long timeoutMs) throws $$$CORBA_SYS_EXCEPTION$$$;
+
+	public <T extends $$$DISPOSABLE$$$> T setObjectRelativeRtTimeout(T object, final long timeoutMs) throws $$$CORBA_SYS_EXCEPTION$$$ {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();
+		}
+		return setObjectRelativeRtTimeoutImpl(mNativeWrapper, object, timeoutMs);
+	}
+
+	private native <T extends $$$DISPOSABLE$$$> T setObjectRelativeRtTimeoutImpl(final long nativeWrapper, final T object, final long timeoutMs) throws $$$CORBA_SYS_EXCEPTION$$$;
+
 	public <T extends $$$DISPOSABLE$$$> T resolve(Class<T> cls, String corbaStr) throws $$$CORBA_SYS_EXCEPTION$$$ {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new $$$ALREADY_DISPOSED_EXCEPTION$$$();

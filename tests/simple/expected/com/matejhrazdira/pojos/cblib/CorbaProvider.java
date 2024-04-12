@@ -12,6 +12,24 @@ public class CorbaProvider implements Disposable {
 
 	private native long init(final String[] orbArgs) throws CorbaException;
 
+	public void setOrbRelativeRtTimeout(final long timeoutMs) throws CorbaException {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new AlreadyDisposedException();
+		}
+		setOrbRelativeRtTimeoutImpl(mNativeWrapper, timeoutMs);
+	}
+
+	private native void setOrbRelativeRtTimeoutImpl(final long nativeWrapper, final long timeoutMs) throws CorbaException;
+
+	public <T extends Disposable> T setObjectRelativeRtTimeout(T object, final long timeoutMs) throws CorbaException {
+		if (mNativeWrapper == NULL_PTR) {
+			throw new AlreadyDisposedException();
+		}
+		return setObjectRelativeRtTimeoutImpl(mNativeWrapper, object, timeoutMs);
+	}
+
+	private native <T extends Disposable> T setObjectRelativeRtTimeoutImpl(final long nativeWrapper, final T object, final long timeoutMs) throws CorbaException;
+
 	public <T extends Disposable> T resolve(Class<T> cls, String corbaStr) throws CorbaException {
 		if (mNativeWrapper == NULL_PTR) {
 			throw new AlreadyDisposedException();

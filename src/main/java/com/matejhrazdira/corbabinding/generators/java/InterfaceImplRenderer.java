@@ -29,6 +29,7 @@ import com.matejhrazdira.corbabinding.idl.expressions.ScopedName;
 import com.matejhrazdira.corbabinding.idl.interfaces.Declaration;
 import com.matejhrazdira.corbabinding.idl.interfaces.Operation;
 import com.matejhrazdira.corbabinding.idl.types.PrimitiveType;
+import com.matejhrazdira.corbabinding.idl.types.StringType;
 import com.matejhrazdira.corbabinding.idl.types.Type;
 import com.matejhrazdira.corbabinding.idl.types.VoidType;
 import com.matejhrazdira.corbabinding.util.OutputListener;
@@ -43,12 +44,16 @@ public class InterfaceImplRenderer extends InterfaceDeclRenderer implements Java
 
 	public static final String NATIVE_ADDRESS = "_native_address_";
 	public static final Type NATIVE_ADDRESS_TYPE = new PrimitiveType(PrimitiveType.Type.UNSIGNED_LONG_LONG_INT);
+	public static final String INTERFACE_NAME = "_interface_name_";
+	public static final Type INTERFACE_NAME_TYPE = new StringType();
 
 	private final String mAddressType;
+	private final String mInterfaceNameType;
 
 	public InterfaceImplRenderer(final ScopedRenderer scopedRenderer, final SymbolResolver resolver, final OutputListener outputListener, final ExceptionRenderer exceptionRenderer, final String varType, final String corbaExceptionType, String disposableType) {
 		super(scopedRenderer, resolver, outputListener, exceptionRenderer, varType, corbaExceptionType, disposableType);
 		mAddressType = mTypeRenderer.render(NATIVE_ADDRESS_TYPE);
+		mInterfaceNameType = mTypeRenderer.render(INTERFACE_NAME_TYPE);
 	}
 
 	@Override
@@ -89,6 +94,7 @@ public class InterfaceImplRenderer extends InterfaceDeclRenderer implements Java
 	@Override
 	protected void writeFields(final LineWriter writer, final Symbol symbol) throws IOException {
 		writer.writeln("private ", mAddressType, " ", NATIVE_ADDRESS, ";");
+		writer.writeln("private static final ", mInterfaceNameType, " ", INTERFACE_NAME, " = ", "\"", mScopedRenderer.render(symbol.name), "\"", ";");
 		writer.writeln();
 	}
 

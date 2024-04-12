@@ -63,6 +63,24 @@ CORBA::Object_ptr NativeWrapper::resolve(const char *corbaStr) {
 	return mOrb->string_to_object(corbaStr);
 }
 
+void NativeWrapper::setOrbRelativeRtTimeout(long long timeoutMs) {
+	TimeBase::TimeT relativeRtTimeout = timeoutMs * 1.0e4;
+	CORBA::Any timeoutAsAny;
+	timeoutAsAny <<= relativeRtTimeout;
+
+	CORBA::PolicyList policyList;
+	policyList.length(1);
+	policyList[0] = mOrb->create_policy(Messaging::RELATIVE_RT_TIMEOUT_POLICY_TYPE, timeoutAsAny);
+
+	CORBA::Object_var policyManagerObj = mOrb->resolve_initial_references("ORBPolicyManager");
+	CORBA::PolicyManager_var policyManager = CORBA::PolicyManager::_narrow (policyManagerObj.in());
+	policyManager->set_policy_overrides (policyList, CORBA::SET_OVERRIDE);
+
+	for (CORBA::ULong i = 0; i < policyList.length(); ++i) {
+		policyList[i]->destroy();
+	}
+}
+
 void * NativeWrapper::runOrb(void * arg) {
 	NativeWrapper * instance = (NativeWrapper *) arg;
 	instance->mOrb->run();

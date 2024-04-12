@@ -16,6 +16,7 @@ public:
 	TypeCache();
 	virtual ~TypeCache();
 	jobject convert(JNIEnv * env, const char * name, CORBA::Object_ptr in);
+	jobject setObjectRelativeRtTimeout(JNIEnv * env, NativeWrapper * nativeWrapper, const jobject in, const char * name, long long timeoutMs);
 	convertAnyImpl getAnyConversion(const char * name);
 	convertToAnyImpl getToAnyConversion(const char * name);
 
@@ -33,6 +34,17 @@ private:
 	template<typename T> static jobject convertObject(JNIEnv * env, CORBA::Object_ptr obj) {
 		if (obj) {
 			return ::corbabinding::convert(env, T::_narrow(obj));
+		} else {
+			return nullptr;
+		}
+	}
+
+	typedef jobject (* setObjectRelativeRtTimeoutImpl)(JNIEnv * env, NativeWrapper * nativeWrapper, const jobject obj, long long timeoutMs);
+	std::map<std::string, setObjectRelativeRtTimeoutImpl> mRelativeRtTimeoutTable;
+	template<typename T> static jobject setObjectRelativeRtTimeoutFn(JNIEnv * env, NativeWrapper * nativeWrapper, const jobject obj, long long timeoutMs) {
+		if (obj) {
+			T * ptr = ::corbabinding::convert<T>(env, obj);
+			return ::corbabinding::convert(env, nativeWrapper->setObjectRelativeRtTimeout(ptr, timeoutMs));
 		} else {
 			return nullptr;
 		}
@@ -72,6 +84,15 @@ jobject TypeCache::convert(JNIEnv* env, const char * name, CORBA::Object_ptr in)
 		return item->second(env, in);
 	} else {
 		return nullptr;
+	}
+}
+
+jobject TypeCache::setObjectRelativeRtTimeout(JNIEnv * env, NativeWrapper * nativeWrapper, const jobject obj, const char * name, long long timeoutMs) {
+	auto item = mRelativeRtTimeoutTable.find(name);
+	if (item != mRelativeRtTimeoutTable.end()) {
+		return item->second(env, nativeWrapper, obj, timeoutMs);
+	} else {
+		throw CORBA::UNKNOWN(0, CORBA::CompletionStatus::COMPLETED_NO);
 	}
 }
 
@@ -292,6 +313,35 @@ JNIEXPORT jlong JNICALL Java_CorbaProvider_init(JNIEnv * env, jobject thiz, jobj
 	}
 
 	return (jlong) result;
+}
+
+JNIEXPORT void JNICALL Java_CorbaProvider_setOrbRelativeRtTimeoutImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jlong jtimeoutMs) {
+	try {
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		nativeWrapper->setOrbRelativeRtTimeout(jtimeoutMs);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+	}
+}
+
+JNIEXPORT jobject JNICALL Java_CorbaProvider_setObjectRelativeRtTimeoutImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jobject object, jlong jtimeoutMs) {
+	try {
+		NativeWrapper * nativeWrapper = (NativeWrapper *) jnativeWrapper;
+		jclass cls = env->GetObjectClass(object);
+		jfieldID classNameField = env->GetStaticFieldID(cls, "_interface_name_", "Ljava/lang/String;");
+		CORBA::String_var className;
+		if (env->ExceptionCheck() == JNI_TRUE) {
+			env->ExceptionClear();
+			className = "";
+		} else {
+			jstring jclassName = (jstring) env->GetStaticObjectField(cls, classNameField);
+			className = getStringChars(env, jclassName);
+		}
+		return sTypeCache->setObjectRelativeRtTimeout(env, nativeWrapper, object, className, jtimeoutMs);
+	} catch (const CORBA::Exception & e) {
+		env->Throw(convert(env, e));
+		return (jobject) 0x0;
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_CorbaProvider_resolveImpl(JNIEnv * env, jobject thiz, jlong jnativeWrapper, jstring jclassName, jstring jcorbaStr) {

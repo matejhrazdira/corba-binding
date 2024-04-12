@@ -24,6 +24,7 @@ $$$ BGN $$$
 #include <orbsvcs/RtecEventCommS.h>
 #include <tao/IORTable/IORTable.h>
 #include <tao/PortableServer/PortableServer.h>
+#include <tao/Messaging/Messaging.h>
 #include <ace/Thread_Manager.h>
 
 namespace corbabinding {
@@ -68,6 +69,27 @@ public:
 	void unbind(const char * name);
 
 	CORBA::Object_ptr resolve(const char * corbaStr);
+
+	void setOrbRelativeRtTimeout(long long timeoutMs);
+
+	template<typename T> T * setObjectRelativeRtTimeout(T * object, long long timeoutMs) {
+		TimeBase::TimeT relativeRtTimeout = timeoutMs * 1.0e4;
+		CORBA::Any timeoutAsAny;
+		timeoutAsAny <<= relativeRtTimeout;
+
+		CORBA::PolicyList policyList;
+		policyList.length(1);
+		policyList[0] = mOrb->create_policy(Messaging::RELATIVE_RT_TIMEOUT_POLICY_TYPE, timeoutAsAny);
+
+		CORBA::Object_var resultObj = object->_set_policy_overrides(policyList, CORBA::SET_OVERRIDE);
+
+		for (CORBA::ULong i = 0; i < policyList.length(); ++i) {
+			policyList[i]->destroy();
+		}
+
+		typename T::_var_type result = T::_narrow(resultObj);
+		return result._retn();
+	}
 
 private:
 	CORBA::ORB_var mOrb;

@@ -3,6 +3,7 @@ package com.matejhrazdira.pojos.cblib.client.SimpleIdl;
 public class SimpleIdlInterface implements com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface {
 
 	private long _native_address_;
+	private static final String _interface_name_ = "com.matejhrazdira.pojos.SimpleIdl.SimpleIdlInterface";
 
 	public SimpleIdlInterface(long _native_address_) {
 		this._native_address_ = _native_address_;

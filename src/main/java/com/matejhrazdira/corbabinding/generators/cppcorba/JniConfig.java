@@ -16,6 +16,7 @@
 
 package com.matejhrazdira.corbabinding.generators.cppcorba;
 
+import com.matejhrazdira.corbabinding.generators.java.InterfaceImplRenderer;
 import com.matejhrazdira.corbabinding.generators.java.TemplateRenderer;
 import com.matejhrazdira.corbabinding.generators.java.projection.JavaTemplateProjection;
 
@@ -60,9 +61,11 @@ public class JniConfig {
 	public static final String CORBABINDING_CPP = "corbabinding.cpp";
 
 	public static final String TYPE_CACHE_INTERFACE_TABLE = "mInterfaceTable";
+	public static final String TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT_TABLE = "mRelativeRtTimeoutTable";
 	public static final String TYPE_CACHE_ANY_TABLE = "mAnyTable";
 	public static final String TYPE_CACHE_TO_ANY_TABLE = "mToAnyTable";
 	public static final String TYPE_CACHE_CONVERT_OBJ = "convertObject";
+	public static final String TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT = "setObjectRelativeRtTimeoutFn";
 	public static final String TYPE_CACHE_CONVERT_ANY = "convertAny";
 	public static final String TYPE_CACHE_CONVERT_TO_ANY = "convertToAny";
 
@@ -106,10 +109,13 @@ public class JniConfig {
 		res.put("$$$JSTRING_VAR$$$", "_j_string_");
 		res.put("$$$TYPE_CACHE_INTERFACE_TABLE$$$", TYPE_CACHE_INTERFACE_TABLE);
 		res.put("$$$TYPE_CACHE_CONVERT_OBJ$$$", TYPE_CACHE_CONVERT_OBJ);
+		res.put("$$$TYPE_CACHE_RELATIVE_RT_TIMEOUT_TABLE$$$", TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT_TABLE);
+		res.put("$$$TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT$$$", TYPE_CACHE_SET_RELATIVE_RT_TIMEOUT);
 		res.put("$$$TYPE_CACHE_ANY_TABLE$$$", TYPE_CACHE_ANY_TABLE);
 		res.put("$$$TYPE_CACHE_CONVERT_ANY$$$", TYPE_CACHE_CONVERT_ANY);
 		res.put("$$$TYPE_CACHE_TO_ANY_TABLE$$$", TYPE_CACHE_TO_ANY_TABLE);
 		res.put("$$$TYPE_CACHE_CONVERT_TO_ANY$$$", TYPE_CACHE_CONVERT_TO_ANY);
+		res.put("$$$FIELD_INTERFACE_NAME$$$", InterfaceImplRenderer.INTERFACE_NAME);
 		res.put("$$$CORBA_ENCODING$$$", corbaEncoding);
 		res.put("$$$UTF_8_DEFINE$$$", UTF_8_DEFINE);
 		return res;
