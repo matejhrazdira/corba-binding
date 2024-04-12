@@ -1,6 +1,7 @@
 #include "corbabinding.h"
 
 #include <iconv.h>
+#include <simdutf.h>
 
 #define CB_CORBA_USES_UTF_8
 
@@ -136,7 +137,23 @@ jthrowable convert(JNIEnv * _env_, const ::CORBA::Exception & _in_) {
 template<> jobject convert<const char>(JNIEnv * _env_, const char * _in_) {
 	if (_in_) {
 #ifdef CB_CORBA_USES_UTF_8
-		return _env_->NewStringUTF(_in_);
+		size_t _in_len_ = strlen(_in_) + 1;
+		bool _in_valid_ = simdutf::validate_utf8(_in_, _in_len_);
+		if (_in_valid_) {
+			return _env_->NewStringUTF(_in_);
+		} else {
+			char _ascii_[_in_len_] = {0};
+
+			const unsigned char * _in_ptr_ = (const unsigned char *) _in_;
+			const unsigned char * _in_end_ = (const unsigned char *) _in_ + _in_len_;
+			char * _ascii_ptr_ = _ascii_;
+			while (_in_ptr_ < _in_end_) {
+				*_ascii_ptr_ = *_in_ptr_ < 127 ? *_in_ptr_ : '?';
+				++_in_ptr_;
+				++_ascii_ptr_;
+			}
+			return _env_->NewStringUTF(_ascii_);
+		}
 #else // CB_CORBA_USES_UTF_8
 		size_t _in_len_ = strlen(_in_);
 		if (_in_len_ > 0) {

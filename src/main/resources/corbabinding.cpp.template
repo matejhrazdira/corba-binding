@@ -18,6 +18,7 @@ $$$ BGN $$$
 #include "corbabinding.h"
 
 #include <iconv.h>
+#include <simdutf.h>
 
 $$$ DEFINE UTF-8 $$$
 namespace corbabinding {
@@ -152,7 +153,23 @@ jthrowable $$$CONVERT$$$(JNIEnv * $$$ENV$$$, const ::CORBA::Exception & $$$IN_AR
 template<> jobject $$$CONVERT$$$<const char>(JNIEnv * $$$ENV$$$, const char * $$$IN_ARG$$$) {
 	if ($$$IN_ARG$$$) {
 #ifdef $$$UTF_8_DEFINE$$$
-		return $$$ENV$$$->NewStringUTF($$$IN_ARG$$$);
+		size_t _in_len_ = strlen($$$IN_ARG$$$) + 1;
+		bool _in_valid_ = simdutf::validate_utf8($$$IN_ARG$$$, _in_len_);
+		if (_in_valid_) {
+			return $$$ENV$$$->NewStringUTF($$$IN_ARG$$$);
+		} else {
+			char _ascii_[_in_len_] = {0};
+
+			const unsigned char * _in_ptr_ = (const unsigned char *) $$$IN_ARG$$$;
+			const unsigned char * _in_end_ = (const unsigned char *) $$$IN_ARG$$$ + _in_len_;
+			char * _ascii_ptr_ = _ascii_;
+			while (_in_ptr_ < _in_end_) {
+				*_ascii_ptr_ = *_in_ptr_ < 127 ? *_in_ptr_ : '?';
+				++_in_ptr_;
+				++_ascii_ptr_;
+			}
+			return $$$ENV$$$->NewStringUTF(_ascii_);
+		}
 #else // $$$UTF_8_DEFINE$$$
 		size_t _in_len_ = strlen($$$IN_ARG$$$);
 		if (_in_len_ > 0) {
